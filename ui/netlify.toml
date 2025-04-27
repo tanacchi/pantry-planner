@@ -7,4 +7,7 @@ base = "ui"
 directory = "netlify/functions"
 
 [functions.default]
-included_files = ["node_modules/.prisma/**", "prisma/schema.prisma"]
+included_files = [
+  "node_modules/.prisma/**",
+  "prisma/schema.prisma"
+]
