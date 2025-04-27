@@ -4,11 +4,6 @@ import tsconfigPaths from "vite-tsconfig-paths";
 import { vitePlugin as remix } from "@remix-run/dev";
 
 export default defineConfig(() => ({
-  base: "./",
-  build: {
-    outDir: "public/assets",
-    emptyOutDir: false,
-  },
   plugins: [
     remix({
       future: {
