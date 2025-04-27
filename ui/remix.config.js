@@ -3,8 +3,8 @@ const { netlify } = require("@remix-run/netlify");
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
   appDirectory: "app",
-  assetsBuildDirectory: "public/build",
-  publicPath: "/build/",
+  assetsBuildDirectory: "public/assets",
+  publicPath: "/assets/",
   serverBuildPath: "netlify/functions/server.js",
   serverModuleFormat: "cjs",
   serverPlatform: "node",

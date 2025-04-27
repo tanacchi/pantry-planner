@@ -3,8 +3,12 @@ import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
 import { vitePlugin as remix } from "@remix-run/dev";
 
-export default defineConfig(({ mode }) => ({
-  base: "./", // ← ここを "./" に固定！！
+export default defineConfig(() => ({
+  base: "./",
+  build: {
+    outDir: "public/assets",
+    emptyOutDir: false,
+  },
   plugins: [
     remix({
       future: {
