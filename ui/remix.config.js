@@ -1,12 +1,15 @@
+const { netlify } = require("@remix-run/netlify");
+
 /** @type {import('@remix-run/dev').AppConfig} */
 module.exports = {
   appDirectory: "app",
-  assetsBuildDirectory: "public/build", // ブラウザ用のJS出力先
+  assetsBuildDirectory: "public/build",
   publicPath: "/build/",
-  serverBuildPath: "build/index.js",    // SSR用サーバビルドファイル
-  serverModuleFormat: "cjs",             // NetlifyではCommonJS
+  serverBuildPath: "netlify/functions/server.js",
+  serverModuleFormat: "cjs",
+  serverPlatform: "node",
   future: {
     v2_routeConvention: true,
   },
-  server: "./server.js",                // これを追加（後述）
+  ...netlify(), // ←これが重要！！
 };
