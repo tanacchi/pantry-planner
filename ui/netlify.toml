@@ -1,6 +1,6 @@
 [build]
 command = "pnpm prisma generate && pnpm run build"
-publish = "build"
+publish = "build/client"
 base = "ui"
 
 [functions]
