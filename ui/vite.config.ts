@@ -9,7 +9,8 @@ declare module "@remix-run/node" {
   }
 }
 
-export default defineConfig({
+export default defineConfig(({ mode} ) => ({
+  base: mode === "development" ? "/" : "/build/",
   plugins: [
     remix({
       future: {
@@ -23,4 +24,4 @@ export default defineConfig({
     tsconfigPaths(),
     netlifyPlugin()
   ],
-});
+}));
