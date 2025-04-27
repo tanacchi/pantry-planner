@@ -1,5 +1,5 @@
 export type ItemName = "Milk" | "Eggs" | "Bread" | "Rice" | "OliveOil" | "Salt" | "Sugar" | "Pepper";
-export type Category = "food" | "drink" | "snack" | "spice" | "other";
+export type Category = "Food" | "Drink" | "Snack" | "Spice" | "Other";
 
 export interface Item {
   id: string;
@@ -14,5 +14,4 @@ export interface Pantry {
   id: string;
   userId: string;
   items: Item[];
-  capacity: number;
 }
