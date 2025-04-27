@@ -45,6 +45,9 @@ importers:
         specifier: ^4.0.2
         version: 4.0.2(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3))(@remix-run/server-runtime@2.16.5(typescript@5.8.3))
     devDependencies:
+      '@netlify/remix-adapter':
+        specifier: ^2.6.1
+        version: 2.6.1(typescript@5.8.3)(vite@6.3.3(@types/node@22.15.2)(jiti@1.21.7)(yaml@2.7.1))
       '@remix-run/dev':
         specifier: ^2.16.5
         version: 2.16.5(@remix-run/react@2.16.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)(typescript@5.8.3))(@remix-run/serve@2.16.5(typescript@5.8.3))(@types/node@22.15.2)(jiti@1.21.7)(typescript@5.8.3)(vite@6.3.3(@types/node@22.15.2)(jiti@1.21.7)(yaml@2.7.1))(yaml@2.7.1)
@@ -742,6 +745,15 @@ packages:
   '@netlify/functions@1.6.0':
     resolution: {integrity: sha512-6G92AlcpFrQG72XU8YH8pg94eDnq7+Q0YJhb8x4qNpdGsvuzvrfHWBmqFGp/Yshmv4wex9lpsTRZOocdrA2erQ==}
     engines: {node: '>=14.0.0'}
+
+  '@netlify/remix-adapter@2.6.1':
+    resolution: {integrity: sha512-WB1Kc7AOYzXhgPNiFd4ATMZg04EIzR8eX8H+1QwSAKn2gjNYg3k0t8nVJwZRmUZ4sL5jRZuXM/HeESFMOimVUA==}
+    engines: {node: '>=18'}
+    peerDependencies:
+      vite: '>=5.0.0'
+    peerDependenciesMeta:
+      vite:
+        optional: true
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -2426,6 +2438,10 @@ packages:
 
   isbot@4.4.0:
     resolution: {integrity: sha512-8ZvOWUA68kyJO4hHJdWjyreq7TYNWTS9y15IzeqVdKxR9pPr3P/3r9AHcoIv9M0Rllkao5qWz2v1lmcyKIVCzQ==}
+    engines: {node: '>=18'}
+
+  isbot@5.1.27:
+    resolution: {integrity: sha512-V3W56Hnztt4Wdh3VUlAMbdNicX/tOM38eChW3a2ixP6KEBJAeehxzYzTD59JrU5NCTgBZwRt9lRWr8D7eMZVYQ==}
     engines: {node: '>=18'}
 
   isexe@2.0.0:
@@ -4507,6 +4523,15 @@ snapshots:
     dependencies:
       is-promise: 4.0.0
 
+  '@netlify/remix-adapter@2.6.1(typescript@5.8.3)(vite@6.3.3(@types/node@22.15.2)(jiti@1.21.7)(yaml@2.7.1))':
+    dependencies:
+      '@remix-run/node': 2.16.5(typescript@5.8.3)
+      isbot: 5.1.27
+    optionalDependencies:
+      vite: 6.3.3(@types/node@22.15.2)(jiti@1.21.7)(yaml@2.7.1)
+    transitivePeerDependencies:
+      - typescript
+
   '@nodelib/fs.scandir@2.1.5':
     dependencies:
       '@nodelib/fs.stat': 2.0.5
@@ -6568,6 +6593,8 @@ snapshots:
   isarray@2.0.5: {}
 
   isbot@4.4.0: {}
+
+  isbot@5.1.27: {}
 
   isexe@2.0.0: {}
 
