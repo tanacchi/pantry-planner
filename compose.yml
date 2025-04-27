@@ -1,0 +1,24 @@
+version: "3.8"
+
+services:
+  db:
+    image: postgres:17-alpine
+    container_name: pantry-planner-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - pantry-planner-network
+
+volumes:
+  db-data:
+
+networks:
+  pantry-planner-network:
+    driver: bridge
