@@ -1,5 +1,4 @@
-import { data, LoaderFunction, redirect } from "@remix-run/server-runtime";
-import { defer } from "@remix-run/node"; // or cloudflare/deno
+import { data, LoaderFunction } from "@remix-run/server-runtime";
 import {
   Await,
   Form,
@@ -32,6 +31,7 @@ export const loader: LoaderFunction = async ({
 }: {
   request: Request;
 }): Promise<DashboardLoaderData> => {
+  console.log("Loader called");
   const url = new URL(request.url);
   const query = url.searchParams.get("q")?.toLowerCase() ?? "";
   const filtered = new Promise<Item[]>((resolve) => {
@@ -43,6 +43,7 @@ export const loader: LoaderFunction = async ({
 };
 
 export const action = async ({ request }: { request: Request }) => {
+  console.log("Action called");
   const formData = await request.formData();
   const intent = formData.get("intent");
   const id = Number(formData.get("id"));
@@ -58,8 +59,7 @@ export const action = async ({ request }: { request: Request }) => {
       isFavorite: false,
     };
     ITEMS.push(newItem);
-    return redirect("/dashboard");
-  }
+    return data({ success: true });  }
 
   if (intent === "delete") {
     ITEMS = ITEMS.filter((item) => item.id !== id);
