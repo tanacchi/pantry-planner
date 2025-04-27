@@ -1,16 +1,10 @@
-import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
+import tsconfigPaths from "vite-tsconfig-paths";
+import { vitePlugin as remix } from "@remix-run/dev";
 
-declare module "@remix-run/node" {
-  interface Future {
-    v3_singleFetch: true;
-  }
-}
-
-export default defineConfig(({ mode} ) => ({
-  base: mode === "development" ? "/" : "/build/assets/",
+export default defineConfig(({ mode }) => ({
+  base: "./", // ← ここを "./" に固定！！
   plugins: [
     remix({
       future: {
@@ -22,6 +16,6 @@ export default defineConfig(({ mode} ) => ({
       },
     }),
     tsconfigPaths(),
-    netlifyPlugin()
+    netlifyPlugin(),
   ],
 }));
