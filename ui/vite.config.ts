@@ -10,7 +10,7 @@ declare module "@remix-run/node" {
 }
 
 export default defineConfig(({ mode} ) => ({
-  base: mode === "development" ? "/" : "/build/",
+  base: mode === "development" ? "/" : "/build/assets/",
   plugins: [
     remix({
       future: {
