@@ -2,3 +2,9 @@
 command = "pnpm prisma generate && pnpm run build"
 publish = "public"
 base = "ui"
+
+[functions]
+directory = "netlify/functions"
+
+[functions.default]
+included_files = ["node_modules/.prisma/**", "prisma/schema.prisma"]
