@@ -6,8 +6,8 @@ import {
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react";
-import { useTransition } from "react";
-import React from "react";
+import React, { useTransition } from "react";
+import { getItems } from "../db/index.server";
 
 type DashboardLoaderData = {
   title: string;
@@ -34,12 +34,15 @@ export const loader: LoaderFunction = async ({
   console.log("Loader called");
   const url = new URL(request.url);
   const query = url.searchParams.get("q")?.toLowerCase() ?? "";
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filtered = new Promise<Item[]>((resolve) => {
     setTimeout(() => {
       resolve(ITEMS.filter((item) => item.name.toLowerCase().includes(query)));
     }, 1000);
   });
-  return { title: "dashboard", items: filtered };
+  const items = getItems(1)
+    .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
+  return { title: "dashboard", items };
 };
 
 export const action = async ({ request }: { request: Request }) => {
@@ -78,7 +81,7 @@ export const action = async ({ request }: { request: Request }) => {
 };
 
 export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
-  return formMethod === "GET"; // 検索クエリ時のみ再検証
+  return true;
 };
 
 export default function Dashboard() {
