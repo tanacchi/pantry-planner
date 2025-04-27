@@ -119,7 +119,6 @@ exports.Prisma.TransactionIsolationLevel = makeStrictEnum({
 
 exports.Prisma.UserScalarFieldEnum = {
   id: 'id',
-  email: 'email',
   name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -127,7 +126,6 @@ exports.Prisma.UserScalarFieldEnum = {
 
 exports.Prisma.PantryScalarFieldEnum = {
   id: 'id',
-  name: 'name',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   userId: 'userId'
@@ -150,11 +148,6 @@ exports.Prisma.SortOrder = {
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
-};
-
-exports.Prisma.NullsOrder = {
-  first: 'first',
-  last: 'last'
 };
 exports.Category = exports.$Enums.Category = {
   Food: 'Food',
