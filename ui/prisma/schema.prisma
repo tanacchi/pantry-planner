@@ -17,7 +17,7 @@ datasource db {
 
 model User {
   id          Int      @id @default(autoincrement())
-  lineUid     String?  @db.VarChar(255)
+  lineUid     String   @unique @db.VarChar(255)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lastLoginAt DateTime @default(now())
