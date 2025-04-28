@@ -1,3 +1,4 @@
+import { c } from "node_modules/vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf";
 import { ensureConnected, prisma } from "./common.server";
 
 export const getItems = async (userId: number) => {
@@ -10,13 +11,18 @@ export const getItems = async (userId: number) => {
 };
 
 export const login = async (lineUid: string) => {
+  let count = 0;
   console.log("logging in", lineUid);
   try {
+    count++;
     await ensureConnected();
+    count++;
     console.log("DB connected");
     const user = await prisma.user.findUnique({
       where: { lineUid },
     });
+    count++;
+
     if (user) {
       console.log("User found", user);
       user.lastLoginAt = new Date();
@@ -24,13 +30,16 @@ export const login = async (lineUid: string) => {
         where: { id: user.id },
         data: { lastLoginAt: user.lastLoginAt },
       });
+      count++;
       return { user };
     }
+    count += 100;
     const { user: newUser } = await registerUser(lineUid);
+    count++;
     return { user: newUser };
   } catch (error) {
     console.error("Error in login function:", error);
-    return { error: JSON.stringify(error, null, 2) };
+    return { error: JSON.stringify(error, null, 2), count };
   }
 };
 
