@@ -10,6 +10,10 @@ export const loader = async ({ request }: { request: Request }) => {
     throw new Response("Missing lineUid", { status: 400 });
   }
 
-  const user = await login(lineUid).then(res => res.user);
-  return data(user);
+  try {
+    const user = await login(lineUid).then(res => res.user);
+    return data(user);
+  } catch (error) {
+    throw new Response(`Internal Server Error: ${JSON.stringify(error)}`, { status: 500 });
+  }
 };

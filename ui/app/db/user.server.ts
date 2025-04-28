@@ -38,7 +38,7 @@ export const login = async (lineUid: string) => {
     return { user: newUser };
   } catch (error) {
     console.error("Error in login function:", error);
-    return { error: JSON.stringify(error, null, 2), count };
+    throw new Error(`Error in login function: ${JSON.stringify(error)}---${count}`);
   }
 };
 
