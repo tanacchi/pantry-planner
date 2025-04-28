@@ -53,9 +53,7 @@ export function ErrorBoundary({ error }: { error: Error }) {
       <body>
         <h1>エラーが発生しました</h1>
         <pre style={{ whiteSpace: "pre-wrap", color: "red", backgroundColor: "#fee", padding: "1rem" }}>
-          {error.message}
-          {"\n\n"}
-          {error.stack}
+          {JSON.stringify(error, null, 2)}
         </pre>
         <Scripts />
       </body>
