@@ -1,4 +1,3 @@
-import { c } from "node_modules/vite/dist/node/moduleRunnerTransport.d-DJ_mE5sf";
 import { ensureConnected, prisma } from "./common.server";
 
 export const getItems = async (userId: number) => {
