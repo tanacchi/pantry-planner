@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import React, { useTransition } from "react";
-import { getItems } from "../db/index.server";
+import { getItems } from "../db";
 import { UserDisplayName } from "../components/liff/UserDisplayName";
 
 type DashboardLoaderData = {
@@ -34,15 +34,15 @@ export const loader: LoaderFunction = async ({
 }): Promise<DashboardLoaderData> => {
   console.log("Loader called");
   const url = new URL(request.url);
-  const query = url.searchParams.get("q")?.toLowerCase() ?? "";
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filtered = new Promise<Item[]>((resolve) => {
-    setTimeout(() => {
-      resolve(ITEMS.filter((item) => item.name.toLowerCase().includes(query)));
-    }, 1000);
-  });
+  const query = url.searchParams.get("q")?.toLowerCase() ?? "";
   const items = getItems(1)
     .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
+  // const filtered = new Promise<Item[]>((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(items.filter((item) => item.name.toLowerCase().includes(query)));
+  //   }, 1000);
+  // });
   return { title: "dashboard", items };
 };
 

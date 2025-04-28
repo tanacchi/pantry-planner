@@ -21,25 +21,13 @@ if (process.env.NODE_ENV === "production") {
   }
   prisma = global.__db__;
 }
-
-// ★ ここでコネクションチェックを入れる
-async function ensureConnected() {
+export async function ensureConnected() {
   try {
     await prisma.$connect();
   } catch (e) {
     console.error("Failed to connect to database", e);
     throw e;
   }
-}
-
-
-export const getItems = async (userId: number) => {
-  await ensureConnected();
-  const items = prisma.item.findMany({
-    where: { pantry: { userId } },
-    orderBy: { createdAt: "desc" },
-  });
-  return items;
 }
 
 export { prisma };
