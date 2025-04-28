@@ -1,6 +1,7 @@
-import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
+import { netlifyPlugin } from "@netlify/remix-adapter/plugin";
 import tsconfigPaths from "vite-tsconfig-paths";
+import { vitePlugin as remix } from "@remix-run/dev";
 
 declare module "@remix-run/node" {
   interface Future {
@@ -8,7 +9,7 @@ declare module "@remix-run/node" {
   }
 }
 
-export default defineConfig({
+export default defineConfig(() => ({
   plugins: [
     remix({
       future: {
@@ -20,5 +21,6 @@ export default defineConfig({
       },
     }),
     tsconfigPaths(),
+    netlifyPlugin(),
   ],
-});
+}));
