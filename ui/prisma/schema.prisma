@@ -12,6 +12,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL") // Supabase に接続する場合は、こちらを使用.
 }
 
 model User {
