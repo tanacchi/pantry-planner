@@ -43,3 +43,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return <Outlet />;
 }
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return (
+    <html lang="ja">
+      <head>
+        <title>エラー発生！</title>
+      </head>
+      <body>
+        <h1>エラーが発生しました</h1>
+        <pre style={{ whiteSpace: "pre-wrap", color: "red", backgroundColor: "#fee", padding: "1rem" }}>
+          {error.message}
+          {"\n\n"}
+          {error.stack}
+        </pre>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
