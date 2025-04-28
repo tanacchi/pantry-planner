@@ -11,22 +11,27 @@ export const getItems = async (userId: number) => {
 
 export const login = async (lineUid: string) => {
   console.log("logging in", lineUid);
-  await ensureConnected();
-  console.log("DB connected");
-  const user = await prisma.user.findUnique({
-    where: { lineUid },
-  });
-  if (user) {
-    console.log("User found", user);
-    user.lastLoginAt = new Date();
-    prisma.user.update({
-      where: { id: user.id },
-      data: { lastLoginAt: user.lastLoginAt },
+  try {
+    await ensureConnected();
+    console.log("DB connected");
+    const user = await prisma.user.findUnique({
+      where: { lineUid },
     });
-    return { user };
+    if (user) {
+      console.log("User found", user);
+      user.lastLoginAt = new Date();
+      prisma.user.update({
+        where: { id: user.id },
+        data: { lastLoginAt: user.lastLoginAt },
+      });
+      return { user };
+    }
+    const { user: newUser } = await registerUser(lineUid);
+    return { user: newUser };
+  } catch (error) {
+    console.error("Error in login function:", error);
+    throw error;
   }
-  const { user: newUser } = await registerUser(lineUid);
-  return { user: newUser };
 };
 
 export const registerUser = async (lineUid: string) => {
