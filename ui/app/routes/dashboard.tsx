@@ -96,9 +96,9 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
-      <p>
+      <div>
         <UserDisplayName />
-      </p>
+      </div>
 
       {/* Search Form */}
       <Form method="get" className="flex mb-6">
