@@ -81,6 +81,7 @@ export const action = async ({ request }: { request: Request }) => {
   return data({ error: "Invalid action" }, { status: 400 });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
   return true;
 };
@@ -88,7 +89,7 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 export default function Dashboard() {
   const { title, items: itemPromise } = useLoaderData<DashboardLoaderData>();
   const fetcher = useFetcher();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const transition = useTransition();
 
   const isSubmitting = transition[0];
