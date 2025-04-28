@@ -16,11 +16,12 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  pantry    Pantry[]
+  id          Int      @id @default(autoincrement())
+  lineUid     String?  @db.VarChar(255)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLoginAt DateTime @default(now())
+  pantry      Pantry[]
 }
 
 model Pantry {
