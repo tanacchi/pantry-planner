@@ -8,6 +8,7 @@ import {
 } from "@remix-run/react";
 import React, { useTransition } from "react";
 import { getItems } from "../db/index.server";
+import { UserDisplayName } from "../components/liff/UserDisplayName";
 
 type DashboardLoaderData = {
   title: string;
@@ -95,6 +96,9 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
+      <p>
+        <UserDisplayName />
+      </p>
 
       {/* Search Form */}
       <Form method="get" className="flex mb-6">
