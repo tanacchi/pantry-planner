@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: Pantry Planner API
   version: 1.0.0
@@ -51,10 +51,12 @@ paths:
                 - type: object
                   properties:
                     createdAt:
-                      nullable: true
+                      type: [string, 'null']
+                      format: date-time
                       readOnly: true
                     updatedAt:
-                      nullable: true
+                      type: [string, 'null']
+                      format: date-time
                       readOnly: true
                   required: []
       responses:
@@ -191,10 +193,12 @@ paths:
                 - type: object
                   properties:
                     createdAt:
-                      nullable: true
+                      type: [string, 'null']
+                      format: date-time
                       readOnly: true
                     updatedAt:
-                      nullable: true
+                      type: [string, 'null']
+                      format: date-time
                       readOnly: true
                   required: []
       responses:
@@ -348,23 +352,13 @@ paths:
       tags:
         - Item
       summary: 新しいアイテムを作成します
-      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      description: createdAt, updatedAt はリクエストボディに含めずに作成してください。
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: '#/components/schemas/Item'
-                - type: object
-                  properties:
-                    createdAt:
-                      nullable: true
-                      readOnly: true
-                    updatedAt:
-                      nullable: true
-                      readOnly: true
-                  required: []
+              $ref: '#/components/schemas/Item'
       responses:
         '201':
           description: アイテムの作成に成功しました
@@ -484,30 +478,26 @@ paths:
           description: サーバーエラー
 components:
   schemas:
-    Category:
-      type: string
-      enum: [Food, Drink, Snack, Spice, Other]
     User:
       type: object
       properties:
         id:
           type: integer
           description: ユーザーID
+          readOnly: true
         name:
           type: string
           description: ユーザー名
-        email:
-          type: string
-          format: email
-          description: メールアドレス
         createdAt:
           type: string
           format: date-time
           description: 作成日時
+          readOnly: true
         updatedAt:
           type: string
           format: date-time
           description: 更新日時
+          readOnly: true
       required:
         - id
         - name
@@ -530,45 +520,59 @@ components:
           type: string
           format: date-time
           description: 作成日時
+          readOnly: true
         updatedAt:
           type: string
           format: date-time
           description: 更新日時
+          readOnly: true
       required:
         - id
         - name
         - userId
         - createdAt
         - updatedAt
+
+    Category:
+      type: string
+      enum: [Food, Drink, Snack, Spice, Other]
+
     Item:
       type: object
       properties:
         id:
           type: integer
           description: アイテムID
+          readOnly: true
         name:
           type: string
           description: アイテム名
         category:
-          type: enum
-          ref: '#/components/schemas/Category'
+          $ref: '#/components/schemas/Category'
         pantryId:
           type: integer
           description: 所属パントリーID
         quantity:
           type: integer
           description: 数量
+        unit:
+          type: string
+          description: 単位
         createdAt:
           type: string
           format: date-time
           description: 作成日時
+          readOnly: true
         updatedAt:
           type: string
           format: date-time
           description: 更新日時
+          readOnly: true
       required:
         - id
         - name
+        - category
+        - unit
         - pantryId
         - quantity
         - createdAt
