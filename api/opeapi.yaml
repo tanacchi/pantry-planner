@@ -1,0 +1,575 @@
+openapi: 3.0.3
+info:
+  title: Pantry Planner API
+  version: 1.0.0
+  description: パントリープランナーのAPI仕様書です。
+servers:
+  - url: https://api.pantryplanner.example.com
+paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: ユーザー一覧を取得します
+      description: クエリパラメータで検索条件を指定してユーザーのリストを取得します。
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: ユーザー名で絞り込み
+        - in: query
+          name: email
+          schema:
+            type: string
+          description: メールアドレスで絞り込み
+      responses:
+        '200':
+          description: ユーザー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    post:
+      tags:
+        - User
+      summary: 新しいユーザーを作成します
+      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/User'
+                - type: object
+                  properties:
+                    createdAt:
+                      nullable: true
+                      readOnly: true
+                    updatedAt:
+                      nullable: true
+                      readOnly: true
+                  required: []
+      responses:
+        '201':
+          description: ユーザーの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: 指定IDのユーザーを取得します
+      description: ユーザーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ユーザーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    put:
+      tags:
+        - User
+      summary: 指定IDのユーザー情報を更新します
+      description: ユーザーの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: ユーザーの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: ユーザーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    delete:
+      tags:
+        - User
+      summary: 指定IDのユーザーを削除します
+      description: ユーザーを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
+      responses:
+        '204':
+          description: ユーザーの削除に成功しました
+        '404':
+          description: ユーザーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /pantries:
+    get:
+      tags:
+        - Pantry
+      summary: パントリー一覧を取得します
+      description: クエリパラメータで検索条件を指定してパントリーのリストを取得します。
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: パントリー名で絞り込み
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          description: ユーザーIDで絞り込み
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    post:
+      tags:
+        - Pantry
+      summary: 新しいパントリーを作成します
+      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Pantry'
+                - type: object
+                  properties:
+                    createdAt:
+                      nullable: true
+                      readOnly: true
+                    updatedAt:
+                      nullable: true
+                      readOnly: true
+                  required: []
+      responses:
+        '201':
+          description: パントリーの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /pantries/{id}:
+    get:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーを取得します
+      description: パントリーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: パントリーID
+      responses:
+        '200':
+          description: パントリーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          description: パントリーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    put:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリー情報を更新します
+      description: パントリーの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: パントリーID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pantry'
+      responses:
+        '200':
+          description: パントリーの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          description: パントリーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    delete:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーを削除します
+      description: パントリーを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: パントリーID
+      responses:
+        '204':
+          description: パントリーの削除に成功しました
+        '404':
+          description: パントリーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /pantries/by-user/{userId}:
+    get:
+      tags:
+        - Pantry
+      summary: ユーザーIDでパントリー一覧を取得します
+      description: 指定したユーザーIDに紐づくパントリーの一覧を取得します。
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: ユーザーID
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '404':
+          description: 該当ユーザーのパントリーが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /items:
+    get:
+      tags:
+        - Item
+      summary: アイテム一覧を取得します
+      description: クエリパラメータで検索条件を指定してアイテムのリストを取得します。
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          description: アイテム名で絞り込み
+        - in: query
+          name: pantryId
+          schema:
+            type: integer
+          description: パントリーIDで絞り込み
+      responses:
+        '200':
+          description: アイテム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    post:
+      tags:
+        - Item
+      summary: 新しいアイテムを作成します
+      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              allOf:
+                - $ref: '#/components/schemas/Item'
+                - type: object
+                  properties:
+                    createdAt:
+                      nullable: true
+                      readOnly: true
+                    updatedAt:
+                      nullable: true
+                      readOnly: true
+                  required: []
+      responses:
+        '201':
+          description: アイテムの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /items/{id}:
+    get:
+      tags:
+        - Item
+      summary: 指定IDのアイテムを取得します
+      description: アイテムのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: アイテムID
+      responses:
+        '200':
+          description: アイテムの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: アイテムが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    put:
+      tags:
+        - Item
+      summary: 指定IDのアイテム情報を更新します
+      description: アイテムの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: アイテムID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: アイテムの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          description: アイテムが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+    delete:
+      tags:
+        - Item
+      summary: 指定IDのアイテムを削除します
+      description: アイテムを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: アイテムID
+      responses:
+        '204':
+          description: アイテムの削除に成功しました
+        '404':
+          description: アイテムが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+  /items/by-pantry/{pantryId}:
+    get:
+      tags:
+        - Item
+      summary: パントリーIDでアイテム一覧を取得します
+      description: 指定したパントリーIDに紐づくアイテムの一覧を取得します。
+      parameters:
+        - in: path
+          name: pantryId
+          required: true
+          schema:
+            type: integer
+          description: パントリーID
+      responses:
+        '200':
+          description: アイテム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '404':
+          description: 該当パントリーのアイテムが見つかりません
+        '400':
+          description: 不正なリクエスト
+        '500':
+          description: サーバーエラー
+components:
+  schemas:
+    Category:
+      type: string
+      enum: [Food, Drink, Snack, Spice, Other]
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: ユーザーID
+        name:
+          type: string
+          description: ユーザー名
+        email:
+          type: string
+          format: email
+          description: メールアドレス
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+      required:
+        - id
+        - name
+        - email
+        - createdAt
+        - updatedAt
+    Pantry:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: パントリーID
+        name:
+          type: string
+          description: パントリー名
+        userId:
+          type: integer
+          description: 所有者ユーザーID
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+      required:
+        - id
+        - name
+        - userId
+        - createdAt
+        - updatedAt
+    Item:
+      type: object
+      properties:
+        id:
+          type: integer
+          description: アイテムID
+        name:
+          type: string
+          description: アイテム名
+        category:
+          type: enum
+          ref: '#/components/schemas/Category'
+        pantryId:
+          type: integer
+          description: 所属パントリーID
+        quantity:
+          type: integer
+          description: 数量
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+      required:
+        - id
+        - name
+        - pantryId
+        - quantity
+        - createdAt
+        - updatedAt
