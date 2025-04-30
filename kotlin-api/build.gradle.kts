@@ -2,7 +2,16 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 group = "org.openapitools"
 version = "1.0.0"
-java.sourceCompatibility = JavaVersion.VERSION_17
+java.sourceCompatibility = JavaVersion.VERSION_21
+
+plugins {
+    id("org.springframework.boot") version "3.4.5"
+    id("io.spring.dependency-management") version "1.1.7"
+    val kotlinVersion = "1.9.25"
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
+}
 
 repositories {
     mavenCentral()
@@ -10,20 +19,15 @@ repositories {
 }
 
 tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "17"
+    kotlinOptions.jvmTarget = "21"
 }
 
 tasks.bootJar {
     enabled = false
 }
 
-plugins {
-    val kotlinVersion = "1.9.25"
-    id("org.jetbrains.kotlin.jvm") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
-    id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
-    id("org.springframework.boot") version "3.0.2"
-    id("io.spring.dependency-management") version "1.0.14.RELEASE"
+repositories {
+	mavenCentral()
 }
 
 dependencies {
@@ -44,4 +48,14 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
     }
+}
+
+kotlin {
+	compilerOptions {
+		freeCompilerArgs.addAll("-Xjsr305=strict")
+	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
