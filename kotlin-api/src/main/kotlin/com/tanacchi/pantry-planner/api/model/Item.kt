@@ -1,10 +1,10 @@
-package com.tanacchi.pantry-planner.api.model
+package com.tanacchi.pantry.planner.api.model
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonValue
-import com.tanacchi.pantry-planner.api.model.Category
+import com.tanacchi.pantry.planner.api.model.Category
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Email

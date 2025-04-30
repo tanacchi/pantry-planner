@@ -1,4 +1,4 @@
-package com.tanacchi.pantry-planner.api.model
+package com.tanacchi.pantry.planner.api.model
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonProperty
@@ -14,7 +14,7 @@ import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
- * 
+ *
  * @param id パントリーID
  * @param userId 所有者ユーザーID
  * @param createdAt 作成日時

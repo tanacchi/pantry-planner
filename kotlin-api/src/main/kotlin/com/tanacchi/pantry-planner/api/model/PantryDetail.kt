@@ -1,8 +1,8 @@
-package com.tanacchi.pantry-planner.api.model
+package com.tanacchi.pantry.planner.api.model
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.tanacchi.pantry-planner.api.model.Item
+import com.tanacchi.pantry.planner.api.model.Item
 import jakarta.validation.constraints.DecimalMax
 import jakarta.validation.constraints.DecimalMin
 import jakarta.validation.constraints.Email
@@ -15,12 +15,12 @@ import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
- * 
+ *
  * @param id パントリーID
  * @param userId 所有者ユーザーID
  * @param createdAt 作成日時
  * @param updatedAt 更新日時
- * @param items 
+ * @param items
  */
 data class PantryDetail(
 

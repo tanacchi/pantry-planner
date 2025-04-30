@@ -1,4 +1,4 @@
-package com.tanacchi.pantry-planner.api.controller
+package com.tanacchi.pantry.planner.api.controller
 
 import org.springframework.web.context.request.NativeWebRequest
 

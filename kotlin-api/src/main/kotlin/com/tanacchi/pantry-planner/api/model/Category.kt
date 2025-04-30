@@ -1,4 +1,4 @@
-package com.tanacchi.pantry-planner.api.model
+package com.tanacchi.pantry.planner.api.model
 
 import java.util.Objects
 import com.fasterxml.jackson.annotation.JsonValue
@@ -16,7 +16,7 @@ import jakarta.validation.Valid
 import io.swagger.v3.oas.annotations.media.Schema
 
 /**
-* 
+*
 * Values: FOOD,DRINK,SNACK,SPICE,OTHER
 */
 enum class Category(@get:JsonValue val value: kotlin.String) {

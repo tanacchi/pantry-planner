@@ -3,12 +3,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
 */
-package com.tanacchi.pantry-planner.api.controller
+package com.tanacchi.pantry.planner.api.controller
 
-import com.tanacchi.pantry-planner.api.model.Model400ErrorMessage
-import com.tanacchi.pantry-planner.api.model.Model404ErrorMessage
-import com.tanacchi.pantry-planner.api.model.Model500ErrorMessage
-import com.tanacchi.pantry-planner.api.model.Pantry
+import com.tanacchi.pantry.planner.api.model.Model400ErrorMessage
+import com.tanacchi.pantry.planner.api.model.Model404ErrorMessage
+import com.tanacchi.pantry.planner.api.model.Model500ErrorMessage
+import com.tanacchi.pantry.planner.api.model.Pantry
 import io.swagger.v3.oas.annotations.*
 import io.swagger.v3.oas.annotations.enums.*
 import io.swagger.v3.oas.annotations.media.*
