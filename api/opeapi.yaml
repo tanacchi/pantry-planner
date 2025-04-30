@@ -4,6 +4,8 @@ info:
   version: 1.0.0
   description: パントリープランナーのAPI仕様書です。
 servers:
+  - url: http://localhost:8000
+    description: ローカル環境
   - url: https://api.pantryplanner.example.com
 paths:
   /users:
@@ -12,17 +14,6 @@ paths:
         - User
       summary: ユーザー一覧を取得します
       description: クエリパラメータで検索条件を指定してユーザーのリストを取得します。
-      parameters:
-        - in: query
-          name: name
-          schema:
-            type: string
-          description: ユーザー名で絞り込み
-        - in: query
-          name: email
-          schema:
-            type: string
-          description: メールアドレスで絞り込み
       responses:
         '200':
           description: ユーザー一覧の取得に成功しました
@@ -33,9 +24,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - User
@@ -46,19 +37,7 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: '#/components/schemas/User'
-                - type: object
-                  properties:
-                    createdAt:
-                      type: [string, 'null']
-                      format: date-time
-                      readOnly: true
-                    updatedAt:
-                      type: [string, 'null']
-                      format: date-time
-                      readOnly: true
-                  required: []
+              $ref: '#/components/schemas/User'
       responses:
         '201':
           description: ユーザーの作成に成功しました
@@ -67,9 +46,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
   /users/{id}:
     get:
       tags:
@@ -81,7 +60,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/UserId'
           description: ユーザーID
       responses:
         '200':
@@ -91,11 +70,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '404':
-          description: ユーザーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     put:
       tags:
         - User
@@ -106,7 +85,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/UserId'
           description: ユーザーID
       requestBody:
         required: true
@@ -122,11 +101,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
         '404':
-          description: ユーザーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - User
@@ -137,34 +116,101 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/UserId'
           description: ユーザーID
       responses:
         '204':
           description: ユーザーの削除に成功しました
         '404':
-          description: ユーザーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
+  /users/{id}/detail:
+    get:
+      tags:
+        - User
+      summary: 指定IDのユーザーの詳細を取得します
+      description: ユーザーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/by-line-uid/{lineUid}:
+    get:
+      tags:
+        - User
+      summary: 指定 LINE UID のユーザーを取得します
+      description: ユーザーの LINE UID を指定して取得します。
+      parameters:
+        - in: path
+          name: lineUid
+          required: true
+          schema:
+            $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/by-line-uid/{lineUid}/detail:
+    get:
+      tags:
+        - User
+      summary: 指定 LINE UID のユーザーの詳細を取得します
+      description: ユーザーの LINE UID を指定して取得します。
+      parameters:
+        - in: path
+          name: lineUid
+          required: true
+          schema:
+            $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /pantries:
     get:
       tags:
         - Pantry
       summary: パントリー一覧を取得します
       description: クエリパラメータで検索条件を指定してパントリーのリストを取得します。
-      parameters:
-        - in: query
-          name: name
-          schema:
-            type: string
-          description: パントリー名で絞り込み
-        - in: query
-          name: userId
-          schema:
-            type: integer
-          description: ユーザーIDで絞り込み
       responses:
         '200':
           description: パントリー一覧の取得に成功しました
@@ -175,9 +221,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Pantry'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Pantry
@@ -188,19 +234,7 @@ paths:
         content:
           application/json:
             schema:
-              allOf:
-                - $ref: '#/components/schemas/Pantry'
-                - type: object
-                  properties:
-                    createdAt:
-                      type: [string, 'null']
-                      format: date-time
-                      readOnly: true
-                    updatedAt:
-                      type: [string, 'null']
-                      format: date-time
-                      readOnly: true
-                  required: []
+              $ref: '#/components/schemas/Pantry'
       responses:
         '201':
           description: パントリーの作成に成功しました
@@ -209,9 +243,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pantry'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
   /pantries/{id}:
     get:
       tags:
@@ -223,7 +257,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/PantryId'
           description: パントリーID
       responses:
         '200':
@@ -233,11 +267,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pantry'
         '404':
-          description: パントリーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     put:
       tags:
         - Pantry
@@ -248,7 +282,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/PantryId'
           description: パントリーID
       requestBody:
         required: true
@@ -264,11 +298,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Pantry'
         '404':
-          description: パントリーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - Pantry
@@ -279,29 +313,55 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/PantryId'
           description: パントリーID
       responses:
         '204':
           description: パントリーの削除に成功しました
         '404':
-          description: パントリーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/{id}/detail:
+    get:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーの詳細を取得します
+      description: パントリーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      responses:
+        '200':
+          description: パントリーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /pantries/by-user/{userId}:
     get:
       tags:
         - Pantry
-      summary: ユーザーIDでパントリー一覧を取得します
-      description: 指定したユーザーIDに紐づくパントリーの一覧を取得します。
+      summary: ユーザーIDでパントリーを取得します
+      description: 指定したユーザーIDに紐づくパントリーを取得します。
       parameters:
         - in: path
           name: userId
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/UserId'
           description: ユーザーID
       responses:
         '200':
@@ -313,11 +373,39 @@ paths:
                 items:
                   $ref: '#/components/schemas/Pantry'
         '404':
-          description: 該当ユーザーのパントリーが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/by-user/{userId}/detail:
+    get:
+      tags:
+        - Pantry
+      summary: ユーザーIDでパントリーの詳細を取得します
+      description: 指定したユーザーIDに紐づくパントリーを取得します。
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /items:
     get:
       tags:
@@ -328,12 +416,16 @@ paths:
         - in: query
           name: name
           schema:
-            type: string
+            type: array
+            items:
+              type: string
           description: アイテム名で絞り込み
         - in: query
-          name: pantryId
+          name: category
           schema:
-            type: integer
+            type: array
+            items:
+              type: string
           description: パントリーIDで絞り込み
       responses:
         '200':
@@ -345,9 +437,9 @@ paths:
                 items:
                   $ref: '#/components/schemas/Item'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     post:
       tags:
         - Item
@@ -367,9 +459,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
   /items/{id}:
     get:
       tags:
@@ -381,7 +473,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/ItemId'
           description: アイテムID
       responses:
         '200':
@@ -391,11 +483,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
         '404':
-          description: アイテムが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     put:
       tags:
         - Item
@@ -406,7 +498,7 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/ItemId'
           description: アイテムID
       requestBody:
         required: true
@@ -422,11 +514,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/Item'
         '404':
-          description: アイテムが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
     delete:
       tags:
         - Item
@@ -437,17 +529,17 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/ItemId'
           description: アイテムID
       responses:
         '204':
           description: アイテムの削除に成功しました
         '404':
-          description: アイテムが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
   /items/by-pantry/{pantryId}:
     get:
       tags:
@@ -459,7 +551,7 @@ paths:
           name: pantryId
           required: true
           schema:
-            type: integer
+            $ref: '#/components/schemas/PantryId'
           description: パントリーID
       responses:
         '200':
@@ -471,23 +563,21 @@ paths:
                 items:
                   $ref: '#/components/schemas/Item'
         '404':
-          description: 該当パントリーのアイテムが見つかりません
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: 不正なリクエスト
+          $ref: '#/components/responses/BadRequest'
         '500':
-          description: サーバーエラー
+          $ref: '#/components/responses/InternalServerError'
 components:
   schemas:
     User:
       type: object
       properties:
         id:
-          type: integer
-          description: ユーザーID
-          readOnly: true
-        name:
-          type: string
-          description: ユーザー名
+          $ref: '#/components/schemas/UserId'
+        lineUid:
+          $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
         createdAt:
           type: string
           format: date-time
@@ -498,21 +588,31 @@ components:
           format: date-time
           description: 更新日時
           readOnly: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: 最終ログイン日時
+          readOnly: true
       required:
         - id
-        - name
-        - email
+        - lineUid
         - createdAt
         - updatedAt
+        - lastLoginAt
+    UserDetail:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            pantry:
+              $ref: '#/components/schemas/PantryDetail'
+          required:
+            - pantry
     Pantry:
       type: object
       properties:
         id:
-          type: integer
-          description: パントリーID
-        name:
-          type: string
-          description: パントリー名
+          $ref: '#/components/schemas/PantryId'
         userId:
           type: integer
           description: 所有者ユーザーID
@@ -532,23 +632,32 @@ components:
         - userId
         - createdAt
         - updatedAt
-
+    PantryDetail:
+      allOf:
+        - $ref: '#/components/schemas/Pantry'
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Item'
+          required:
+            - items
     Category:
       type: string
       enum: [Food, Drink, Snack, Spice, Other]
-
     Item:
       type: object
+      description: アイテム情報
       properties:
         id:
-          type: integer
-          description: アイテムID
-          readOnly: true
+          $ref: '#/components/schemas/ItemId'
         name:
           type: string
           description: アイテム名
         category:
           $ref: '#/components/schemas/Category'
+          description: アイテムのカテゴリ
         pantryId:
           type: integer
           description: 所属パントリーID
@@ -577,3 +686,69 @@ components:
         - quantity
         - createdAt
         - updatedAt
+    404ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "リソースが見つかりませんでした"
+      required:
+        - message
+    400ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "不正なリクエストです"
+      required:
+        - message
+    500ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "エラーが発生しました"
+      required:
+        - message
+    LineUid:
+      type: string
+      description: LINE UID
+      example: "U1234567890abcdef1234567890abcdef"
+    UserId:
+      type: integer
+      description: ユーザーID
+      example: 1
+      readOnly: true
+    PantryId:
+      type: integer
+      description: パントリーID
+      example: 2
+      readOnly: true
+    ItemId:
+      type: integer
+      description: アイテムID
+      example: 3
+      readOnly: true
+
+  responses:
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/404ErrorMessage'
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/400ErrorMessage'
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/500ErrorMessage'
