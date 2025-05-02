@@ -27,10 +27,10 @@ export class UserRepository {
     return UserOrmMapper.toDomain(result);
   }
 
-  async update(id: number, lineUid: string): Promise<User> {
+  async update(user: User): Promise<User> {
     const result = await this.prisma.user.update({
-      where: { id },
-      data: { lineUid },
+      where: { id: user.id },
+      data: { ...user, updatedAt: new Date() },
     });
     return UserOrmMapper.toDomain(result);
   }

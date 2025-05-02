@@ -19,6 +19,13 @@ export class UserDtoMapper {
     );
   }
 
+  static toUpdateDomain(oldUser: User, newUser: CreateUserRequestDto): User {
+    return {
+      ...oldUser,
+      ...newUser,
+    };
+  }
+
   static toResponseDto(user: User): UserResponseDto {
     return {
       id: user.id,

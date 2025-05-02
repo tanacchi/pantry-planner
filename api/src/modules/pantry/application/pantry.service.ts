@@ -58,7 +58,11 @@ export class PantryService {
     id: number,
     dto: CreatePantryRequestDto,
   ): Promise<PantryResponseDto> {
-    const updated = await this.pantryRepository.update(id, dto.userId);
+    const existingPantry = await this.pantryRepository.findById(id);
+    if (!existingPantry) throw new Error('Item not found');
+    const updated = await this.pantryRepository.update(
+      PantryDtoMapper.toUpdateDomain(existingPantry, dto),
+    );
     return PantryDtoMapper.toResponseDto(updated);
   }
 

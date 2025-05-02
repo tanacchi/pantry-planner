@@ -45,11 +45,8 @@ export class ItemRepository {
     const result = await this.prisma.item.update({
       where: { id: item.id },
       data: {
-        name: item.name,
-        category: item.category,
-        pantryId: item.pantryId,
-        quantity: item.quantity,
-        unit: item.unit,
+        ...item,
+        updatedAt: new Date(),
       },
     });
     return ItemOrmMapper.toDomain(result);

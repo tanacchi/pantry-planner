@@ -60,7 +60,11 @@ export class UserService {
     id: number,
     dto: CreateUserRequestDto,
   ): Promise<UserResponseDto> {
-    const updated = await this.userRepository.update(id, dto.lineUid);
+    const existingUser = await this.userRepository.findById(id);
+    if (!existingUser) throw new Error('User not found');
+    const updated = await this.userRepository.update(
+      UserDtoMapper.toUpdateDomain(existingUser, dto),
+    );
     return UserDtoMapper.toResponseDto(updated);
   }
 

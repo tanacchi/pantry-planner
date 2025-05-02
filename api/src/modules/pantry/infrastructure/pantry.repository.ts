@@ -38,11 +38,11 @@ export class PantryRepository {
     return PantryOrmMapper.toDomain(result);
   }
 
-  async update(id: number, userId: number): Promise<Pantry> {
+  async update(pantry: Pantry): Promise<Pantry> {
     const result = await this.prisma.pantry.update({
-      where: { id },
+      where: { id: pantry.id },
       data: {
-        userId,
+        ...pantry,
         updatedAt: new Date(),
       },
     });
