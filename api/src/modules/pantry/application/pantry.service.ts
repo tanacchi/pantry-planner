@@ -29,7 +29,8 @@ export class PantryService {
     return PantryDtoMapper.toResponseDto(pantry);
   }
 
-  getPantryDetail(id: number): PantryDetailResponseDto {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async getPantryDetail(id: number): Promise<PantryDetailResponseDto> {
     const pantry = new Pantry(id, 1, new Date(), new Date());
     const items: Item[] = [
       new Item(1, 'りんご', 'Food', id, 3, '個', new Date(), new Date()),
@@ -42,7 +43,10 @@ export class PantryService {
     return pantries.map((pantry) => PantryDtoMapper.toResponseDto(pantry));
   }
 
-  getPantryDetailsByUser(userId: number): PantryDetailResponseDto[] {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async getPantryDetailsByUser(
+    userId: number,
+  ): Promise<PantryDetailResponseDto[]> {
     const pantry = new Pantry(20, userId, new Date(), new Date());
     const items: Item[] = [
       new Item(1, 'みかん', 'Food', pantry.id, 2, '個', new Date(), new Date()),

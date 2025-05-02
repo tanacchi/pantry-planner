@@ -28,7 +28,9 @@ export class PantryController {
   })
   @ApiResponse({ status: 400, description: '不正なリクエスト' })
   @ApiResponse({ status: 500, description: 'サーバーエラー' })
-  createPantry(@Body() dto: CreatePantryRequestDto): PantryResponseDto {
+  createPantry(
+    @Body() dto: CreatePantryRequestDto,
+  ): Promise<PantryResponseDto> {
     return this.pantryService.createPantry(dto);
   }
 
@@ -38,7 +40,7 @@ export class PantryController {
     description: 'パントリー一覧の取得に成功しました',
     type: [PantryResponseDto],
   })
-  getPantries(): PantryResponseDto[] {
+  getPantries(): Promise<PantryResponseDto[]> {
     return this.pantryService.getPantries();
   }
 
@@ -50,7 +52,7 @@ export class PantryController {
     type: PantryResponseDto,
   })
   @ApiResponse({ status: 404, description: 'リソースが見つかりません' })
-  getPantry(@Param('id', ParseIntPipe) id: number): PantryResponseDto {
+  getPantry(@Param('id', ParseIntPipe) id: number): Promise<PantryResponseDto> {
     return this.pantryService.getPantry(id);
   }
 
@@ -63,7 +65,7 @@ export class PantryController {
   })
   getPantryDetail(
     @Param('id', ParseIntPipe) id: number,
-  ): PantryDetailResponseDto {
+  ): Promise<PantryDetailResponseDto> {
     return this.pantryService.getPantryDetail(id);
   }
 
@@ -76,7 +78,7 @@ export class PantryController {
   })
   getPantriesByUser(
     @Param('userId', ParseIntPipe) userId: number,
-  ): PantryResponseDto[] {
+  ): Promise<PantryResponseDto[]> {
     return this.pantryService.getPantriesByUser(userId);
   }
 
@@ -89,7 +91,7 @@ export class PantryController {
   })
   getPantryDetailsByUser(
     @Param('userId', ParseIntPipe) userId: number,
-  ): PantryDetailResponseDto[] {
+  ): Promise<PantryDetailResponseDto[]> {
     return this.pantryService.getPantryDetailsByUser(userId);
   }
 
@@ -104,14 +106,14 @@ export class PantryController {
   updatePantry(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreatePantryRequestDto,
-  ): PantryResponseDto {
+  ): Promise<PantryResponseDto> {
     return this.pantryService.updatePantry(id, dto);
   }
 
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'パントリーID' })
   @ApiResponse({ status: 204, description: 'パントリーの削除に成功しました' })
-  deletePantry(@Param('id', ParseIntPipe) id: number): void {
-    this.pantryService.deletePantry(id);
+  deletePantry(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.pantryService.deletePantry(id);
   }
 }
