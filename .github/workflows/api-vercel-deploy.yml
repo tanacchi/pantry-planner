@@ -32,7 +32,6 @@ jobs:
       - uses: pnpm/action-setup@v4 # バージョンは package.json に記載のものを使用
         with:
           package_json_file: ./api/package.json
-          version: 9 # FIXME: package.json を読んでくれない？
 
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
