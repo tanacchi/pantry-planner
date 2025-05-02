@@ -24,8 +24,8 @@ export class ItemResponseDto {
   unit: string;
 
   @ApiProperty({ description: '作成日時', example: '2024-01-01T00:00:00Z' })
-  createdAt: string;
+  createdAt: Date;
 
   @ApiProperty({ description: '更新日時', example: '2024-01-01T00:00:00Z' })
-  updatedAt: string;
+  updatedAt: Date;
 }

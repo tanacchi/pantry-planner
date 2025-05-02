@@ -11,12 +11,12 @@ export class ItemDtoMapper {
       pantryId: itemDto.pantryId,
       quantity: itemDto.quantity,
       unit: itemDto.unit,
-      createdAt: new Date().toISOString(), // 作成日時は現在の日時を設定
-      updatedAt: new Date().toISOString(), // 更新日時も現在の日時を設定
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
   }
 
-  static toPersistence(item: Item): ItemResponseDto {
+  static toResponseDto(item: Item): ItemResponseDto {
     return {
       id: item.id,
       name: item.name,
@@ -24,8 +24,8 @@ export class ItemDtoMapper {
       pantryId: item.pantryId,
       quantity: item.quantity,
       unit: item.unit,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
+      createdAt: new Date(item.createdAt),
+      updatedAt: new Date(item.updatedAt),
     };
   }
 }

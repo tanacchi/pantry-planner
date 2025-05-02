@@ -19,7 +19,7 @@ export class Item {
 
   unit: string;
 
-  createdAt: string;
+  createdAt: Date;
 
-  updatedAt: string;
+  updatedAt: Date;
 }
