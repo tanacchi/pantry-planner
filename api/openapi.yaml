@@ -1,0 +1,754 @@
+openapi: 3.1.0
+info:
+  title: Pantry Planner API
+  version: 1.0.0
+  description: パントリープランナーのAPI仕様書です。
+servers:
+  - url: http://localhost:8000
+    description: ローカル環境
+  - url: https://api.pantryplanner.example.com
+paths:
+  /users:
+    get:
+      tags:
+        - User
+      summary: ユーザー一覧を取得します
+      description: クエリパラメータで検索条件を指定してユーザーのリストを取得します。
+      responses:
+        '200':
+          description: ユーザー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - User
+      summary: 新しいユーザーを作成します
+      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: ユーザーの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{id}:
+    get:
+      tags:
+        - User
+      summary: 指定IDのユーザーを取得します
+      description: ユーザーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - User
+      summary: 指定IDのユーザー情報を更新します
+      description: ユーザーの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: ユーザーの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - User
+      summary: 指定IDのユーザーを削除します
+      description: ユーザーを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '204':
+          description: ユーザーの削除に成功しました
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{id}/detail:
+    get:
+      tags:
+        - User
+      summary: 指定IDのユーザーの詳細を取得します
+      description: ユーザーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/by-line-uid/{lineUid}:
+    get:
+      tags:
+        - User
+      summary: 指定 LINE UID のユーザーを取得します
+      description: ユーザーの LINE UID を指定して取得します。
+      parameters:
+        - in: path
+          name: lineUid
+          required: true
+          schema:
+            $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/by-line-uid/{lineUid}/detail:
+    get:
+      tags:
+        - User
+      summary: 指定 LINE UID のユーザーの詳細を取得します
+      description: ユーザーの LINE UID を指定して取得します。
+      parameters:
+        - in: path
+          name: lineUid
+          required: true
+          schema:
+            $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
+      responses:
+        '200':
+          description: ユーザーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pantries:
+    get:
+      tags:
+        - Pantry
+      summary: パントリー一覧を取得します
+      description: クエリパラメータで検索条件を指定してパントリーのリストを取得します。
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Pantry
+      summary: 新しいパントリーを作成します
+      description: createdAt, updatedAtはリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pantry'
+      responses:
+        '201':
+          description: パントリーの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/{id}:
+    get:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーを取得します
+      description: パントリーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      responses:
+        '200':
+          description: パントリーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリー情報を更新します
+      description: パントリーの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Pantry'
+      responses:
+        '200':
+          description: パントリーの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーを削除します
+      description: パントリーを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      responses:
+        '204':
+          description: パントリーの削除に成功しました
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/{id}/detail:
+    get:
+      tags:
+        - Pantry
+      summary: 指定IDのパントリーの詳細を取得します
+      description: パントリーのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      responses:
+        '200':
+          description: パントリーの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/by-user/{userId}:
+    get:
+      tags:
+        - Pantry
+      summary: ユーザーIDでパントリーを取得します
+      description: 指定したユーザーIDに紐づくパントリーを取得します。
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /pantries/by-user/{userId}/detail:
+    get:
+      tags:
+        - Pantry
+      summary: ユーザーIDでパントリーの詳細を取得します
+      description: 指定したユーザーIDに紐づくパントリーを取得します。
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            $ref: '#/components/schemas/UserId'
+          description: ユーザーID
+      responses:
+        '200':
+          description: パントリー一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Pantry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /items:
+    get:
+      tags:
+        - Item
+      summary: アイテム一覧を取得します
+      description: クエリパラメータで検索条件を指定してアイテムのリストを取得します。
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: array
+            items:
+              type: string
+          description: アイテム名で絞り込み
+        - in: query
+          name: category
+          schema:
+            type: array
+            items:
+              type: string
+          description: パントリーIDで絞り込み
+      responses:
+        '200':
+          description: アイテム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Item
+      summary: 新しいアイテムを作成します
+      description: createdAt, updatedAt はリクエストボディに含めずに作成してください。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '201':
+          description: アイテムの作成に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /items/{id}:
+    get:
+      tags:
+        - Item
+      summary: 指定IDのアイテムを取得します
+      description: アイテムのプライマリキーであるIDを指定して取得します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ItemId'
+          description: アイテムID
+      responses:
+        '200':
+          description: アイテムの取得に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Item
+      summary: 指定IDのアイテム情報を更新します
+      description: アイテムの情報を更新します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ItemId'
+          description: アイテムID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Item'
+      responses:
+        '200':
+          description: アイテムの更新に成功しました
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Item
+      summary: 指定IDのアイテムを削除します
+      description: アイテムを削除します。
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            $ref: '#/components/schemas/ItemId'
+          description: アイテムID
+      responses:
+        '204':
+          description: アイテムの削除に成功しました
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /items/by-pantry/{pantryId}:
+    get:
+      tags:
+        - Item
+      summary: パントリーIDでアイテム一覧を取得します
+      description: 指定したパントリーIDに紐づくアイテムの一覧を取得します。
+      parameters:
+        - in: path
+          name: pantryId
+          required: true
+          schema:
+            $ref: '#/components/schemas/PantryId'
+          description: パントリーID
+      responses:
+        '200':
+          description: アイテム一覧の取得に成功しました
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Item'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UserId'
+        lineUid:
+          $ref: '#/components/schemas/LineUid'
+          description: ユーザーの LINE UID
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+          readOnly: true
+        lastLoginAt:
+          type: string
+          format: date-time
+          description: 最終ログイン日時
+          readOnly: true
+      required:
+        - id
+        - lineUid
+        - createdAt
+        - updatedAt
+        - lastLoginAt
+    UserDetail:
+      allOf:
+        - $ref: '#/components/schemas/User'
+        - type: object
+          properties:
+            pantry:
+              $ref: '#/components/schemas/PantryDetail'
+          required:
+            - pantry
+    Pantry:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/PantryId'
+        userId:
+          type: integer
+          description: 所有者ユーザーID
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+          readOnly: true
+      required:
+        - id
+        - name
+        - userId
+        - createdAt
+        - updatedAt
+    PantryDetail:
+      allOf:
+        - $ref: '#/components/schemas/Pantry'
+        - type: object
+          properties:
+            items:
+              type: array
+              items:
+                $ref: '#/components/schemas/Item'
+          required:
+            - items
+    Category:
+      type: string
+      enum: [Food, Drink, Snack, Spice, Other]
+    Item:
+      type: object
+      description: アイテム情報
+      properties:
+        id:
+          $ref: '#/components/schemas/ItemId'
+        name:
+          type: string
+          description: アイテム名
+        category:
+          $ref: '#/components/schemas/Category'
+          description: アイテムのカテゴリ
+        pantryId:
+          type: integer
+          description: 所属パントリーID
+        quantity:
+          type: integer
+          description: 数量
+        unit:
+          type: string
+          description: 単位
+        createdAt:
+          type: string
+          format: date-time
+          description: 作成日時
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          description: 更新日時
+          readOnly: true
+      required:
+        - id
+        - name
+        - category
+        - unit
+        - pantryId
+        - quantity
+        - createdAt
+        - updatedAt
+    404ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "リソースが見つかりませんでした"
+      required:
+        - message
+    400ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "不正なリクエストです"
+      required:
+        - message
+    500ErrorMessage:
+      type: object
+      properties:
+        message:
+          type: string
+          description: エラーメッセージ
+          example: "エラーが発生しました"
+      required:
+        - message
+    LineUid:
+      type: string
+      description: LINE UID
+      example: "U1234567890abcdef1234567890abcdef"
+    UserId:
+      type: integer
+      description: ユーザーID
+      example: 1
+      readOnly: true
+    PantryId:
+      type: integer
+      description: パントリーID
+      example: 2
+      readOnly: true
+    ItemId:
+      type: integer
+      description: アイテムID
+      example: 3
+      readOnly: true
+
+  responses:
+    NotFound:
+      description: リソースが見つかりません
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/404ErrorMessage'
+    BadRequest:
+      description: 不正なリクエスト
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/400ErrorMessage'
+    InternalServerError:
+      description: サーバーエラー
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/500ErrorMessage'

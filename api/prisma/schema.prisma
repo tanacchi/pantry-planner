@@ -1,44 +1,41 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output = "../node_modules/.prisma/client"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-  // directUrl = env("DIRECT_URL") // Supabase に接続する場合は、こちらを使用.
+  // directUrl = env("DIRECT_URL") // Supabase に接続する場合は、こちらを使用
 }
 
 model User {
   id          Int      @id @default(autoincrement())
-  lineUid     String   @unique @db.VarChar(255)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   lastLoginAt DateTime @default(now())
-  pantry      Pantry[]
+  lineUid     String   @unique @db.VarChar(255)
+  pantry      Pantry?
 }
 
 model Pantry {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  items     Item[]
   userId    Int      @unique
+  items     Item[]
   user      User     @relation(fields: [userId], references: [id])
 }
 
 model Item {
   id        Int      @id @default(autoincrement())
   name      String
+  quantity  Int
+  unit      String
   category  Category
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  expiresAt DateTime?
   pantryId  Int
   pantry    Pantry   @relation(fields: [pantryId], references: [id])
 }
