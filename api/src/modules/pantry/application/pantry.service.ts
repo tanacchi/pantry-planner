@@ -6,75 +6,67 @@ import {
 } from '../dto/pantry-response.dto';
 import { PantryDtoMapper } from './mapper/pantry.dto-mapper';
 import { Pantry } from '../domain/entity/pantry.entity';
-import { Category, Item } from '../../item/domain/entity/item.entity';
+import { Item } from '../../item/domain/entity/item.entity';
+import { PantryRepository } from '../infrastructure/pantry.repository';
 
 @Injectable()
 export class PantryService {
-  constructor() {}
+  constructor(private readonly pantryRepository: PantryRepository) {}
 
-  createPantry(dto: CreatePantryRequestDto): PantryResponseDto {
-    const entity = PantryDtoMapper.toDomain(dto);
-    // TODO: this.pantryRepository.save(entity)
-    return PantryDtoMapper.toResponseDto({
-      ...entity,
-      id: 1, // 仮ID
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  async createPantry(dto: CreatePantryRequestDto): Promise<PantryResponseDto> {
+    const entity = await this.pantryRepository.create(dto.userId);
+    return PantryDtoMapper.toResponseDto(entity);
   }
 
-  getPantries(): PantryResponseDto[] {
-    const mock = new Pantry(1, 1, new Date(), new Date());
-    return [PantryDtoMapper.toResponseDto(mock)];
+  async getPantries(): Promise<PantryResponseDto[]> {
+    const pantries = await this.pantryRepository.findAll();
+    return pantries.map((pantry) => PantryDtoMapper.toResponseDto(pantry));
   }
 
-  getPantry(id: number): PantryResponseDto {
-    const pantry = new Pantry(id, 1, new Date(), new Date());
+  async getPantry(id: number): Promise<PantryResponseDto> {
+    const pantry = await this.pantryRepository.findById(id);
+    if (!pantry) throw new Error('Pantry not found');
     return PantryDtoMapper.toResponseDto(pantry);
   }
 
-  getPantryDetail(id: number): PantryDetailResponseDto {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async getPantryDetail(id: number): Promise<PantryDetailResponseDto> {
     const pantry = new Pantry(id, 1, new Date(), new Date());
     const items: Item[] = [
-      new Item(1, 'りんご', Category.Food, id, 3, '個', new Date(), new Date()),
+      new Item(1, 'りんご', 'Food', id, 3, '個', new Date(), new Date()),
     ];
     return PantryDtoMapper.toDetailResponseDto(pantry, items);
   }
 
-  getPantriesByUser(userId: number): PantryResponseDto[] {
-    const pantry = new Pantry(10, userId, new Date(), new Date());
-    return [PantryDtoMapper.toResponseDto(pantry)];
+  async getPantriesByUser(userId: number): Promise<PantryResponseDto[]> {
+    const pantries = await this.pantryRepository.findByUserId(userId);
+    return pantries.map((pantry) => PantryDtoMapper.toResponseDto(pantry));
   }
 
-  getPantryDetailsByUser(userId: number): PantryDetailResponseDto[] {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  async getPantryDetailsByUser(
+    userId: number,
+  ): Promise<PantryDetailResponseDto[]> {
     const pantry = new Pantry(20, userId, new Date(), new Date());
     const items: Item[] = [
-      new Item(
-        1,
-        'みかん',
-        Category.Food,
-        pantry.id,
-        2,
-        '個',
-        new Date(),
-        new Date(),
-      ),
+      new Item(1, 'みかん', 'Food', pantry.id, 2, '個', new Date(), new Date()),
     ];
     return [PantryDtoMapper.toDetailResponseDto(pantry, items)];
   }
 
-  updatePantry(id: number, dto: CreatePantryRequestDto): PantryResponseDto {
-    const updated = PantryDtoMapper.toDomain(dto);
-    return PantryDtoMapper.toResponseDto({
-      ...updated,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  async updatePantry(
+    id: number,
+    dto: CreatePantryRequestDto,
+  ): Promise<PantryResponseDto> {
+    const existingPantry = await this.pantryRepository.findById(id);
+    if (!existingPantry) throw new Error('Item not found');
+    const updated = await this.pantryRepository.update(
+      PantryDtoMapper.toUpdateDomain(existingPantry, dto),
+    );
+    return PantryDtoMapper.toResponseDto(updated);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deletePantry(_id: number): void {
-    // TODO: repository.delete(id)
+  async deletePantry(id: number): Promise<void> {
+    await this.pantryRepository.delete(id);
   }
 }

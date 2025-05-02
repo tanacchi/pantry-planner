@@ -30,7 +30,7 @@ export class UserController {
   })
   @ApiResponse({ status: 400, description: '不正なリクエスト' })
   @ApiResponse({ status: 500, description: 'サーバーエラー' })
-  createUser(@Body() dto: CreateUserRequestDto): UserResponseDto {
+  createUser(@Body() dto: CreateUserRequestDto): Promise<UserResponseDto> {
     return this.userService.createUser(dto);
   }
 
@@ -40,7 +40,7 @@ export class UserController {
     description: 'ユーザー一覧の取得に成功しました',
     type: [UserResponseDto],
   })
-  getUsers(): UserResponseDto[] {
+  getUsers(): Promise<UserResponseDto[]> {
     return this.userService.getUsers();
   }
 
@@ -51,7 +51,7 @@ export class UserController {
     description: 'ユーザーの取得に成功しました',
     type: UserResponseDto,
   })
-  getUser(@Param('id', ParseIntPipe) id: number): UserResponseDto {
+  getUser(@Param('id', ParseIntPipe) id: number): Promise<UserResponseDto> {
     return this.userService.getUser(id);
   }
 
@@ -62,7 +62,9 @@ export class UserController {
     description: 'ユーザー詳細の取得に成功しました',
     type: UserDetailResponseDto,
   })
-  getUserDetail(@Param('id', ParseIntPipe) id: number): UserDetailResponseDto {
+  getUserDetail(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<UserDetailResponseDto> {
     return this.userService.getUserDetail(id);
   }
 
@@ -73,7 +75,9 @@ export class UserController {
     description: 'LINE UID によるユーザー取得に成功しました',
     type: UserResponseDto,
   })
-  getUserByLineUid(@Param('lineUid') lineUid: string): UserResponseDto {
+  getUserByLineUid(
+    @Param('lineUid') lineUid: string,
+  ): Promise<UserResponseDto> {
     return this.userService.getUserByLineUid(lineUid);
   }
 
@@ -86,7 +90,7 @@ export class UserController {
   })
   getUserDetailByLineUid(
     @Param('lineUid') lineUid: string,
-  ): UserDetailResponseDto {
+  ): Promise<UserDetailResponseDto> {
     return this.userService.getUserDetailByLineUid(lineUid);
   }
 
@@ -101,14 +105,14 @@ export class UserController {
   updateUser(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: CreateUserRequestDto,
-  ): UserResponseDto {
+  ): Promise<UserResponseDto> {
     return this.userService.updateUser(id, dto);
   }
 
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'ユーザーID' })
   @ApiResponse({ status: 204, description: 'ユーザーの削除に成功しました' })
-  deleteUser(@Param('id', ParseIntPipe) id: number): void {
-    this.userService.deleteUser(id);
+  deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.userService.deleteUser(id);
   }
 }

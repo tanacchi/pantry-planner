@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // directUrl = env("DIRECT_URL") // Supabase に接続する場合は、こちらを使用
+}
+
+model User {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lastLoginAt DateTime @default(now())
+  lineUid     String   @unique @db.VarChar(255)
+  pantry      Pantry?
+}
+
+model Pantry {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    Int      @unique
+  items     Item[]
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Item {
+  id        Int      @id @default(autoincrement())
+  name      String
+  quantity  Int
+  unit      String
+  category  Category
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  expiresAt DateTime?
+  pantryId  Int
+  pantry    Pantry   @relation(fields: [pantryId], references: [id])
+}
+
+enum Category {
+  Food
+  Drink
+  Snack
+  Spice
+  Other
+}

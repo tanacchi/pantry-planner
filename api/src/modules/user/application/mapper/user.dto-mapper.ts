@@ -6,7 +6,7 @@ import {
   UserDetailResponseDto,
   UserResponseDto,
 } from '../../dto/user-response.dto';
-import { Item } from 'src/modules/item/domain/entity/item.entity';
+import { Item } from '../../..//item/domain/entity/item.entity';
 
 export class UserDtoMapper {
   static toDomain(dto: CreateUserRequestDto): User {
@@ -17,6 +17,13 @@ export class UserDtoMapper {
       new Date(), // updatedAt
       new Date(), // lastLoginAt
     );
+  }
+
+  static toUpdateDomain(oldUser: User, newUser: CreateUserRequestDto): User {
+    return {
+      ...oldUser,
+      ...newUser,
+    };
   }
 
   static toResponseDto(user: User): UserResponseDto {

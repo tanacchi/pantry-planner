@@ -13,6 +13,14 @@ export class ItemDtoMapper {
       unit: itemDto.unit,
       createdAt: new Date(),
       updatedAt: new Date(),
+      expiresAt: new Date(),
+    };
+  }
+
+  static toUpdateDomain(oldItem: Item, newItem: CreateItemRequestDto): Item {
+    return {
+      ...oldItem,
+      ...newItem,
     };
   }
 

@@ -2,82 +2,51 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemRequestDto } from '../dto/item-request.dto';
 import { ItemResponseDto } from '../dto/item-response.dto';
 import { ItemDtoMapper } from './mapper/item.dto-mapper';
-import { Category } from '../domain/entity/item.entity';
+import { ItemRepository } from '../infrastructure/item.repository';
 
 @Injectable()
 export class ItemService {
-  constructor() {}
+  constructor(private readonly itemRepository: ItemRepository) {}
 
-  createItem(item: CreateItemRequestDto): ItemResponseDto {
-    // DTO → ドメインエンティティへ変換
-    const domainItem = ItemDtoMapper.toDomain(item);
-
-    // TODO: repository.save(domainItem);
-    // 例: this.itemRepository.save(domainItem);
-
-    // 保存結果をドメインオブジェクトとして取得した前提で DTO に変換
-    return ItemDtoMapper.toResponseDto(domainItem); // 仮実装：保存せずに変換
+  async createItem(dto: CreateItemRequestDto): Promise<ItemResponseDto> {
+    const domainItem = ItemDtoMapper.toDomain(dto);
+    const created = await this.itemRepository.create(domainItem);
+    return ItemDtoMapper.toResponseDto(created);
   }
 
-  getItem(id: number): ItemResponseDto {
-    // TODO: repository.findById(id)
-    // const domainItem = this.itemRepository.findById(id);
-    const mockItem = ItemDtoMapper.toDomain({
-      name: 'りんご',
-      category: Category.Food,
-      pantryId: 1,
-      quantity: 5,
-      unit: '個',
-    });
-    return ItemDtoMapper.toResponseDto({
-      ...mockItem,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  async getItem(id: number): Promise<ItemResponseDto> {
+    const item = await this.itemRepository.findById(id);
+    if (!item) throw new Error('Item not found');
+    return ItemDtoMapper.toResponseDto(item);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  getItems(_filter: {
+  async getItems(_filter: {
     name?: string[];
     category?: string[];
-  }): ItemResponseDto[] {
-    // TODO: repository.findByFilter(filter)
-    return [this.getItem(1), this.getItem(2)];
+  }): Promise<ItemResponseDto[]> {
+    const items = await this.itemRepository.findAll();
+    return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 
-  updateItem(id: number, dto: CreateItemRequestDto): ItemResponseDto {
-    // DTO → Entity → Save
-    const updated = ItemDtoMapper.toDomain(dto);
-    return ItemDtoMapper.toResponseDto({
-      ...updated,
-      id,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    });
+  async updateItem(
+    id: number,
+    dto: CreateItemRequestDto,
+  ): Promise<ItemResponseDto> {
+    const existingItem = await this.itemRepository.findById(id);
+    if (!existingItem) throw new Error('Item not found');
+    const updated = await this.itemRepository.update(
+      ItemDtoMapper.toUpdateDomain(existingItem, dto),
+    );
+    return ItemDtoMapper.toResponseDto(updated);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deleteItem(_id: number): void {
-    // TODO: this.itemRepository.delete(id)
+  async deleteItem(id: number): Promise<void> {
+    await this.itemRepository.delete(id);
   }
 
-  getItemsByPantry(pantryId: number): ItemResponseDto[] {
-    // TODO: repository.findByPantryId(pantryId)
-    const mockItem = ItemDtoMapper.toDomain({
-      name: 'しょうゆ',
-      category: Category.Spice,
-      pantryId,
-      quantity: 1,
-      unit: '本',
-    });
-    return [
-      ItemDtoMapper.toResponseDto({
-        ...mockItem,
-        id: 100,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
-    ];
+  async getItemsByPantry(pantryId: number): Promise<ItemResponseDto[]> {
+    const items = await this.itemRepository.findByPantryId(pantryId);
+    return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 }

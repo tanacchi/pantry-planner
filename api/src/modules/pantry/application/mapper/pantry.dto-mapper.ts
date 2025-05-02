@@ -17,6 +17,16 @@ export class PantryDtoMapper {
     );
   }
 
+  static toUpdateDomain(
+    oldEntity: Pantry,
+    newEntity: CreatePantryRequestDto,
+  ): Pantry {
+    return {
+      ...oldEntity,
+      ...newEntity,
+    };
+  }
+
   static toResponseDto(entity: Pantry): PantryResponseDto {
     return {
       id: entity.id,

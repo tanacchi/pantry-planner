@@ -36,7 +36,7 @@ export class ItemController {
   @ApiResponse({ status: 500, description: 'サーバーエラー' })
   createItem(
     @Body() createItemRequestDto: CreateItemRequestDto,
-  ): ItemResponseDto {
+  ): Promise<ItemResponseDto> {
     return this.itemService.createItem(createItemRequestDto);
   }
 
@@ -51,7 +51,7 @@ export class ItemController {
   getItems(
     @Query('name') name?: string[],
     @Query('category') category?: string[],
-  ): ItemResponseDto[] {
+  ): Promise<ItemResponseDto[]> {
     return this.itemService.getItems({ name, category });
   }
 
@@ -63,7 +63,7 @@ export class ItemController {
     type: ItemResponseDto,
   })
   @ApiResponse({ status: 404, description: 'リソースが見つかりません' })
-  getItem(@Param('id', ParseIntPipe) id: number): ItemResponseDto {
+  getItem(@Param('id', ParseIntPipe) id: number): Promise<ItemResponseDto> {
     return this.itemService.getItem(id);
   }
 
@@ -78,15 +78,15 @@ export class ItemController {
   updateItem(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: CreateItemRequestDto,
-  ): ItemResponseDto {
+  ): Promise<ItemResponseDto> {
     return this.itemService.updateItem(id, updateDto);
   }
 
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'アイテムID' })
   @ApiResponse({ status: 204, description: 'アイテムの削除に成功しました' })
-  deleteItem(@Param('id', ParseIntPipe) id: number): void {
-    this.itemService.deleteItem(id);
+  deleteItem(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    return this.itemService.deleteItem(id);
   }
 
   @Get('/by-pantry/:pantryId')
@@ -98,7 +98,7 @@ export class ItemController {
   })
   getItemsByPantry(
     @Param('pantryId', ParseIntPipe) pantryId: number,
-  ): ItemResponseDto[] {
+  ): Promise<ItemResponseDto[]> {
     return this.itemService.getItemsByPantry(pantryId);
   }
 }
