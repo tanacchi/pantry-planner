@@ -9,7 +9,7 @@ on:
     inputs:
       ref:
         description: branch|tag|SHA to checkout
-        default: 'main'
+        default: "main"
         required: false
   release:
     types: [created]
