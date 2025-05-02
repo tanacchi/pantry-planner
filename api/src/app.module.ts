@@ -1,9 +1,10 @@
 import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { ItemModule } from './modules/item/item.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { PantryModule } from './modules/pantry/pantry.module';
 
 @Module({
-  imports: [ItemModule],
+  imports: [ItemModule, PantryModule],
   controllers: [],
   providers: [],
 })

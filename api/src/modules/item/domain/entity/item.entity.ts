@@ -7,19 +7,14 @@ export enum Category {
 }
 
 export class Item {
-  id: number;
-
-  name: string;
-
-  category: Category;
-
-  pantryId: number;
-
-  quantity: number;
-
-  unit: string;
-
-  createdAt: Date;
-
-  updatedAt: Date;
+  constructor(
+    public readonly id: number,
+    public readonly name: string,
+    public readonly category: Category,
+    public readonly pantryId: number,
+    public readonly quantity: number,
+    public readonly unit: string,
+    public readonly createdAt: Date,
+    public readonly updatedAt: Date,
+  ) {}
 }
