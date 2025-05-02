@@ -16,6 +16,13 @@ export class ItemRepository {
     return data ? ItemOrmMapper.toDomain(data) : null;
   }
 
+  async findByPantryId(pantryId: number): Promise<Item[]> {
+    const result = await this.prisma.item.findMany({
+      where: { pantryId },
+    });
+    return result.map((item) => ItemOrmMapper.toDomain(item));
+  }
+
   async findAll(): Promise<Item[]> {
     const result = await this.prisma.item.findMany();
     return result.map((item) => ItemOrmMapper.toDomain(item));
@@ -46,5 +53,9 @@ export class ItemRepository {
       },
     });
     return ItemOrmMapper.toDomain(result);
+  }
+
+  async delete(id: number): Promise<void> {
+    await this.prisma.item.delete({ where: { id } });
   }
 }

@@ -5,7 +5,6 @@ import {
   UserResponseDto,
 } from '../dto/user-response.dto';
 import { UserDtoMapper } from './mapper/user.dto-mapper';
-import { User } from '../domain/entity/user.entity';
 import { Pantry } from '../../pantry/domain/entity/pantry.entity';
 import { Item } from '../../item/domain/entity/item.entity';
 import { UserRepository } from '../infrastructure/user.repository';
@@ -14,77 +13,58 @@ import { UserRepository } from '../infrastructure/user.repository';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  createUser(dto: CreateUserRequestDto): UserResponseDto {
+  async createUser(dto: CreateUserRequestDto): Promise<UserResponseDto> {
     const entity = UserDtoMapper.toDomain(dto);
-    // 仮にIDを生成したと仮定
-    return UserDtoMapper.toResponseDto({
-      ...entity,
-      id: 1,
-    });
+    const created = await this.userRepository.create(entity.lineUid);
+    return UserDtoMapper.toResponseDto(created);
   }
 
-  getUsers(): UserResponseDto[] {
-    const mock = new User(
-      1,
-      'U1234567890abcdef',
-      new Date(),
-      new Date(),
-      new Date(),
-    );
-    return [UserDtoMapper.toResponseDto(mock)];
+  async getUsers(): Promise<UserResponseDto[]> {
+    const users = await this.userRepository.findAll();
+    return users.map((user) => UserDtoMapper.toResponseDto(user));
   }
 
-  getUser(id: number): UserResponseDto {
-    const user = new User(
-      id,
-      'U1234567890abcdef',
-      new Date(),
-      new Date(),
-      new Date(),
-    );
+  async getUser(id: number): Promise<UserResponseDto> {
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new Error('User not found');
     return UserDtoMapper.toResponseDto(user);
   }
 
-  getUserDetail(id: number): UserDetailResponseDto {
-    const user = new User(
-      id,
-      'U1234567890abcdef',
-      new Date(),
-      new Date(),
-      new Date(),
-    );
+  async getUserDetail(id: number): Promise<UserDetailResponseDto> {
+    const user = await this.userRepository.findById(id);
+    if (!user) throw new Error('User not found');
+    // NOTE: pantry, items は仮データ
     const pantry = new Pantry(1, user.id, new Date(), new Date());
-    const items: Item[] = [
-      new Item(1, 'りんご', 'Food', pantry.id, 3, '個', new Date(), new Date()),
-    ];
+    const items: Item[] = [];
     return UserDtoMapper.toDetailResponseDto(user, pantry, items);
   }
 
-  getUserByLineUid(lineUid: string): UserResponseDto {
-    const user = new User(1, lineUid, new Date(), new Date(), new Date());
+  async getUserByLineUid(lineUid: string): Promise<UserResponseDto> {
+    const user = await this.userRepository.findByLineUid(lineUid);
+    if (!user) throw new Error('User not found');
     return UserDtoMapper.toResponseDto(user);
   }
 
-  getUserDetailByLineUid(lineUid: string): UserDetailResponseDto {
-    const user = new User(1, lineUid, new Date(), new Date(), new Date());
+  async getUserDetailByLineUid(
+    lineUid: string,
+  ): Promise<UserDetailResponseDto> {
+    const user = await this.userRepository.findByLineUid(lineUid);
+    if (!user) throw new Error('User not found');
+    // NOTE: pantry, items は仮データ
     const pantry = new Pantry(1, user.id, new Date(), new Date());
-    const items: Item[] = [
-      new Item(2, 'みかん', 'Food', pantry.id, 5, '個', new Date(), new Date()),
-    ];
+    const items: Item[] = [];
     return UserDtoMapper.toDetailResponseDto(user, pantry, items);
   }
 
-  updateUser(id: number, dto: CreateUserRequestDto): UserResponseDto {
-    const updated = UserDtoMapper.toDomain(dto);
-    return UserDtoMapper.toResponseDto({
-      ...updated,
-      id,
-      updatedAt: new Date(),
-    });
+  async updateUser(
+    id: number,
+    dto: CreateUserRequestDto,
+  ): Promise<UserResponseDto> {
+    const updated = await this.userRepository.update(id, dto.lineUid);
+    return UserDtoMapper.toResponseDto(updated);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  deleteUser(_id: number): void {
-    // スタブ：削除処理をここに実装
+  async deleteUser(id: number): Promise<void> {
+    await this.userRepository.delete(id);
   }
 }
