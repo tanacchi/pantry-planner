@@ -8,11 +8,11 @@ import { UserDtoMapper } from './mapper/user.dto-mapper';
 import { User } from '../domain/entity/user.entity';
 import { Pantry } from '../../pantry/domain/entity/pantry.entity';
 import { Item } from '../../item/domain/entity/item.entity';
-import { Category } from 'src/modules/item/domain/entity/item.entity';
+import { UserRepository } from '../infrastructure/user.repository';
 
 @Injectable()
 export class UserService {
-  constructor() {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   createUser(dto: CreateUserRequestDto): UserResponseDto {
     const entity = UserDtoMapper.toDomain(dto);
@@ -55,16 +55,7 @@ export class UserService {
     );
     const pantry = new Pantry(1, user.id, new Date(), new Date());
     const items: Item[] = [
-      new Item(
-        1,
-        'りんご',
-        Category.Food,
-        pantry.id,
-        3,
-        '個',
-        new Date(),
-        new Date(),
-      ),
+      new Item(1, 'りんご', 'Food', pantry.id, 3, '個', new Date(), new Date()),
     ];
     return UserDtoMapper.toDetailResponseDto(user, pantry, items);
   }
@@ -78,16 +69,7 @@ export class UserService {
     const user = new User(1, lineUid, new Date(), new Date(), new Date());
     const pantry = new Pantry(1, user.id, new Date(), new Date());
     const items: Item[] = [
-      new Item(
-        2,
-        'みかん',
-        Category.Food,
-        pantry.id,
-        5,
-        '個',
-        new Date(),
-        new Date(),
-      ),
+      new Item(2, 'みかん', 'Food', pantry.id, 5, '個', new Date(), new Date()),
     ];
     return UserDtoMapper.toDetailResponseDto(user, pantry, items);
   }

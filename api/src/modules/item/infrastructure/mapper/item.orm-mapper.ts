@@ -1,21 +1,20 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Category as PrismaCategory, Item as PrismaItem } from '@prisma/client';
-import { Item, Category } from '../../domain/entity/item.entity';
+import { Item, ItemCategory } from '../../domain/entity/item.entity';
 
-const categoryMapping = (category: PrismaCategory): Category => {
+const categoryMapping = (category: PrismaCategory): ItemCategory => {
   switch (category) {
     case PrismaCategory.Food:
-      return Category.Food;
+      return 'Food';
     case PrismaCategory.Drink:
-      return Category.Drink;
+      return 'Drink';
     case PrismaCategory.Snack:
-      return Category.Snack;
+      return 'Snack';
     case PrismaCategory.Spice:
-      return Category.Spice;
+      return 'Spice';
     case PrismaCategory.Other:
-      return Category.Other;
+      return 'Other';
     default:
-      throw new Error(`Unknown category: ${category}`);
+      throw new Error(`Unknown category`);
   }
 };
 

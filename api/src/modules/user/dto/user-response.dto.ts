@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PantryDetailResponseDto } from 'src/modules/pantry/dto/pantry-response.dto';
+import { PantryDetailResponseDto } from '../../pantry/dto/pantry-response.dto';
 
 export class UserResponseDto {
   @ApiProperty({ description: 'ユーザーID', example: 1 })

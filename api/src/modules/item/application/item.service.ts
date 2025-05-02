@@ -2,11 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { CreateItemRequestDto } from '../dto/item-request.dto';
 import { ItemResponseDto } from '../dto/item-response.dto';
 import { ItemDtoMapper } from './mapper/item.dto-mapper';
-import { Category } from '../domain/entity/item.entity';
+import { ItemRepository } from '../infrastructure/item.repository';
 
 @Injectable()
 export class ItemService {
-  constructor() {}
+  constructor(private readonly itemRepository: ItemRepository) {}
 
   createItem(item: CreateItemRequestDto): ItemResponseDto {
     // DTO → ドメインエンティティへ変換
@@ -24,7 +24,7 @@ export class ItemService {
     // const domainItem = this.itemRepository.findById(id);
     const mockItem = ItemDtoMapper.toDomain({
       name: 'りんご',
-      category: Category.Food,
+      category: 'Food',
       pantryId: 1,
       quantity: 5,
       unit: '個',
@@ -67,7 +67,7 @@ export class ItemService {
     // TODO: repository.findByPantryId(pantryId)
     const mockItem = ItemDtoMapper.toDomain({
       name: 'しょうゆ',
-      category: Category.Spice,
+      category: 'Spice',
       pantryId,
       quantity: 1,
       unit: '本',

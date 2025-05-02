@@ -6,7 +6,7 @@ import {
 } from '../dto/pantry-response.dto';
 import { PantryDtoMapper } from './mapper/pantry.dto-mapper';
 import { Pantry } from '../domain/entity/pantry.entity';
-import { Category, Item } from '../../item/domain/entity/item.entity';
+import { Item } from '../../item/domain/entity/item.entity';
 
 @Injectable()
 export class PantryService {
@@ -36,7 +36,7 @@ export class PantryService {
   getPantryDetail(id: number): PantryDetailResponseDto {
     const pantry = new Pantry(id, 1, new Date(), new Date());
     const items: Item[] = [
-      new Item(1, 'りんご', Category.Food, id, 3, '個', new Date(), new Date()),
+      new Item(1, 'りんご', 'Food', id, 3, '個', new Date(), new Date()),
     ];
     return PantryDtoMapper.toDetailResponseDto(pantry, items);
   }
@@ -49,16 +49,7 @@ export class PantryService {
   getPantryDetailsByUser(userId: number): PantryDetailResponseDto[] {
     const pantry = new Pantry(20, userId, new Date(), new Date());
     const items: Item[] = [
-      new Item(
-        1,
-        'みかん',
-        Category.Food,
-        pantry.id,
-        2,
-        '個',
-        new Date(),
-        new Date(),
-      ),
+      new Item(1, 'みかん', 'Food', pantry.id, 2, '個', new Date(), new Date()),
     ];
     return [PantryDtoMapper.toDetailResponseDto(pantry, items)];
   }

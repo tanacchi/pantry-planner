@@ -1,20 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsDateString,
-  IsEnum,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
   Length,
 } from 'class-validator';
-
-enum Category {
-  Food = 'Food',
-  Drink = 'Drink',
-  Snack = 'Snack',
-  Spice = 'Spice',
-  Other = 'Other',
-}
+import { All_CATEGORIES, ItemCategory } from '../domain/entity/item.entity';
 
 export class CreateItemRequestDto {
   @ApiProperty({ description: 'アイテム名', example: 'りんご' })
@@ -23,13 +16,12 @@ export class CreateItemRequestDto {
   name: string;
 
   @ApiProperty({
-    enum: Category,
+    enum: All_CATEGORIES,
     description: 'カテゴリ',
-    enumName: 'Category',
-    example: Category.Food,
+    example: All_CATEGORIES[0],
   })
-  @IsEnum(Category)
-  category: Category;
+  @IsIn(All_CATEGORIES)
+  category: ItemCategory;
 
   @ApiProperty({ description: 'パントリーID', example: 1 })
   @IsInt()
