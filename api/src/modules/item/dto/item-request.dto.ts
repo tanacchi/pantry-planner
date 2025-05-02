@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsString, Length } from 'class-validator';
+import {
+  IsDateString,
+  IsEnum,
+  IsInt,
+  IsOptional,
+  IsString,
+  Length,
+} from 'class-validator';
 
 enum Category {
   Food = 'Food',
@@ -36,4 +43,14 @@ export class CreateItemRequestDto {
   @IsString()
   @Length(1, 10)
   unit: string;
+
+  @ApiProperty({
+    description: '賞味期限',
+    example: '2024-01-01',
+    nullable: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsDateString()
+  expiresAt?: Date | null = null;
 }

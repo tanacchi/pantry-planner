@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 import { User as PrismaUser } from '@prisma/client';
 import { User } from '../../domain/entity/user.entity';
 

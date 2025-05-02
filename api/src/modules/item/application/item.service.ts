@@ -28,6 +28,7 @@ export class ItemService {
       pantryId: 1,
       quantity: 5,
       unit: '個',
+      expiresAt: null,
     });
     return ItemDtoMapper.toResponseDto({
       ...mockItem,
@@ -70,6 +71,7 @@ export class ItemService {
       pantryId,
       quantity: 1,
       unit: '本',
+      expiresAt: new Date('2024-01-01'),
     });
     return [
       ItemDtoMapper.toResponseDto({
