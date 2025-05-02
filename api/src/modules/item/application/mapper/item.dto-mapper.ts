@@ -17,6 +17,20 @@ export class ItemDtoMapper {
     };
   }
 
+  static toUpdateDomain(oldItem: Item, newItem: CreateItemRequestDto): Item {
+    return {
+      ...oldItem,
+      name: newItem.name,
+      category: newItem.category,
+      pantryId: newItem.pantryId,
+      quantity: newItem.quantity,
+      unit: newItem.unit,
+      createdAt: oldItem.createdAt,
+      updatedAt: new Date(),
+      expiresAt: newItem.expiresAt ?? oldItem.expiresAt,
+    };
+  }
+
   static toResponseDto(item: Item): ItemResponseDto {
     return {
       id: item.id,

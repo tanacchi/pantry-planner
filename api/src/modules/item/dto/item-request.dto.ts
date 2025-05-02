@@ -46,3 +46,9 @@ export class CreateItemRequestDto {
   @IsDateString()
   expiresAt?: Date | null = null;
 }
+
+export class UpdateItemRequestDto extends CreateItemRequestDto {
+  @ApiProperty({ description: 'アイテムID', example: 1 })
+  @IsInt()
+  id: number;
+}

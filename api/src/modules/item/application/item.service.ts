@@ -33,8 +33,10 @@ export class ItemService {
     id: number,
     dto: CreateItemRequestDto,
   ): Promise<ItemResponseDto> {
+    const existingItem = await this.itemRepository.findById(id);
+    if (!existingItem) throw new Error('Item not found');
     const updated = await this.itemRepository.update(
-      ItemDtoMapper.toDomain(dto),
+      ItemDtoMapper.toUpdateDomain(existingItem, dto),
     );
     return ItemDtoMapper.toResponseDto(updated);
   }
