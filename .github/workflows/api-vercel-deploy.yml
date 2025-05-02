@@ -27,6 +27,8 @@ jobs:
           node-version: '22'
 
       - uses: pnpm/action-setup@v4 # バージョンは package.json に記載のものを使用
+        with:
+          package_json_file: ./api/package.json
 
       - name: Install Vercel CLI
         run: pnpm install --global vercel@latest
