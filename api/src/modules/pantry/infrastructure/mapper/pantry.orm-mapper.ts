@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Pantry as PrismaPantry } from '@prisma/client';
 import { Pantry } from '../../domain/entity/pantry.entity';
 
