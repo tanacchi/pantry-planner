@@ -11,11 +11,11 @@ export class MessageRepository {
   // eslint-disable-next-line @typescript-eslint/require-await
   async send(lineUid: string, message: string): Promise<void> {
     console.log(`send message: ${lineUid} -> ${message}`);
-    const result = await this.client.pushMessage({
-      to: lineUid,
-      messages: [{ type: 'text', text: message }],
-    });
-    console.log('send message result: ', JSON.stringify(result, null, 2));
+    // const result = await this.client.pushMessage({
+    //   to: lineUid,
+    //   messages: [{ type: 'text', text: message }],
+    // });
+    // console.log('send message result: ', JSON.stringify(result, null, 2));
     return;
   }
 }
