@@ -7,7 +7,7 @@ import { PantryClientImpl } from "./pantry/PantryClientImpl";
 import { UserClient } from "./user/UserClient";
 import { UserClientImpl } from "./user/UserClientImpl";
 
-const BASE_PATH = "http://localhost:8000";
+const BASE_PATH = process.env.API_HOST
 
 // Item
 const itemApi: ItemApi = new ItemApi(
