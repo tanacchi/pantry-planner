@@ -1,86 +1,67 @@
-import { data, LoaderFunction } from "@remix-run/server-runtime";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import React, { useEffect } from "react";
 import {
-  Await,
+  ActionFunction,
+  data,
+  LoaderFunction,
+} from "@remix-run/server-runtime";
+import {
   Form,
   useFetcher,
   useLoaderData,
   useSearchParams,
 } from "@remix-run/react";
-import React, { useTransition } from "react";
 import { UserDisplayName } from "../components/liff/UserDisplayName";
+import { useLiff } from "../hooks/useLiff";
+import { User } from "../domain/user";
+import { itemClient } from "../lib/client/api/index.server";
+import { Item } from "../domain/item";
 
 type DashboardLoaderData = {
   title: string;
-  items: Promise<Item[]>;
 };
 
-type Item = {
-  id: number;
-  name: string;
-  isFavorite: boolean;
-};
+export const loader: LoaderFunction =
+  async (): Promise<DashboardLoaderData> => {
+    console.log("Loader called");
+    return { title: "dashboard" };
+  };
 
-let ITEMS: Item[] = [
-  { id: 1, name: "Milk", isFavorite: false },
-  { id: 2, name: "Eggs", isFavorite: true },
-  { id: 3, name: "Bread", isFavorite: false },
-];
-
-export const loader: LoaderFunction = async ({
-  request,
-}: {
-  request: Request;
-}): Promise<DashboardLoaderData> => {
-  console.log("Loader called");
-  const url = new URL(request.url);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const query = url.searchParams.get("q")?.toLowerCase() ?? "";
-  const items = new Promise<Item[]>((resolve) => resolve(ITEMS));
-  // const items = itemClient
-  //   .getItemsByPantryId(1)
-  //   .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
-  // const filtered = new Promise<Item[]>((resolve) => {
-  //   setTimeout(() => {
-  //     resolve(items.filter((item) => item.name.toLowerCase().includes(query)));
-  //   }, 1000);
-  // });
-  return { title: "dashboard", items };
-};
-
-export const action = async ({ request }: { request: Request }) => {
-  console.log("Action called");
+export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-  const intent = formData.get("intent");
-  const id = Number(formData.get("id"));
-  const name = (formData.get("name") as string)?.trim();
-
-  if (intent === "add") {
-    if (!name) {
-      return data({ error: "名前を入力してください" }, { status: 400 });
+  switch (formData.get("intent")) {
+    case "add": {
+      const name = formData.get("name");
+      if (!name) {
+        throw new Response("Name is required", { status: 400 });
+      }
+      const pantryId = formData.get("pantryId");
+      if (typeof pantryId !== "string") {
+        throw new Response("Pantry ID is required", { status: 400 });
+      }
+      const item = await itemClient.addItem({
+        name: name.toString(),
+        pantryId: Number(pantryId),
+        category: "Food",
+        quantity: 1,
+        unit: "個",
+        expiresAt: new Date(),
+      });
+      return data({ item });
     }
-    const newItem = {
-      id: ITEMS.length ? Math.max(...ITEMS.map((i) => i.id)) + 1 : 1,
-      name,
-      isFavorite: false,
-    };
-    ITEMS.push(newItem);
-    return data({ success: true });
-  }
-
-  if (intent === "delete") {
-    ITEMS = ITEMS.filter((item) => item.id !== id);
-    return data({ success: true });
-  }
-
-  if (intent === "toggleFavorite") {
-    const item = ITEMS.find((i) => i.id === id);
-    if (item) {
-      item.isFavorite = !item.isFavorite;
+    case "delete": {
+      const id = formData.get("id");
+      if (!id) {
+        throw new Response("ID is required", { status: 400 });
+      }
+      console.log("Deleting item:", id);
+      await itemClient.deleteItem(Number(id));
+      return null;
     }
-    return data({ success: true });
+    default: {
+      throw new Response("Invalid intent", { status: 400 });
+    }
   }
-
-  return data({ error: "Invalid action" }, { status: 400 });
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -89,12 +70,36 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 };
 
 export default function Dashboard() {
-  const { title, items: itemPromise } = useLoaderData<DashboardLoaderData>();
-  const fetcher = useFetcher();
-  const [searchParams] = useSearchParams();
-  const transition = useTransition();
+  const { title } = useLoaderData<DashboardLoaderData>();
+  const userFetcher = useFetcher<{ user: User }>();
+  const user = userFetcher.data?.user;
+  const { profile } = useLiff();
+  useEffect(() => {
+    if (!profile) {
+      return;
+    }
+    userFetcher.submit(
+      {
+        id: profile.userId,
+      },
+      {
+        method: "post",
+        action: "/resources/user/login",
+        encType: "application/json",
+      }
+    );
+  }, [profile?.userId]);
 
-  const isSubmitting = transition[0];
+  const fetcher = useFetcher();
+  const itemFetcher = useFetcher<{ items: Item[] }>();
+  const items = itemFetcher.data?.items;
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && user?.pantry?.id) {
+      itemFetcher.load(`/resources/item/by-pantry-id/${user.pantry.id}`);
+    }
+  }, [fetcher.state, userFetcher.data?.user?.pantry?.id]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -118,67 +123,63 @@ export default function Dashboard() {
       </Form>
 
       {/* Add Item Form */}
-      <Form method="post" className="flex mb-6 items-center gap-2">
+      <fetcher.Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
         <input
           type="text"
           name="name"
           placeholder="新しいアイテム名"
           className="flex-1 border rounded px-4 py-2"
         />
+        {/* URL の構造を変えた方が良さそう */}
+        <input type="hidden" name="pantryId" value={user?.pantry.id ?? ""} />
         <button
           type="submit"
           name="intent"
           value="add"
           className="bg-green-500 text-white px-4 py-2 rounded"
-          disabled={isSubmitting}
+          disabled={fetcher.state !== "idle" || user == null}
         >
-          {isSubmitting ? "追加中..." : "追加"}
+          {fetcher.state !== "idle" ? "追加中..." : "追加"}
         </button>
-      </Form>
+      </fetcher.Form>
 
       {/* Item List */}
       <ul className="space-y-4">
-        <React.Suspense fallback={<div>Loading...</div>}>
-          <Await resolve={itemPromise}>
-            {(items) =>
-              items.map((item) => (
-                <li
-                  key={item.id}
-                  className="border p-4 rounded flex justify-between items-center"
+        {items?.map((item) => (
+          <li
+            key={item.id}
+            className="border p-4 rounded flex justify-between items-center"
+          >
+            <div className="flex items-center gap-4">
+              <fetcher.Form method="post">
+                <input type="hidden" name="id" value={item.id} />
+                <button
+                  type="submit"
+                  name="intent"
+                  value="toggleFavorite"
+                  // className={`text-xl ${
+                  //   // item.isFavorite ? "text-yellow-400" : "text-gray-300"
+                  // }`}
                 >
-                  <div className="flex items-center gap-4">
-                    <fetcher.Form method="post">
-                      <input type="hidden" name="id" value={item.id} />
-                      <button
-                        type="submit"
-                        name="intent"
-                        value="toggleFavorite"
-                        className={`text-xl ${
-                          item.isFavorite ? "text-yellow-400" : "text-gray-300"
-                        }`}
-                      >
-                        ★
-                      </button>
-                    </fetcher.Form>
-                    <span>{item.name}</span>
-                  </div>
+                  ★
+                </button>
+              </fetcher.Form>
+              <span>{item.name}</span>
+            </div>
 
-                  <fetcher.Form method="post">
-                    <input type="hidden" name="id" value={item.id} />
-                    <button
-                      type="submit"
-                      name="intent"
-                      value="delete"
-                      className="text-red-500 hover:underline"
-                    >
-                      削除
-                    </button>
-                  </fetcher.Form>
-                </li>
-              ))
-            }
-          </Await>
-        </React.Suspense>
+            <fetcher.Form method="post">
+              <input type="hidden" name="id" value={item.id} />
+              <button
+                type="submit"
+                name="intent"
+                value="delete"
+                className="text-red-500 hover:underline"
+              >
+                削除
+              </button>
+            </fetcher.Form>
+          </li>
+        ))}
       </ul>
     </div>
   );

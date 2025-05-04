@@ -7,6 +7,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Error("ID is required");
   }
 
-  const pantry = itemClient.getItemsByPantryId(Number(id));
-  return data({ pantry });
+  const items = await itemClient.getItemsByPantryId(Number(id));
+  return data({ items});
 }
