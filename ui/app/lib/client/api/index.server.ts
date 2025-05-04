@@ -1,4 +1,3 @@
-// TODO: 丸見えになるので将来的にはサーバのみ直接コールするようにする.
 import { Configuration, ItemApi, PantryApi, UserApi } from "./generated";
 import { ItemClient } from "./item/ItemClient";
 import { ItemClientImpl } from "./item/ItemClientImpl";
@@ -7,7 +6,8 @@ import { PantryClientImpl } from "./pantry/PantryClientImpl";
 import { UserClient } from "./user/UserClient";
 import { UserClientImpl } from "./user/UserClientImpl";
 
-const BASE_PATH = (typeof window !== "undefined" && "process" in window) ? process?.env.API_HOST : "https://pantry-planner-api.vercel.app";
+const BASE_PATH = process.env.API_HOST;
+console.log("BASE_PATH", BASE_PATH);
 
 // Item
 const itemApi: ItemApi = new ItemApi(

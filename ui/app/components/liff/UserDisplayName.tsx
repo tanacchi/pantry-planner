@@ -1,31 +1,20 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect } from "react";
 import { useLiff } from "../../hooks/useLiff";
-import { userClient } from "../../lib/client/api";
+import { useFetcher } from "@remix-run/react";
+import { User } from "../../domain/user";
 
-type User = {
-  id: number;
-  lineUid: string;
-  lastLoginAt: Date;
-};
 
 export function UserDisplayName() {
   const { profile } = useLiff();
-  const [user, setUser] = React.useState<User | null>(null);
+  const userFetcher = useFetcher<User>();
+  const user = userFetcher.data;
 
   useEffect(() => {
     if (profile?.userId) {
-      userClient.getUserByLineUid(profile.userId)
-        .then((userData) => {
-          setUser(userData);
-        })
-        .catch((error) => {
-          console.error("Error fetching user data:", error);
-          setUser(null);
-        }
-      );
+      userFetcher.load(`/resources/user/by-line-uid/${profile.userId}`);
     }
-  }, [profile]);
+  }, [profile?.userId]);
 
   if (!profile) {
     return <div>Loading...</div>;
@@ -40,8 +29,11 @@ export function UserDisplayName() {
       />
       <span>こんにちは、{profile.displayName}さん！</span>
       {(() => {
-        if (user == null) {
+        if (userFetcher.state === "loading") {
           return <span>Loading user data...</span>;
+        }
+        if (userFetcher.state === "idle" || !user) {
+          return <span>ユーザーデータがありません</span>;
         }
         return (
           <div className="text-sm text-gray-500">
@@ -52,7 +44,7 @@ export function UserDisplayName() {
               <br />
             </div>
             <div className="text-sm text-gray-500">
-              最終ログイン: {new Date(user.lastLoginAt).toLocaleString()}
+              最終ログイン: {user.lastLoginAt.toDateString()})
             </div>
           </div>
         );
