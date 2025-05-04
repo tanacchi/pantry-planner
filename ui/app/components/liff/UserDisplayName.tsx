@@ -7,8 +7,8 @@ import { User } from "../../domain/user";
 
 export function UserDisplayName() {
   const { profile } = useLiff();
-  const userFetcher = useFetcher<User>();
-  const user = userFetcher.data;
+  const userFetcher = useFetcher<{ user: User}>();
+  const user = userFetcher.data?.user;
 
   useEffect(() => {
     if (profile?.userId) {
@@ -32,7 +32,7 @@ export function UserDisplayName() {
         if (userFetcher.state === "loading") {
           return <span>Loading user data...</span>;
         }
-        if (userFetcher.state === "idle" || !user) {
+        if (!user) {
           return <span>ユーザーデータがありません</span>;
         }
         return (
@@ -44,7 +44,7 @@ export function UserDisplayName() {
               <br />
             </div>
             <div className="text-sm text-gray-500">
-              最終ログイン: {user.lastLoginAt.toDateString()})
+              最終ログイン: {user.lastLoginAt.toDateString()}
             </div>
           </div>
         );

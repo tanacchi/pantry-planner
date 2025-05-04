@@ -7,6 +7,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Error("ID is required");
   }
 
-  const user = userClient.getUserByLineUid(id);
+  const user = await userClient.getUserByLineUid(id);
   return data({ user });
 };
