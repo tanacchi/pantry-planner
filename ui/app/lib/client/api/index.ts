@@ -1,3 +1,4 @@
+// TODO: 丸見えになるので将来的にはサーバのみ直接コールするようにする.
 import { Configuration, ItemApi, PantryApi, UserApi } from "./generated";
 import { ItemClient } from "./item/ItemClient";
 import { ItemClientImpl } from "./item/ItemClientImpl";
