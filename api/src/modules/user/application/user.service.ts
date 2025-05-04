@@ -8,10 +8,16 @@ import { UserDtoMapper } from './mapper/user.dto-mapper';
 import { Pantry } from '../../pantry/domain/entity/pantry.entity';
 import { Item } from '../../item/domain/entity/item.entity';
 import { UserRepository } from '../infrastructure/user.repository';
+import { PantryRepository } from 'src/modules/pantry/infrastructure/pantry.repository';
+import { ItemRepository } from 'src/modules/item/infrastructure/item.repository';
 
 @Injectable()
 export class UserService {
-  constructor(private readonly userRepository: UserRepository) {}
+  constructor(
+    private readonly userRepository: UserRepository,
+    private readonly pantryRepository: PantryRepository,
+    private readonly itemRepository: ItemRepository,
+  ) {}
 
   async createUser(dto: CreateUserRequestDto): Promise<UserResponseDto> {
     const entity = UserDtoMapper.toDomain(dto);
@@ -33,10 +39,10 @@ export class UserService {
   async getUserDetail(id: number): Promise<UserDetailResponseDto> {
     const user = await this.userRepository.findById(id);
     if (!user) throw new Error('User not found');
-    // NOTE: pantry, items は仮データ
-    const pantry = new Pantry(1, user.id, new Date(), new Date());
-    const items: Item[] = [];
-    return UserDtoMapper.toDetailResponseDto(user, pantry, items);
+    const pantry = await this.pantryRepository.findByUserId(user.id);
+    if (!pantry) throw new Error('Pantry not found');
+    const items = await this.itemRepository.findByPantryId(pantry[0].id);
+    return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }
 
   async getUserByLineUid(lineUid: string): Promise<UserResponseDto> {
@@ -50,10 +56,10 @@ export class UserService {
   ): Promise<UserDetailResponseDto> {
     const user = await this.userRepository.findByLineUid(lineUid);
     if (!user) throw new Error('User not found');
-    // NOTE: pantry, items は仮データ
-    const pantry = new Pantry(1, user.id, new Date(), new Date());
-    const items: Item[] = [];
-    return UserDtoMapper.toDetailResponseDto(user, pantry, items);
+    const pantry = await this.pantryRepository.findByUserId(user.id);
+    if (!pantry) throw new Error('Pantry not found');
+    const items = await this.itemRepository.findByPantryId(pantry[0].id);
+    return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }
 
   async updateUser(
