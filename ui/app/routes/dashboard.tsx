@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ActionFunction,
   data,
@@ -111,6 +111,15 @@ export default function Dashboard() {
     }
   }, [fetcher.state, userFetcher.data?.user?.pantry?.id]);
 
+  // Add Item Form input ref
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Clear input after adding item
+  useEffect(() => {
+    if (fetcher.state === "idle" && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [fetcher.state]);
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
@@ -135,6 +144,7 @@ export default function Dashboard() {
       {/* Add Item Form */}
       <fetcher.Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
         <input
+          ref={inputRef}
           type="text"
           name="name"
           placeholder="新しいアイテム名"
