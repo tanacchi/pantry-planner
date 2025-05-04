@@ -1,9 +1,11 @@
 apis/ItemApi.ts
+apis/MessageApi.ts
 apis/PantryApi.ts
 apis/UserApi.ts
 apis/index.ts
 index.ts
 models/CreateItemRequestDto.ts
+models/CreateMessageRequestDto.ts
 models/CreatePantryRequestDto.ts
 models/CreateUserRequestDto.ts
 models/ItemResponseDto.ts

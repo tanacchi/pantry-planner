@@ -1,6 +1,8 @@
-import { Configuration, ItemApi, PantryApi, UserApi } from "./generated";
+import { Configuration, ItemApi, MessageApi, PantryApi, UserApi } from "./generated";
 import { ItemClient } from "./item/ItemClient";
 import { ItemClientImpl } from "./item/ItemClientImpl";
+import { MessageClient } from "./message/MessageClient";
+import { MessageClientImpl } from "./message/MessageClientImpl";
 import { PantryClient } from "./pantry/PantryClient";
 import { PantryClientImpl } from "./pantry/PantryClientImpl";
 import { UserClient } from "./user/UserClient";
@@ -31,3 +33,11 @@ const userApi: UserApi = new UserApi(
   })
 );
 export const userClient: UserClient = new UserClientImpl(userApi);
+
+// Message
+const messageApi: MessageApi = new MessageApi(
+  new Configuration({
+    basePath: BASE_PATH,
+  })
+);
+export const messageClient: MessageClient = new MessageClientImpl(messageApi);
