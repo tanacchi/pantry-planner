@@ -36,7 +36,7 @@ export const loader: LoaderFunction = async ({
   const url = new URL(request.url);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const query = url.searchParams.get("q")?.toLowerCase() ?? "";
-  const items = itemClient.getItemsByPantryId("1")
+  const items = itemClient.getItemsByPantryId(1)
     .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
   // const filtered = new Promise<Item[]>((resolve) => {
   //   setTimeout(() => {
