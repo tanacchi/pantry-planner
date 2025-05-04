@@ -55,6 +55,7 @@ export const action: ActionFunction = async ({ request }) => {
         throw new Response("ID is required", { status: 400 });
       }
       console.log("Deleting item:", id);
+      await itemClient.deleteItem(Number(id));
       return null;
     }
     default: {
