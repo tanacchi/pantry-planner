@@ -1,15 +1,26 @@
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
   useRouteError,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
+
+// TODO: API への直接リクエストはサーバサイドで行うようにする.
+export const loader = () => {
+  return data({
+    ENV: {
+      API_HOST: process.env.API_HOST,
+    },
+  });
+}
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -25,6 +36,7 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const { ENV } = useLoaderData<typeof loader>();
   return (
     <html lang="en">
       <head>
@@ -32,6 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <script dangerouslySetInnerHTML={{ __html: `window.ENV = ${JSON.stringify(ENV)};` }} />
       </head>
       <body>
         {children}
