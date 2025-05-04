@@ -25,6 +25,12 @@ export interface CreateMessageRequestDto {
      * @memberof CreateMessageRequestDto
      */
     userId: number;
+    /**
+     * メッセージ内容
+     * @type {string}
+     * @memberof CreateMessageRequestDto
+     */
+    message: string;
 }
 
 /**
@@ -32,6 +38,7 @@ export interface CreateMessageRequestDto {
  */
 export function instanceOfCreateMessageRequestDto(value: object): value is CreateMessageRequestDto {
     if (!('userId' in value) || value['userId'] === undefined) return false;
+    if (!('message' in value) || value['message'] === undefined) return false;
     return true;
 }
 
@@ -46,6 +53,7 @@ export function CreateMessageRequestDtoFromJSONTyped(json: any, ignoreDiscrimina
     return {
         
         'userId': json['userId'],
+        'message': json['message'],
     };
 }
 
@@ -61,6 +69,7 @@ export function CreateMessageRequestDtoToJSONTyped(value?: CreateMessageRequestD
     return {
         
         'userId': value['userId'],
+        'message': value['message'],
     };
 }
 

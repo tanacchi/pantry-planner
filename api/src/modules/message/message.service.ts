@@ -18,6 +18,6 @@ export class MessageService {
     if (!user) {
       throw new Error('ユーザーが見つかりません');
     }
-    await this.messageRepository.send(user.lineUid);
+    await this.messageRepository.send(user.lineUid, dto.message);
   }
 }

@@ -14,7 +14,7 @@ export class MessageClientImpl implements MessageClient {
   }): Promise<void> => {
     console.log("sending message", message);
     await this.api.messageControllerCreateMessage({
-      createMessageRequestDto: { userId: id },
+      createMessageRequestDto: { userId: id, message },
     });
   };
 }
