@@ -7,7 +7,7 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import React, { useTransition } from "react";
-import { getItems } from "../db/index.server";
+import { UserDisplayName } from "../components/liff/UserDisplayName";
 
 type DashboardLoaderData = {
   title: string;
@@ -33,15 +33,17 @@ export const loader: LoaderFunction = async ({
 }): Promise<DashboardLoaderData> => {
   console.log("Loader called");
   const url = new URL(request.url);
-  const query = url.searchParams.get("q")?.toLowerCase() ?? "";
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filtered = new Promise<Item[]>((resolve) => {
-    setTimeout(() => {
-      resolve(ITEMS.filter((item) => item.name.toLowerCase().includes(query)));
-    }, 1000);
-  });
-  const items = getItems(1)
-    .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
+  const query = url.searchParams.get("q")?.toLowerCase() ?? "";
+  const items = new Promise<Item[]>((resolve) => resolve(ITEMS));
+  // const items = itemClient
+  //   .getItemsByPantryId(1)
+  //   .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
+  // const filtered = new Promise<Item[]>((resolve) => {
+  //   setTimeout(() => {
+  //     resolve(items.filter((item) => item.name.toLowerCase().includes(query)));
+  //   }, 1000);
+  // });
   return { title: "dashboard", items };
 };
 
@@ -62,7 +64,8 @@ export const action = async ({ request }: { request: Request }) => {
       isFavorite: false,
     };
     ITEMS.push(newItem);
-    return data({ success: true });  }
+    return data({ success: true });
+  }
 
   if (intent === "delete") {
     ITEMS = ITEMS.filter((item) => item.id !== id);
@@ -80,6 +83,7 @@ export const action = async ({ request }: { request: Request }) => {
   return data({ error: "Invalid action" }, { status: 400 });
 };
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
   return true;
 };
@@ -87,7 +91,7 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 export default function Dashboard() {
   const { title, items: itemPromise } = useLoaderData<DashboardLoaderData>();
   const fetcher = useFetcher();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const transition = useTransition();
 
   const isSubmitting = transition[0];
@@ -95,6 +99,9 @@ export default function Dashboard() {
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
+      <div>
+        <UserDisplayName />
+      </div>
 
       {/* Search Form */}
       <Form method="get" className="flex mb-6">
@@ -133,41 +140,43 @@ export default function Dashboard() {
       <ul className="space-y-4">
         <React.Suspense fallback={<div>Loading...</div>}>
           <Await resolve={itemPromise}>
-            {(items) => items.map((item) => (
-              <li
-                key={item.id}
-                className="border p-4 rounded flex justify-between items-center"
-              >
-                <div className="flex items-center gap-4">
+            {(items) =>
+              items.map((item) => (
+                <li
+                  key={item.id}
+                  className="border p-4 rounded flex justify-between items-center"
+                >
+                  <div className="flex items-center gap-4">
+                    <fetcher.Form method="post">
+                      <input type="hidden" name="id" value={item.id} />
+                      <button
+                        type="submit"
+                        name="intent"
+                        value="toggleFavorite"
+                        className={`text-xl ${
+                          item.isFavorite ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </button>
+                    </fetcher.Form>
+                    <span>{item.name}</span>
+                  </div>
+
                   <fetcher.Form method="post">
                     <input type="hidden" name="id" value={item.id} />
                     <button
                       type="submit"
                       name="intent"
-                      value="toggleFavorite"
-                      className={`text-xl ${
-                        item.isFavorite ? "text-yellow-400" : "text-gray-300"
-                      }`}
+                      value="delete"
+                      className="text-red-500 hover:underline"
                     >
-                      ★
+                      削除
                     </button>
                   </fetcher.Form>
-                  <span>{item.name}</span>
-                </div>
-
-                <fetcher.Form method="post">
-                  <input type="hidden" name="id" value={item.id} />
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="delete"
-                    className="text-red-500 hover:underline"
-                  >
-                    削除
-                  </button>
-                </fetcher.Form>
-              </li>
-            ))}
+                </li>
+              ))
+            }
           </Await>
         </React.Suspense>
       </ul>

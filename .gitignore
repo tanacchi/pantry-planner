@@ -4,6 +4,9 @@
 ### dotenv ###
 .env
 
+# Local Netlify folder
+.netlify
+
 ### macOS ###
 # General
 .DS_Store

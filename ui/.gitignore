@@ -8,7 +8,8 @@
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -100,7 +101,8 @@ tags
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
@@ -294,3 +296,6 @@ node_modules
 .ionide
 
 # End of https://www.toptal.com/developers/gitignore/api/macos,visualstudiocode,node,remix,remix+netlify
+
+# mkcert localhost の生成物
+*.pem
