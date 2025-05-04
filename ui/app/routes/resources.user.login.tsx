@@ -3,6 +3,7 @@ import { pantryClient, userClient } from "../lib/client/api/index.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const id = await request.json().then((data) => data.id);
+  console.log("ID:", id);
   if (!id) {
     throw new Response("ID is required", { status: 400 });
   }

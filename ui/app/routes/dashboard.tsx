@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useTransition } from "react";
+import React, { useEffect } from "react";
 import {
   ActionFunction,
   data,
@@ -15,6 +15,7 @@ import { UserDisplayName } from "../components/liff/UserDisplayName";
 import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
 import { itemClient } from "../lib/client/api/index.server";
+import { Item } from "../domain/item";
 
 type DashboardLoaderData = {
   title: string;
@@ -89,10 +90,15 @@ export default function Dashboard() {
   }, [profile?.userId]);
 
   const fetcher = useFetcher();
+  const itemFetcher = useFetcher<{ items: Item[] }>();
+  const items = itemFetcher.data?.items;
   const [searchParams] = useSearchParams();
-  const transition = useTransition();
 
-  const isSubmitting = transition[0];
+  useEffect(() => {
+    if (fetcher.state === "idle" && user?.pantry?.id) {
+      itemFetcher.load(`/resources/item/by-pantry-id/${user.pantry.id}`);
+    }
+  }, [fetcher.state, userFetcher.data?.user?.pantry?.id]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -116,7 +122,7 @@ export default function Dashboard() {
       </Form>
 
       {/* Add Item Form */}
-      <Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
+      <fetcher.Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
         <input
           type="text"
           name="name"
@@ -130,15 +136,15 @@ export default function Dashboard() {
           name="intent"
           value="add"
           className="bg-green-500 text-white px-4 py-2 rounded"
-          disabled={isSubmitting || user == null}
+          disabled={fetcher.state !== "idle" || user == null}
         >
-          {isSubmitting ? "追加中..." : "追加"}
+          {fetcher.state !== "idle" ? "追加中..." : "追加"}
         </button>
-      </Form>
+      </fetcher.Form>
 
       {/* Item List */}
       <ul className="space-y-4">
-        {user?.pantry.items.map((item) => (
+        {items?.map((item) => (
           <li
             key={item.id}
             className="border p-4 rounded flex justify-between items-center"
