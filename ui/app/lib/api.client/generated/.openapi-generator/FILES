@@ -1,3 +1,4 @@
+.openapi-generator-ignore
 apis/ItemApi.ts
 apis/PantryApi.ts
 apis/UserApi.ts
