@@ -7,7 +7,6 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import React, { useTransition } from "react";
-import { itemClient } from "../lib/client/api";
 import { UserDisplayName } from "../components/liff/UserDisplayName";
 
 type DashboardLoaderData = {
@@ -36,8 +35,10 @@ export const loader: LoaderFunction = async ({
   const url = new URL(request.url);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const query = url.searchParams.get("q")?.toLowerCase() ?? "";
-  const items = itemClient.getItemsByPantryId(1)
-    .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
+  const items = new Promise<Item[]>((resolve) => resolve(ITEMS));
+  // const items = itemClient
+  //   .getItemsByPantryId(1)
+  //   .then((items) => items.map((item) => ({ ...item, isFavorite: false })));
   // const filtered = new Promise<Item[]>((resolve) => {
   //   setTimeout(() => {
   //     resolve(items.filter((item) => item.name.toLowerCase().includes(query)));
@@ -63,7 +64,8 @@ export const action = async ({ request }: { request: Request }) => {
       isFavorite: false,
     };
     ITEMS.push(newItem);
-    return data({ success: true });  }
+    return data({ success: true });
+  }
 
   if (intent === "delete") {
     ITEMS = ITEMS.filter((item) => item.id !== id);
@@ -138,41 +140,43 @@ export default function Dashboard() {
       <ul className="space-y-4">
         <React.Suspense fallback={<div>Loading...</div>}>
           <Await resolve={itemPromise}>
-            {(items) => items.map((item) => (
-              <li
-                key={item.id}
-                className="border p-4 rounded flex justify-between items-center"
-              >
-                <div className="flex items-center gap-4">
+            {(items) =>
+              items.map((item) => (
+                <li
+                  key={item.id}
+                  className="border p-4 rounded flex justify-between items-center"
+                >
+                  <div className="flex items-center gap-4">
+                    <fetcher.Form method="post">
+                      <input type="hidden" name="id" value={item.id} />
+                      <button
+                        type="submit"
+                        name="intent"
+                        value="toggleFavorite"
+                        className={`text-xl ${
+                          item.isFavorite ? "text-yellow-400" : "text-gray-300"
+                        }`}
+                      >
+                        ★
+                      </button>
+                    </fetcher.Form>
+                    <span>{item.name}</span>
+                  </div>
+
                   <fetcher.Form method="post">
                     <input type="hidden" name="id" value={item.id} />
                     <button
                       type="submit"
                       name="intent"
-                      value="toggleFavorite"
-                      className={`text-xl ${
-                        item.isFavorite ? "text-yellow-400" : "text-gray-300"
-                      }`}
+                      value="delete"
+                      className="text-red-500 hover:underline"
                     >
-                      ★
+                      削除
                     </button>
                   </fetcher.Form>
-                  <span>{item.name}</span>
-                </div>
-
-                <fetcher.Form method="post">
-                  <input type="hidden" name="id" value={item.id} />
-                  <button
-                    type="submit"
-                    name="intent"
-                    value="delete"
-                    className="text-red-500 hover:underline"
-                  >
-                    削除
-                  </button>
-                </fetcher.Form>
-              </li>
-            ))}
+                </li>
+              ))
+            }
           </Await>
         </React.Suspense>
       </ul>
