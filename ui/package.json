@@ -8,7 +8,7 @@
     "dev": "remix vite:dev",
     "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "openapi-gen": "npx openapi-generator-cli generate -i http://localhost:8000/api-json  -g typescript-fetch -o app/lib/api.client/generated",
+    "openapi-gen": "npx openapi-generator-cli generate -i http://localhost:8000/api-json  -g typescript-fetch -o app/lib/client/api/generated",
     "typecheck": "tsc"
   },
   "dependencies": {

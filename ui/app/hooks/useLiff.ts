@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect, useState } from "react";
-import { initLiff, getProfile } from "../lib/liff.client";
+import { initLiff, getProfile } from "../lib/client/liff.client";
 
 export function useLiff() {
   const [profile, setProfile] = useState<Awaited<ReturnType<typeof getProfile>> | null>(null);
