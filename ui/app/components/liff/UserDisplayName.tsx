@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect } from "react";
 import { useLiff } from "../../hooks/useLiff";
-import { useFetcher } from "@remix-run/react";
+import { userClient } from "../../lib/client/api";
 
 type User = {
   id: number;
@@ -11,19 +11,25 @@ type User = {
 
 export function UserDisplayName() {
   const { profile } = useLiff();
-  const fetcher = useFetcher<User>();
+  const [user, setUser] = React.useState<User | null>(null);
 
   useEffect(() => {
     if (profile?.userId) {
-      fetcher.load(`/resources/user?lineUid=${profile.userId}`);
+      userClient.getUserByLineUid(profile.userId)
+        .then((userData) => {
+          setUser(userData);
+        })
+        .catch((error) => {
+          console.error("Error fetching user data:", error);
+          setUser(null);
+        }
+      );
     }
   }, [profile]);
 
   if (!profile) {
     return <div>Loading...</div>;
   }
-
-  const user = fetcher.data;
 
   return (
     <div className="flex items-center space-x-4">
@@ -34,7 +40,7 @@ export function UserDisplayName() {
       />
       <span>こんにちは、{profile.displayName}さん！</span>
       {(() => {
-        if (fetcher.state === "loading" || user == null) {
+        if (user == null) {
           return <span>Loading user data...</span>;
         }
         return (
