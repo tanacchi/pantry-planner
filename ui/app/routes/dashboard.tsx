@@ -14,7 +14,7 @@ import {
 import { UserDisplayName } from "../components/liff/UserDisplayName";
 import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
-import { itemClient } from "../lib/client/api/index.server";
+import { itemClient, messageClient } from "../lib/client/api/index.server";
 import { Item } from "../domain/item";
 
 type DashboardLoaderData = {
@@ -35,9 +35,14 @@ export const action: ActionFunction = async ({ request }) => {
       if (!name) {
         throw new Response("Name is required", { status: 400 });
       }
+      // FIXME: 手動で id を指定するのは良くない.
       const pantryId = formData.get("pantryId");
       if (typeof pantryId !== "string") {
         throw new Response("Pantry ID is required", { status: 400 });
+      }
+      const userId = formData.get("userId");
+      if (typeof userId !== "string") {
+        throw new Response("User ID is required", { status: 400 });
       }
       const item = await itemClient.addItem({
         name: name.toString(),
@@ -46,6 +51,11 @@ export const action: ActionFunction = async ({ request }) => {
         quantity: 1,
         unit: "個",
         expiresAt: new Date(),
+      });
+
+      messageClient.sendMessage({
+        id: Number(userId),
+        message: `「${name}」を追加しました`,
       });
       return data({ item });
     }
@@ -132,6 +142,7 @@ export default function Dashboard() {
         />
         {/* URL の構造を変えた方が良さそう */}
         <input type="hidden" name="pantryId" value={user?.pantry.id ?? ""} />
+        <input type="hidden" name="userId" value={user?.id ?? ""} />
         <button
           type="submit"
           name="intent"
