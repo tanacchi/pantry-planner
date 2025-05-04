@@ -12,7 +12,13 @@ export function UserDisplayName() {
 
   useEffect(() => {
     if (profile?.userId) {
-      userFetcher.load(`/resources/user/by-line-uid/${profile.userId}`);
+      userFetcher.submit({
+        id: profile.userId,
+      }, {
+        method: "post",
+        action: "/resources/user/login",
+        encType: "application/json",
+      });
     }
   }, [profile?.userId]);
 
