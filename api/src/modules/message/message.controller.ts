@@ -12,7 +12,7 @@ export class MessageController {
   @ApiBody({ type: CreateMessageRequestDto })
   @ApiResponse({
     status: 201,
-    description: 'パントリーの作成に成功しました',
+    description: 'メッセージ送信に成功しました',
   })
   @ApiResponse({ status: 400, description: '不正なリクエスト' })
   @ApiResponse({ status: 500, description: 'サーバーエラー' })

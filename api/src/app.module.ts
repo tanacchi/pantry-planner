@@ -4,9 +4,10 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
 import { PantryModule } from './modules/pantry/pantry.module';
 import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
+import { MessageModule } from './modules/message/message.module';
 
 @Module({
-  imports: [ItemModule, PantryModule, UserModule, PrismaModule],
+  imports: [ItemModule, PantryModule, UserModule, PrismaModule, MessageModule],
   controllers: [],
   providers: [],
 })
