@@ -1,6 +1,10 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect, useTransition } from "react";
-import { ActionFunction, LoaderFunction } from "@remix-run/server-runtime";
+import {
+  ActionFunction,
+  data,
+  LoaderFunction,
+} from "@remix-run/server-runtime";
 import {
   Form,
   useFetcher,
@@ -10,6 +14,7 @@ import {
 import { UserDisplayName } from "../components/liff/UserDisplayName";
 import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
+import { itemClient } from "../lib/client/api/index.server";
 
 type DashboardLoaderData = {
   title: string;
@@ -23,14 +28,25 @@ export const loader: LoaderFunction =
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
-   switch (formData.get("intent")) {
+  switch (formData.get("intent")) {
     case "add": {
       const name = formData.get("name");
       if (!name) {
         throw new Response("Name is required", { status: 400 });
       }
-      console.log("Adding item:", name);
-      return null;
+      const pantryId = formData.get("pantryId");
+      if (typeof pantryId !== "string") {
+        throw new Response("Pantry ID is required", { status: 400 });
+      }
+      const item = await itemClient.addItem({
+        name: name.toString(),
+        pantryId: Number(pantryId),
+        category: "Food",
+        quantity: 1,
+        unit: "個",
+        expiresAt: new Date(),
+      });
+      return data({ item });
     }
     case "delete": {
       const id = formData.get("id");
@@ -60,6 +76,16 @@ export default function Dashboard() {
     if (!profile) {
       return;
     }
+    userFetcher.submit(
+      {
+        id: profile.userId,
+      },
+      {
+        method: "post",
+        action: "/resources/user/login",
+        encType: "application/json",
+      }
+    );
   }, [profile?.userId]);
 
   const fetcher = useFetcher();
@@ -90,19 +116,21 @@ export default function Dashboard() {
       </Form>
 
       {/* Add Item Form */}
-      <Form method="post" className="flex mb-6 items-center gap-2">
+      <Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
         <input
           type="text"
           name="name"
           placeholder="新しいアイテム名"
           className="flex-1 border rounded px-4 py-2"
         />
+        {/* URL の構造を変えた方が良さそう */}
+        <input type="hidden" name="pantryId" value={user?.pantry.id ?? ""} />
         <button
           type="submit"
           name="intent"
           value="add"
           className="bg-green-500 text-white px-4 py-2 rounded"
-          disabled={isSubmitting}
+          disabled={isSubmitting || user == null}
         >
           {isSubmitting ? "追加中..." : "追加"}
         </button>
