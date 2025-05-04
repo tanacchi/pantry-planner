@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   ActionFunction,
   data,
@@ -14,7 +14,7 @@ import {
 import { UserDisplayName } from "../components/liff/UserDisplayName";
 import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
-import { itemClient } from "../lib/client/api/index.server";
+import { itemClient, messageClient } from "../lib/client/api/index.server";
 import { Item } from "../domain/item";
 
 type DashboardLoaderData = {
@@ -35,9 +35,14 @@ export const action: ActionFunction = async ({ request }) => {
       if (!name) {
         throw new Response("Name is required", { status: 400 });
       }
+      // FIXME: 手動で id を指定するのは良くない.
       const pantryId = formData.get("pantryId");
       if (typeof pantryId !== "string") {
         throw new Response("Pantry ID is required", { status: 400 });
+      }
+      const userId = formData.get("userId");
+      if (typeof userId !== "string") {
+        throw new Response("User ID is required", { status: 400 });
       }
       const item = await itemClient.addItem({
         name: name.toString(),
@@ -46,6 +51,11 @@ export const action: ActionFunction = async ({ request }) => {
         quantity: 1,
         unit: "個",
         expiresAt: new Date(),
+      });
+
+      messageClient.sendMessage({
+        id: Number(userId),
+        message: `「${name}」を追加しました`,
       });
       return data({ item });
     }
@@ -101,6 +111,15 @@ export default function Dashboard() {
     }
   }, [fetcher.state, userFetcher.data?.user?.pantry?.id]);
 
+  // Add Item Form input ref
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Clear input after adding item
+  useEffect(() => {
+    if (fetcher.state === "idle" && inputRef.current) {
+      inputRef.current.value = "";
+    }
+  }, [fetcher.state]);
   return (
     <div className="p-6 max-w-3xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">{title}</h1>
@@ -125,6 +144,7 @@ export default function Dashboard() {
       {/* Add Item Form */}
       <fetcher.Form method="post" className="flex mb-6 items-center gap-2" onSubmit={() => console.log(`Form submitted: ${user?.pantry.id}`)}>
         <input
+          ref={inputRef}
           type="text"
           name="name"
           placeholder="新しいアイテム名"
@@ -132,6 +152,7 @@ export default function Dashboard() {
         />
         {/* URL の構造を変えた方が良さそう */}
         <input type="hidden" name="pantryId" value={user?.pantry.id ?? ""} />
+        <input type="hidden" name="userId" value={user?.id ?? ""} />
         <button
           type="submit"
           name="intent"
