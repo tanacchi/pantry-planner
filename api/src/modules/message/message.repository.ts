@@ -1,22 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import line from '@line/bot-sdk';
+import { messagingApi } from '@line/bot-sdk';
+const { MessagingApiClient } = messagingApi;
 
 @Injectable()
 export class MessageRepository {
-  private readonly client: line.messagingApi.MessagingApiClient;
-
-  constructor() {
-    this.client = new line.messagingApi.MessagingApiClient({
-      channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? '',
-    });
-  }
+  private readonly client = new MessagingApiClient({
+    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? '',
+  });
 
   async send(lineUid: string): Promise<void> {
     console.log('send message: ', lineUid);
-    // await this.client.pushMessage({
+    // const result = await this.client.pushMessage({
     //   to: lineUid,
     //   messages: [{ type: 'text', text: 'hello, world' }],
     // });
+    // console.log('send message result: ', JSON.stringify(result, null, 2));
     return;
   }
 }
