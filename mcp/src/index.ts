@@ -1,9 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { z } from "zod";
+import { PantryApiClient } from "./client/api.client";
+import { formatItem } from "./format/item.formatter";
 
-const NWS_API_BASE = "https://api.weather.gov";
-const USER_AGENT = "weather-app/1.0";
+const pantryApiClient = new PantryApiClient();
 
 // Create server instance
 export const server = new McpServer({
@@ -30,6 +31,28 @@ server.tool(
         {
           type: "text",
           text: roll.toString(),
+        },
+      ],
+    };
+  }
+);
+
+server.tool(
+  "getAllPantryItems",
+  "Retrieve all item information in the pantry or refrigerator.",
+  // ツールの引数を定義するスキーマ
+  { limit: z.number().min(1).describe("Number of items to get.") },
+  // ツールが呼び出されたときに実行される関数
+  async ({ limit }) => {
+    // 1から指定された面数までのランダムな整数を生成
+
+    const items = (await pantryApiClient.getAllItems()).slice(0, limit).map(formatItem);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: items.join("\n"),
         },
       ],
     };
