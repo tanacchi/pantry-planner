@@ -23,7 +23,7 @@ export default function Dashboard() {
   const { profile } = useLiff();
   const navigate = useNavigate();
   useEffect(() => {
-    if (!profile) {
+    if (!profile || !profile.userId) {
       return;
     }
     userFetcher.submit(

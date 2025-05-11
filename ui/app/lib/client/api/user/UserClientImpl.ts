@@ -28,13 +28,14 @@ export class UserClientImpl implements UserClient {
     }
   }
 
-  async createUser(lineUid: string): Promise<void> {
-    await this.api
+  async createUser(lineUid: string): Promise<User> {
+    const user = await this.api
       .userControllerCreateUser({ createUserRequestDto: { lineUid } })
       .catch((err) => {
         console.error("Error creating user:", err);
         throw err;
       });
+     return responseToUser(user);
   }
 }
 

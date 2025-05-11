@@ -64,7 +64,7 @@ export class UserApi extends runtime.BaseAPI {
 
     /**
      */
-    async userControllerCreateUserRaw(requestParameters: UserControllerCreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserResponseDto>> {
+    async userControllerCreateUserRaw(requestParameters: UserControllerCreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UserDetailResponseDto>> {
         if (requestParameters['createUserRequestDto'] == null) {
             throw new runtime.RequiredError(
                 'createUserRequestDto',
@@ -86,12 +86,12 @@ export class UserApi extends runtime.BaseAPI {
             body: CreateUserRequestDtoToJSON(requestParameters['createUserRequestDto']),
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => UserResponseDtoFromJSON(jsonValue));
+        return new runtime.JSONApiResponse(response, (jsonValue) => UserDetailResponseDtoFromJSON(jsonValue));
     }
 
     /**
      */
-    async userControllerCreateUser(requestParameters: UserControllerCreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserResponseDto> {
+    async userControllerCreateUser(requestParameters: UserControllerCreateUserRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UserDetailResponseDto> {
         const response = await this.userControllerCreateUserRaw(requestParameters, initOverrides);
         return await response.value();
     }
