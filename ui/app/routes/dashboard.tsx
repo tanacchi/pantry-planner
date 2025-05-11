@@ -5,6 +5,7 @@ import {
   Outlet,
   useFetcher,
   useLoaderData,
+  useMatches,
   useNavigate,
 } from "@remix-run/react";
 import { useLiff } from "../hooks/useLiff";
@@ -37,12 +38,17 @@ export default function Dashboard() {
     );
   }, [profile?.userId]);
 
+  const matches = useMatches();
+  const isAtDeeperRoute = matches.some(
+    (m) =>
+      m.id === "routes/dashboard.$userId.$pantryId" ||
+      m.id === "routes/dashboard.$userId"
+  );
   useEffect(() => {
-    console.log("userId", userId);
-    if (userId) {
+    if (userId && !isAtDeeperRoute) {
       navigate(`/dashboard/${userId}`);
     }
-  }, [navigate, userId]);
+  }, [navigate, userId, isAtDeeperRoute]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">

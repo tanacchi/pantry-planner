@@ -21,6 +21,7 @@ export class PantryClientImpl implements PantryClient {
       const res = await this.api.pantryControllerGetPantryDetailsByUser({
         userId,
       });
+      console.log("res", res);
       return responseToPantry(res[0]);
     } catch (err) {
       console.error("Error fetching pantries by user ID:", err);
