@@ -19,9 +19,7 @@ export const loader: LoaderFunction = async (): Promise<{ title: string }> => {
 export default function Dashboard() {
   const { title } = useLoaderData<{ title: string }>();
   const userFetcher = useFetcher<{ user: User }>();
-  const { id: userId } = userFetcher.data?.user || {};
   const { profile } = useLiff();
-  const navigate = useNavigate();
   useEffect(() => {
     if (!profile || !profile.userId) {
       return;
@@ -44,11 +42,17 @@ export default function Dashboard() {
       m.id === "routes/dashboard.$userId.$pantryId" ||
       m.id === "routes/dashboard.$userId"
   );
+
+  const navigate = useNavigate();
   useEffect(() => {
-    if (userId && !isAtDeeperRoute) {
-      navigate(`/dashboard/${userId}`);
+    if (
+      userFetcher.state === "idle" &&
+      userFetcher.data?.user?.id &&
+      !isAtDeeperRoute
+    ) {
+      navigate(`/dashboard/${userFetcher.data?.user.id}`);
     }
-  }, [navigate, userId, isAtDeeperRoute]);
+  }, [navigate, userFetcher.state, userFetcher.data, isAtDeeperRoute]);
 
   return (
     <div className="p-6 max-w-3xl mx-auto">

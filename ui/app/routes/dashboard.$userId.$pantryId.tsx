@@ -5,27 +5,49 @@ import {
   data,
   LoaderFunction,
 } from "@remix-run/server-runtime";
-import { Form, useFetcher, useLoaderData, useSearchParams } from "@remix-run/react";
+import {
+  Form,
+  useFetcher,
+  useLoaderData,
+  useMatches,
+  useSearchParams,
+} from "@remix-run/react";
 import { User } from "../domain/user";
-import { itemClient, messageClient, pantryClient } from "../lib/client/api/index.server";
+import {
+  itemClient,
+  messageClient,
+  pantryClient,
+  userClient,
+} from "../lib/client/api/index.server";
 import { Pantry } from "../domain/pantry";
 
-export type DashboardLoaderData = {
+export type LoaderData = {
   user: User;
   pantry: Pantry;
 };
 
 export const loader: LoaderFunction = async ({
   params,
-}): Promise<{ pantry: Pantry }> => {
-  if (!params.pantryId) {
+}): Promise<LoaderData> => {
+  const { userId, pantryId } = params;
+  if (!userId) {
+    throw new Response("User ID is required", { status: 400 });
+  }
+  if (!pantryId) {
     throw new Response("Pantry ID is required", { status: 400 });
   }
-  const pantry = await pantryClient.getPantryById(Number(params.pantryId));
+
+  const [user, pantry] = await Promise.all([
+    userClient.getUserById(Number(userId)),
+    pantryClient.getPantryById(Number(pantryId)),
+  ]);
+  if (!user) {
+    throw new Response("User not found", { status: 404 });
+  }
   if (!pantry) {
     throw new Response("Pantry not found", { status: 404 });
   }
-  return { pantry };
+  return { user, pantry };
 };
 
 export const action: ActionFunction = async ({ params, request }) => {
@@ -83,7 +105,17 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 };
 
 export default function Dashboard() {
-  const { pantry } = useLoaderData<{ pantry: Pantry }>();
+  const { pantry } = useLoaderData<LoaderData>();
+  const matches = useMatches();
+  const userMatch = matches.find((m) => m.id === "routes/dashboard.$userId") as
+    | { data: { user: User } }
+    | undefined;
+
+  const user = userMatch?.data.user;
+  if (!user) {
+    throw new Response("User not found", { status: 404 });
+  }
+
   const fetcher = useFetcher();
   const items = pantry.items;
   const [searchParams] = useSearchParams();
@@ -114,10 +146,7 @@ export default function Dashboard() {
       </Form>
 
       {/* Add Item Form */}
-      <fetcher.Form
-        method="post"
-        className="flex mb-6 items-center gap-2"
-      >
+      <fetcher.Form method="post" className="flex mb-6 items-center gap-2">
         <input
           ref={inputRef}
           type="text"

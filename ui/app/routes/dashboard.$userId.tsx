@@ -1,43 +1,35 @@
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect } from "react";
-import { LoaderFunction } from "@remix-run/server-runtime";
-import { Outlet, useFetcher, useLoaderData, useNavigate } from "@remix-run/react";
-import { User } from "../domain/user";
+import { data, LoaderFunction } from "@remix-run/server-runtime";
 import { userClient } from "../lib/client/api/index.server";
+import { Link, Outlet, useLoaderData } from "@remix-run/react";
+import { User } from "../domain/user";
 import { UserProfile } from "../components/UserProfile";
-import { Pantry } from "../domain/pantry";
 
-export const loader: LoaderFunction = async ({
-  params,
-}): Promise<{ user: User }> => {
-  if (!params.userId) {
-    throw new Response("User ID is required", { status: 400 });
-  }
-  const user = await userClient.getUserById(Number(params.userId));
-  return { user };
+export const loader: LoaderFunction = async ({ params }) => {
+  const { userId } = params;
+  const user = await userClient.getUserById(Number(userId));
+  return data({ user });
 };
 
-export default function Dashboard() {
+export default function UserDashboard() {
   const { user } = useLoaderData<{ user: User }>();
-  const pantryFetcher = useFetcher<{ pantry: Pantry }>();
-  const navigate = useNavigate();
-  const pantryId = pantryFetcher.data?.pantry?.id;
-
-  useEffect(() => {
-    pantryFetcher.load("/resources/pantry/by-user-id/" + user.id);
-  }, [user.id]);
-
-  useEffect(() => {
-    console.log("pantryId", pantryId);
-    if (pantryId) {
-      navigate(`/dashboard/${user.id}/${pantryId}`);
-    }
-  }, [navigate, pantryId]);
+  const pantries = [user.pantry];
 
   return (
-    <>
+    <div className="p-6 max-w-3xl mx-auto">
       <UserProfile user={user} />
+      <div className="space-y-4">
+        {pantries.map((pantry) => (
+          <div key={pantry.id}>
+            <Link
+              to={`/dashboard/${user.id}/${pantry.id}`}
+              className="text-blue-600 underline"
+            >
+              自宅の冷蔵庫
+            </Link>
+          </div>
+        ))}
+      </div>
       <Outlet />
-    </>
+    </div>
   );
 }
