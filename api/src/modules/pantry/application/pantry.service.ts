@@ -5,13 +5,15 @@ import {
   PantryResponseDto,
 } from '../dto/pantry-response.dto';
 import { PantryDtoMapper } from './mapper/pantry.dto-mapper';
-import { Pantry } from '../domain/entity/pantry.entity';
-import { Item } from '../../item/domain/entity/item.entity';
 import { PantryRepository } from '../infrastructure/pantry.repository';
+import { ItemRepository } from 'src/modules/item/infrastructure/item.repository';
 
 @Injectable()
 export class PantryService {
-  constructor(private readonly pantryRepository: PantryRepository) {}
+  constructor(
+    private readonly pantryRepository: PantryRepository,
+    private readonly itemRepository: ItemRepository,
+  ) {}
 
   async createPantry(dto: CreatePantryRequestDto): Promise<PantryResponseDto> {
     const entity = await this.pantryRepository.create(dto.userId);
@@ -29,13 +31,16 @@ export class PantryService {
     return PantryDtoMapper.toResponseDto(pantry);
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async getPantryDetail(id: number): Promise<PantryDetailResponseDto> {
-    const pantry = new Pantry(id, 1, new Date(), new Date());
-    const items: Item[] = [
-      new Item(1, 'りんご', 'Food', id, 3, '個', new Date(), new Date()),
-    ];
-    return PantryDtoMapper.toDetailResponseDto(pantry, items);
+    const pantry = this.pantryRepository.findById(id);
+    const items = this.itemRepository.findByPantryId(id);
+    const result = await Promise.all([pantry, items]).then(
+      ([pantry, items]) => {
+        if (!pantry) throw new Error('Pantry not found');
+        return PantryDtoMapper.toDetailResponseDto(pantry, items);
+      },
+    );
+    return result;
   }
 
   async getPantriesByUser(userId: number): Promise<PantryResponseDto[]> {
@@ -43,15 +48,15 @@ export class PantryService {
     return pantries.map((pantry) => PantryDtoMapper.toResponseDto(pantry));
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async getPantryDetailsByUser(
     userId: number,
   ): Promise<PantryDetailResponseDto[]> {
-    const pantry = new Pantry(20, userId, new Date(), new Date());
-    const items: Item[] = [
-      new Item(1, 'みかん', 'Food', pantry.id, 2, '個', new Date(), new Date()),
-    ];
-    return [PantryDtoMapper.toDetailResponseDto(pantry, items)];
+    const pantries = await this.pantryRepository.findByUserId(userId);
+    const result = pantries.map(async (pantry) => {
+      const items = await this.itemRepository.findByPantryId(pantry.id);
+      return PantryDtoMapper.toDetailResponseDto(pantry, items);
+    });
+    return Promise.all(result);
   }
 
   async updatePantry(

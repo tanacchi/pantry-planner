@@ -17,10 +17,11 @@ export class UserService {
     private readonly itemRepository: ItemRepository,
   ) {}
 
-  async createUser(dto: CreateUserRequestDto): Promise<UserResponseDto> {
+  async createUser(dto: CreateUserRequestDto): Promise<UserDetailResponseDto> {
     const entity = UserDtoMapper.toDomain(dto);
     const created = await this.userRepository.create(entity.lineUid);
-    return UserDtoMapper.toResponseDto(created);
+    const pantry = await this.pantryRepository.create(created.id);
+    return UserDtoMapper.toDetailResponseDto(created, pantry, []);
   }
 
   async getUsers(): Promise<UserResponseDto[]> {
@@ -53,9 +54,10 @@ export class UserService {
     lineUid: string,
   ): Promise<UserDetailResponseDto> {
     const user = await this.userRepository.findByLineUid(lineUid);
+    console.log('user', user);
     if (!user) throw new Error('User not found');
     const pantry = await this.pantryRepository.findByUserId(user.id);
-    if (!pantry) throw new Error('Pantry not found');
+    if (pantry.length == 0) throw new Error('Pantry not found');
     const items = await this.itemRepository.findByPantryId(pantry[0].id);
     return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }

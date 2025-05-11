@@ -2,8 +2,10 @@
 import React, { useEffect, useState } from "react";
 import { initLiff, getProfile } from "../lib/client/liff.client";
 
+export type Profile = Awaited<ReturnType<typeof getProfile>>;
+
 export function useLiff() {
-  const [profile, setProfile] = useState<Awaited<ReturnType<typeof getProfile>> | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     async function initialize() {

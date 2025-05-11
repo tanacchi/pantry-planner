@@ -26,11 +26,13 @@ export class UserController {
   @ApiResponse({
     status: 201,
     description: 'ユーザーの作成に成功しました',
-    type: UserResponseDto,
+    type: UserDetailResponseDto,
   })
   @ApiResponse({ status: 400, description: '不正なリクエスト' })
   @ApiResponse({ status: 500, description: 'サーバーエラー' })
-  createUser(@Body() dto: CreateUserRequestDto): Promise<UserResponseDto> {
+  createUser(
+    @Body() dto: CreateUserRequestDto,
+  ): Promise<UserDetailResponseDto> {
     return this.userService.createUser(dto);
   }
 
