@@ -5,6 +5,13 @@ import { PantryApiClient } from "./client/api.client";
 import { formatItem } from "./format/item.formatter";
 
 const pantryApiClient = new PantryApiClient();
+const USER_ID = process.env.USER_ID;
+const PANTRY_ID = process.env.PANTRY_ID;
+if (!USER_ID || !PANTRY_ID) {
+  throw new Error(
+    "USER_ID and PANTRY_ID must be set in the environment variables."
+  );
+}
 
 // Create server instance
 export const server = new McpServer({
@@ -17,20 +24,19 @@ export const server = new McpServer({
 });
 
 server.tool(
-  "getDiceRoll", // ツールの名前
-  "Roll a dice with a specified number of sides and return the result.",
-  // ツールの引数を定義するスキーマ
-  { sides: z.number().min(1).describe("Number of sides on the die") },
-  // ツールが呼び出されたときに実行される関数
-  async ({ sides }) => {
-    // 1から指定された面数までのランダムな整数を生成
-    const roll = Math.floor(Math.random() * sides) + 1;
+  "getPantryItems",
+  "Retrieve all item information in the pantry or refrigerator.",
+  { limit: z.number().min(1).describe("Number of items to get.") },
+  async ({ limit }) => {
+    const items = (await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID)))
+      .slice(0, limit)
+      .map(formatItem);
 
     return {
       content: [
         {
           type: "text",
-          text: roll.toString(),
+          text: items.join("\n"),
         },
       ],
     };
@@ -38,21 +44,32 @@ server.tool(
 );
 
 server.tool(
-  "getAllPantryItems",
-  "Retrieve all item information in the pantry or refrigerator.",
-  // ツールの引数を定義するスキーマ
-  { limit: z.number().min(1).describe("Number of items to get.") },
-  // ツールが呼び出されたときに実行される関数
-  async ({ limit }) => {
-    // 1から指定された面数までのランダムな整数を生成
-
-    const items = (await pantryApiClient.getAllItems()).slice(0, limit).map(formatItem);
-
+  "addItemToPantry",
+  "Add an item to the pantry or refrigerator.",
+  {
+    name: z.string().describe("Name of the item to add in Japanese."),
+    category: z
+      .enum(["Food", "Drink", "Snack", "Spice", "Other"])
+      .describe("Category of the item."),
+    quantity: z.number().min(1).describe("Quantity of the item."),
+    unit: z.string().describe("Unit of the item in Japanese. e.g. 個, g, ml"),
+  },
+  async ({ name, category, quantity, unit }) => {
+    const item = {
+      name,
+      category,
+      quantity,
+      unit,
+    };
+    const result = await pantryApiClient.addItem({
+      ...item,
+      pantryId: Number(PANTRY_ID),
+    });
     return {
       content: [
         {
           type: "text",
-          text: items.join("\n"),
+          text: `Added item: ${result.name} (${result.quantity}${result.unit})`,
         },
       ],
     };
