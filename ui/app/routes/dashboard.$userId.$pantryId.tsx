@@ -140,6 +140,14 @@ export default function Dashboard() {
       inputRef.current.value = "";
     }
   }, [fetcher.state]);
+
+  // Close modal when add action completes successfully
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      setShowModal(false);
+    }
+  }, [fetcher.state, fetcher.data]);
+
   return (
     <>
       {/* Search Form */}
