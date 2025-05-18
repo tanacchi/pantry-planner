@@ -8,19 +8,25 @@ export class ItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async findById(id: number): Promise<Item | null> {
-    const data = await this.prisma.item.findUnique({ where: { id } });
+    const data = await this.prisma.item.findUnique({
+      where: { id, deletedAt: null },
+    });
     return data ? ItemOrmMapper.toDomain(data) : null;
   }
 
   async findByPantryId(pantryId: number): Promise<Item[]> {
     const result = await this.prisma.item.findMany({
-      where: { pantryId },
+      where: { pantryId, deletedAt: null },
+      orderBy: { createdAt: 'desc' },
     });
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
 
   async findAll(): Promise<Item[]> {
-    const result = await this.prisma.item.findMany();
+    const result = await this.prisma.item.findMany({
+      where: { deletedAt: null },
+      orderBy: { createdAt: 'desc' },
+    });
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
 
@@ -49,6 +55,11 @@ export class ItemRepository {
   }
 
   async delete(id: number): Promise<void> {
-    await this.prisma.item.delete({ where: { id } });
+    await this.prisma.item.update({
+      where: { id },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
   }
 }
