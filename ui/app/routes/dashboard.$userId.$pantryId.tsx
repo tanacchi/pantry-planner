@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import React, { useEffect, useRef, useState } from "react";
+import { HiTrash } from "react-icons/hi";
 import {
   ActionFunction,
   data,
@@ -182,8 +183,9 @@ export default function Dashboard() {
                 name="intent"
                 value="delete"
                 className="text-red-500 hover:underline"
+                aria-label="削除"
               >
-                削除
+                <HiTrash className="h-5 w-5" />
               </button>
             </fetcher.Form>
           </li>
