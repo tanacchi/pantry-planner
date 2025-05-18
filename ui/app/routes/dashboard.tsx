@@ -8,7 +8,6 @@ import {
   useMatches,
   useNavigate,
 } from "@remix-run/react";
-import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
 import { LineProfileCard } from "../components/liff/LineProfile";
 
@@ -19,7 +18,13 @@ export const loader: LoaderFunction = async (): Promise<{ title: string }> => {
 export default function Dashboard() {
   const { title } = useLoaderData<{ title: string }>();
   const userFetcher = useFetcher<{ user: User }>();
-  const { profile } = useLiff();
+  const { profile } = {
+    profile: {
+      userId: "27",
+      displayName: "John Doe",
+      pictureUrl: "https://example.com/profile.jpg",
+    }
+  }
   useEffect(() => {
     if (!profile || !profile.userId) {
       return;
