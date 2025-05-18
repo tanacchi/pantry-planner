@@ -47,6 +47,7 @@ export class ItemRepository {
         pantryId: item.pantryId,
         quantity: item.quantity,
         unit: item.unit,
+        expiresAt: item.expiresAt,
       },
     });
     return ItemOrmMapper.toDomain(result);
