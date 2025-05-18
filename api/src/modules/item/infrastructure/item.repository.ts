@@ -40,6 +40,7 @@ export class ItemRepository {
   }
 
   async create(item: Item): Promise<Item> {
+    console.log('item', typeof item.expiresAt);
     const result = await this.prisma.item.create({
       data: {
         name: item.name,
