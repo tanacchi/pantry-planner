@@ -5,10 +5,9 @@ import { createLiff } from '../lib/createLiff';
 
 const LiffContext = createContext<Liff | null>(null);
 
-export const useLiff = (): Liff => {
+export const useLiff = (): Liff | null => {
   const ctx = useContext(LiffContext);
   console.log('useLiff', ctx);
-  if (!ctx) throw new Error('useLiff must be used inside LiffProvider');
   return ctx;
 };
 

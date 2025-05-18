@@ -10,12 +10,14 @@ import {
 } from "@remix-run/react";
 import { User } from "../domain/user";
 import { LineProfileCard } from "../components/liff/LineProfile";
+import { useLiff } from "../context/LiffProvider";
 
 export const loader: LoaderFunction = async (): Promise<{ title: string }> => {
   return { title: "dashboard" };
 };
 
 export default function Dashboard() {
+  const liff = useLiff();
   const { title } = useLoaderData<{ title: string }>();
   const userFetcher = useFetcher<{ user: User }>();
   const { profile } = {
@@ -23,8 +25,8 @@ export default function Dashboard() {
       userId: "27",
       displayName: "John Doe",
       pictureUrl: "https://example.com/profile.jpg",
-    }
-  }
+    },
+  };
   useEffect(() => {
     if (!profile || !profile.userId) {
       return;

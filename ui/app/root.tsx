@@ -10,7 +10,7 @@ import {
 import type { LinksFunction } from "@remix-run/node";
 
 import "./tailwind.css";
-import { LiffProvider } from "./context/liffContext";
+import { LiffProvider } from "./context/LiffProvider";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -36,7 +36,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         <LiffProvider>
-          {children}
+          <Outlet />
         </LiffProvider>
         <ScrollRestoration />
         <Scripts />
