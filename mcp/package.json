@@ -8,7 +8,9 @@
   "scripts": {
     "build": "tsc && chmod 755 build/index.js",
     "openapi-gen": "npx openapi-generator-cli generate -i http://localhost:8000/api-json  -g typescript-fetch -o src/client/generated",
-    "test": "vitest"
+    "test": "vitest",
+    "debug": "USER_ID=27 PANTRY_ID=9 npx @modelcontextprotocol/inspector node build/index.js",
+    "predebug": "npm run build"
   },
   "files": [
     "build"
@@ -21,6 +23,7 @@
     "zod": "^3.24.4"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.12.0",
     "@openapitools/openapi-generator-cli": "^2.20.0",
     "@types/node": "^22.15.3",
     "typescript": "^5.8.3",
