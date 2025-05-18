@@ -1,4 +1,3 @@
-// app/context/LiffContext.tsx
 import React, {
   createContext,
   useCallback,
@@ -12,8 +11,7 @@ import { initLiff} from "../lib/initLiff";
 const LiffContext = createContext<Liff | null>(null);
 
 export const useLiff = (): Liff | null => {
-  const ctx = useContext(LiffContext);
-  return ctx;
+  return useContext(LiffContext);
 };
 
 export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({
