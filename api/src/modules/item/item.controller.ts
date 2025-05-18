@@ -8,6 +8,9 @@ import {
   Param,
   Query,
   ParseIntPipe,
+  ParseArrayPipe,
+  ParseBoolPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -56,11 +59,17 @@ export class ItemController {
     type: [ItemResponseDto],
   })
   getItems(
-    @Query('name') name?: string[],
-    @Query('category') category?: string[],
-    @Query('include_consumed') includeConsumed?: boolean,
+    @Query('include_consumed', new DefaultValuePipe(false), ParseBoolPipe)
+    includeConsumed: boolean,
+    @Query('name', new DefaultValuePipe([]), ParseArrayPipe) name: string[],
+    @Query('category', new DefaultValuePipe([]), ParseArrayPipe)
+    category: string[],
   ): Promise<ItemResponseDto[]> {
-    return this.itemService.getItems({ name, category, includeConsumed });
+    return this.itemService.getItems({
+      name,
+      category,
+      includeConsumed,
+    });
   }
 
   @Get('/:id')
@@ -112,11 +121,9 @@ export class ItemController {
   })
   getItemsByPantry(
     @Param('pantryId', ParseIntPipe) pantryId: number,
-    @Query('include_consumed') includeConsumed?: boolean,
+    @Query('include_consumed', new DefaultValuePipe(false), ParseBoolPipe)
+    includeConsumed?: boolean,
   ): Promise<ItemResponseDto[]> {
-    return this.itemService.getItemsByPantry(
-      pantryId,
-      includeConsumed ?? false,
-    );
+    return this.itemService.getItemsByPantry(pantryId, includeConsumed);
   }
 }
