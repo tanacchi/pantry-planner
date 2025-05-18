@@ -38,9 +38,9 @@ export interface ItemControllerGetItemRequest {
 }
 
 export interface ItemControllerGetItemsRequest {
+    includeConsumed?: boolean;
     name?: Array<string>;
     category?: Array<string>;
-    includeConsumed?: boolean;
 }
 
 export interface ItemControllerGetItemsByPantryRequest {
@@ -158,16 +158,16 @@ export class ItemApi extends runtime.BaseAPI {
     async itemControllerGetItemsRaw(requestParameters: ItemControllerGetItemsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<ItemResponseDto>>> {
         const queryParameters: any = {};
 
+        if (requestParameters['includeConsumed'] != null) {
+            queryParameters['include_consumed'] = requestParameters['includeConsumed'];
+        }
+
         if (requestParameters['name'] != null) {
             queryParameters['name'] = requestParameters['name'];
         }
 
         if (requestParameters['category'] != null) {
             queryParameters['category'] = requestParameters['category'];
-        }
-
-        if (requestParameters['includeConsumed'] != null) {
-            queryParameters['include_consumed'] = requestParameters['includeConsumed'];
         }
 
         const headerParameters: runtime.HTTPHeaders = {};
