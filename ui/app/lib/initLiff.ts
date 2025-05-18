@@ -1,6 +1,6 @@
 import { type Liff } from "@line/liff";
 
-export const createLiff = async (
+export const initLiff = async (
   liffId: string,
   useMock = false
 ): Promise<Liff> => {
@@ -18,7 +18,6 @@ export const createLiff = async (
       ...p,
       getProfile: { displayName: "ダミー田中", userId: userId ?? "123456789" },
     }));
-    console.log("LIFF initialized with mock");
     return liff;
   } else {
     const liff = (await import("@line/liff")).default;

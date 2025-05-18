@@ -7,7 +7,7 @@ import React, {
   useState,
 } from "react";
 import type { Liff } from "@line/liff";
-import { createLiff } from "../lib/createLiff";
+import { initLiff} from "../lib/initLiff";
 
 const LiffContext = createContext<Liff | null>(null);
 
@@ -22,8 +22,8 @@ export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({
   const [liff, setLiff] = useState<Liff | null>(null);
   const liffId = import.meta.env.VITE_LIFF_ID;
   const useMock = import.meta.env.VITE_USE_LIFF_MOCK === "true";
-  const initLiff = useCallback(async () => {
-    await createLiff(liffId, useMock).then((liff) => {
+  const init = useCallback(async () => {
+    await initLiff(liffId, useMock).then((liff) => {
       setLiff(liff);
       if (!liff.isInClient() && !liff.isLoggedIn()) {
         liff.login();
@@ -33,8 +33,8 @@ export const LiffProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // 開発環境では useEffect は2回実行されるため、初期化を2回行わないようにする
   useEffect(() => {
-    initLiff();
-  }, [initLiff]);
+    init();
+  }, [init]);
 
   return <LiffContext.Provider value={liff}>{children}</LiffContext.Provider>;
 };
