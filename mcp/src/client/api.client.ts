@@ -9,10 +9,11 @@ export class PantryApiClient {
     this.itemApi = new ItemApi(new Configuration({ basePath: BASE_PATH }));
   }
 
-  async getItemsByPantryId(pantryId: number) {
+  async getItemsByPantryId(pantryId: number, includeConsumed = false) {
     try {
       const response = await this.itemApi.itemControllerGetItemsByPantry({
         pantryId,
+        includeConsumed,
       });
       return response;
     } catch (error) {

@@ -24,11 +24,31 @@ export const server = new McpServer({
 });
 
 server.tool(
-  "getPantryItems",
-  "Retrieve all item information in the pantry or refrigerator.",
+  "getCurrentPantryItems",
+  "Retrieve all item information in the pantry or refrigerator currently.",
   { limit: z.number().min(1).describe("Number of items to get.") },
   async ({ limit }) => {
     const items = (await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID)))
+      .slice(0, limit)
+      .map(formatItem);
+
+    return {
+      content: [
+        {
+          type: "text",
+          text: items.join("\n"),
+        },
+      ],
+    };
+  }
+);
+
+server.tool(
+  "getAllPantryItems",
+  "Retrieve all item information in the pantry or refrigerator including consumed items.",
+  { limit: z.number().min(1).describe("Number of items to get.") },
+  async ({ limit }) => {
+    const items = (await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID), true))
       .slice(0, limit)
       .map(formatItem);
 
