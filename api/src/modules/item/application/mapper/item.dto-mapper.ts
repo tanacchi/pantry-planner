@@ -34,6 +34,7 @@ export class ItemDtoMapper {
       unit: item.unit,
       createdAt: new Date(item.createdAt),
       updatedAt: new Date(item.updatedAt),
+      expiresAt: item.expiresAt ? new Date(item.expiresAt) : null,
     };
   }
 }
