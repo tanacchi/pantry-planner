@@ -6,12 +6,12 @@ export const createLiff = async (liffId: string, useMock = false): Promise<Liff>
     console.log('Using mock LIFF');
     const LiffMockPlugin = (await import('@line/liff-mock')).default;
     liff.use(new LiffMockPlugin());
-    const mockedLiff = liff as Liff & typeof LiffMockPlugin;
-    await mockedLiff.init({
+    await liff.init({
       liffId: liffId,
+      mock: true
     });
     console.log('LIFF initialized with mock');
-    return liff
+    return liff;
   } else {
     const liff = (await import('@line/liff')).default;
     await liff.init({ liffId });
