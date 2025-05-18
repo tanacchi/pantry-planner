@@ -9,22 +9,27 @@ export class ItemRepository {
 
   async findById(id: number): Promise<Item | null> {
     const data = await this.prisma.item.findUnique({
-      where: { id, deletedAt: null },
+      where: { id },
     });
     return data ? ItemOrmMapper.toDomain(data) : null;
   }
 
-  async findByPantryId(pantryId: number): Promise<Item[]> {
+  async findByPantryId(
+    pantryId: number,
+    includeDeleted = false,
+  ): Promise<Item[]> {
+    const where = includeDeleted ? { pantryId } : { pantryId, deletedAt: null };
     const result = await this.prisma.item.findMany({
-      where: { pantryId, deletedAt: null },
+      where,
       orderBy: { createdAt: 'desc' },
     });
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
 
-  async findAll(): Promise<Item[]> {
+  async findAll(includeDeleted = false): Promise<Item[]> {
+    const where = includeDeleted ? {} : { deletedAt: null };
     const result = await this.prisma.item.findMany({
-      where: { deletedAt: null },
+      where,
       orderBy: { createdAt: 'desc' },
     });
     return result.map((item) => ItemOrmMapper.toDomain(item));
