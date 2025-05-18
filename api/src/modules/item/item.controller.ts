@@ -44,7 +44,7 @@ export class ItemController {
   @ApiQuery({ name: 'name', required: false, isArray: true, type: String })
   @ApiQuery({ name: 'category', required: false, isArray: true, type: String })
   @ApiQuery({
-    name: 'include_deleted',
+    name: 'include_consumed',
     required: false,
     isArray: false,
     type: Boolean,
@@ -58,9 +58,9 @@ export class ItemController {
   getItems(
     @Query('name') name?: string[],
     @Query('category') category?: string[],
-    @Query('include_deleted') includeDeleted?: boolean,
+    @Query('include_consumed') includeConsumed?: boolean,
   ): Promise<ItemResponseDto[]> {
-    return this.itemService.getItems({ name, category, includeDeleted });
+    return this.itemService.getItems({ name, category, includeConsumed });
   }
 
   @Get('/:id')
@@ -100,7 +100,7 @@ export class ItemController {
   @Get('/by-pantry/:pantryId')
   @ApiParam({ name: 'pantryId', type: Number, description: 'パントリーID' })
   @ApiQuery({
-    name: 'include_deleted',
+    name: 'include_consumed',
     required: false,
     type: Boolean,
     description: '削除されたアイテムを含めるかどうか',
@@ -112,8 +112,11 @@ export class ItemController {
   })
   getItemsByPantry(
     @Param('pantryId', ParseIntPipe) pantryId: number,
-    @Query('include_deleted') includeDeleted?: boolean,
+    @Query('include_consumed') includeConsumed?: boolean,
   ): Promise<ItemResponseDto[]> {
-    return this.itemService.getItemsByPantry(pantryId, includeDeleted ?? false);
+    return this.itemService.getItemsByPantry(
+      pantryId,
+      includeConsumed ?? false,
+    );
   }
 }

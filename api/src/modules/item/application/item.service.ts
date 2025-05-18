@@ -23,9 +23,9 @@ export class ItemService {
   async getItems(filter: {
     name?: string[];
     category?: string[];
-    includeDeleted?: boolean;
+    includeConsumed?: boolean;
   }): Promise<ItemResponseDto[]> {
-    const items = await this.itemRepository.findAll(filter.includeDeleted);
+    const items = await this.itemRepository.findAll(filter.includeConsumed);
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 
@@ -47,11 +47,11 @@ export class ItemService {
 
   async getItemsByPantry(
     pantryId: number,
-    includeDeleted = false,
+    includeConsumed = false,
   ): Promise<ItemResponseDto[]> {
     const items = await this.itemRepository.findByPantryId(
       pantryId,
-      includeDeleted,
+      includeConsumed,
     );
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }

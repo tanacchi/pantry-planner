@@ -16,9 +16,11 @@ export class ItemRepository {
 
   async findByPantryId(
     pantryId: number,
-    includeDeleted = false,
+    includeConsumed = false,
   ): Promise<Item[]> {
-    const where = includeDeleted ? { pantryId } : { pantryId, deletedAt: null };
+    const where = includeConsumed
+      ? { pantryId }
+      : { pantryId, deletedAt: null };
     const result = await this.prisma.item.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -26,8 +28,8 @@ export class ItemRepository {
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
 
-  async findAll(includeDeleted = false): Promise<Item[]> {
-    const where = includeDeleted ? {} : { deletedAt: null };
+  async findAll(includeConsumed = false): Promise<Item[]> {
+    const where = includeConsumed ? {} : { deletedAt: null };
     const result = await this.prisma.item.findMany({
       where,
       orderBy: { createdAt: 'desc' },
