@@ -39,6 +39,7 @@ model Item {
   expiresAt DateTime?
   pantryId  Int
   pantry    Pantry   @relation(fields: [pantryId], references: [id])
+  deletedAt DateTime?
 }
 
 enum Category {
