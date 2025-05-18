@@ -21,3 +21,7 @@ export class Item {
     public readonly expiresAt: Date | null = null,
   ) {}
 }
+
+export const validCategory = (category: string | undefined): category is ItemCategory => {
+  return All_CATEGORIES.includes(category as ItemCategory);
+}
