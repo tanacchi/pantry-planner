@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@line/liff": "^2.26.0",
+    "@line/liff-mock": "^1.0.3",
     "@remix-run/netlify": "^1.19.3",
     "@remix-run/node": "^2.16.5",
     "@remix-run/react": "^2.16.5",

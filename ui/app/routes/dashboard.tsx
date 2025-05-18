@@ -8,18 +8,20 @@ import {
   useMatches,
   useNavigate,
 } from "@remix-run/react";
-import { useLiff } from "../hooks/useLiff";
 import { User } from "../domain/user";
 import { LineProfileCard } from "../components/liff/LineProfile";
+import { useLiff } from "../context/LiffProvider";
+import { useLineProfile } from "~/hook/liff";
 
 export const loader: LoaderFunction = async (): Promise<{ title: string }> => {
   return { title: "dashboard" };
 };
 
 export default function Dashboard() {
+  const liff = useLiff();
   const { title } = useLoaderData<{ title: string }>();
   const userFetcher = useFetcher<{ user: User }>();
-  const { profile } = useLiff();
+  const profile = useLineProfile();
   useEffect(() => {
     if (!profile || !profile.userId) {
       return;
