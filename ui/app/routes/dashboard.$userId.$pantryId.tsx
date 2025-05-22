@@ -1,5 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { HiTrash } from "react-icons/hi";
 import {
   ActionFunction,
   data,
@@ -20,6 +21,7 @@ import {
   userClient,
 } from "../lib/client/api/index.server";
 import { Pantry } from "../domain/pantry";
+import { validCategory } from "~/domain/item";
 
 export type LoaderData = {
   user: User;
@@ -58,11 +60,17 @@ export const action: ActionFunction = async ({ params, request }) => {
   const formData = await request.formData();
   switch (formData.get("intent")) {
     case "add": {
+      const itemDto = {
+        name: formData.get("name"),
+        category: formData.get("category")?.toString(),
+        quantity: formData.get("quantity"),
+        unit: formData.get("unit")?.toString(),
+        expiresAt: formData.get("expiresAt")?.toString(),
+      }
       const name = formData.get("name");
       if (!name) {
         throw new Response("Name is required", { status: 400 });
       }
-      // FIXME: 手動で id を指定するのは良くない.
       if (typeof pantryId !== "string") {
         throw new Response("Pantry ID is required", { status: 400 });
       }
@@ -72,10 +80,10 @@ export const action: ActionFunction = async ({ params, request }) => {
       const item = await itemClient.addItem({
         name: name.toString(),
         pantryId: Number(pantryId),
-        category: "Food",
-        quantity: 1,
-        unit: "個",
-        expiresAt: new Date(),
+        category: validCategory(itemDto.category) ? itemDto.category : "Other",
+        quantity: !!itemDto.quantity ? Number(itemDto.quantity) : 1,
+        unit: itemDto.unit?.toString() ?? "個",
+        expiresAt: !!itemDto.expiresAt ? new Date(itemDto.expiresAt) : null,
       });
 
       messageClient.sendMessage({
@@ -120,6 +128,10 @@ export default function Dashboard() {
   const items = pantry.items;
   const [searchParams] = useSearchParams();
 
+  const [showModal, setShowModal] = useState(false);
+  const openModal = () => setShowModal(true);
+  const closeModal = () => setShowModal(false);
+
   // Add Item Form input ref
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -129,6 +141,14 @@ export default function Dashboard() {
       inputRef.current.value = "";
     }
   }, [fetcher.state]);
+
+  // Close modal when add action completes successfully
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      setShowModal(false);
+    }
+  }, [fetcher.state, fetcher.data]);
+
   return (
     <>
       {/* Search Form */}
@@ -145,29 +165,6 @@ export default function Dashboard() {
         </button>
       </Form>
 
-      {/* Add Item Form */}
-      <fetcher.Form method="post" className="flex mb-6 items-center gap-2">
-        <input
-          ref={inputRef}
-          type="text"
-          name="name"
-          placeholder="新しいアイテム名"
-          className="flex-1 border rounded px-4 py-2"
-        />
-        {/* URL の構造を変えた方が良さそう */}
-        <input type="hidden" name="pantryId" value={pantry.id ?? ""} />
-        <input type="hidden" name="userId" value={pantry.userId ?? ""} />
-        <button
-          type="submit"
-          name="intent"
-          value="add"
-          className="bg-green-500 text-white px-4 py-2 rounded"
-          disabled={fetcher.state !== "idle"}
-        >
-          {fetcher.state !== "idle" ? "追加中..." : "追加"}
-        </button>
-      </fetcher.Form>
-
       {/* Item List */}
       <ul className="space-y-4">
         {items.map((item) => (
@@ -176,19 +173,6 @@ export default function Dashboard() {
             className="border p-4 rounded flex justify-between items-center"
           >
             <div className="flex items-center gap-4">
-              <fetcher.Form method="post">
-                <input type="hidden" name="id" value={item.id} />
-                <button
-                  type="submit"
-                  name="intent"
-                  value="toggleFavorite"
-                  // className={`text-xl ${
-                  //   // item.isFavorite ? "text-yellow-400" : "text-gray-300"
-                  // }`}
-                >
-                  ★
-                </button>
-              </fetcher.Form>
               <span>{item.name}</span>
             </div>
 
@@ -199,13 +183,109 @@ export default function Dashboard() {
                 name="intent"
                 value="delete"
                 className="text-red-500 hover:underline"
+                aria-label="削除"
               >
-                削除
+                <HiTrash className="h-5 w-5" />
               </button>
             </fetcher.Form>
           </li>
         ))}
       </ul>
+      <FloatingAddButton onClick={openModal} />
+      {showModal && <AddItemModal onClose={closeModal} fetcher={fetcher} pantry={pantry} />}
     </>
+  );
+}
+
+function FloatingAddButton({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      onClick={onClick}
+      className="fixed bottom-6 right-6 w-14 h-14 bg-green-500 text-white text-3xl rounded-full shadow-lg hover:bg-green-600"
+    >
+      ＋
+    </button>
+  );
+}
+
+function AddItemModal({
+  onClose,
+  fetcher,
+  pantry,
+}: {
+  onClose: () => void;
+  fetcher: ReturnType<typeof useFetcher>;
+  pantry: Pantry;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <h2 className="text-xl font-bold mb-4">アイテム追加</h2>
+        <fetcher.Form method="post" className="space-y-4">
+          <div>
+            <label className="block mb-1 font-medium">名前</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="新しいアイテム名"
+              className="w-full border rounded px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">カテゴリ</label>
+            <select name="category" className="w-full border rounded px-4 py-2">
+              <option value="Food">食品</option>
+              <option value="Drink">飲料</option>
+              <option value="Other">その他</option>
+            </select>
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">個数</label>
+            <input
+              type="number"
+              name="quantity"
+              defaultValue={1}
+              className="w-full border rounded px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">単位</label>
+            <input
+              type="text"
+              name="unit"
+              defaultValue="個"
+              className="w-full border rounded px-4 py-2"
+            />
+          </div>
+          <div>
+            <label className="block mb-1 font-medium">賞味期限（任意）</label>
+            <input
+              type="date"
+              name="expiresAt"
+              className="w-full border rounded px-4 py-2"
+            />
+          </div>
+          <input type="hidden" name="pantryId" value={pantry.id ?? ""} />
+          <input type="hidden" name="userId" value={pantry.userId ?? ""} />
+          <div className="flex justify-end gap-2 mt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 border rounded hover:bg-gray-100"
+            >
+              キャンセル
+            </button>
+            <button
+              type="submit"
+              name="intent"
+              value="add"
+              className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+            >
+              追加
+            </button>
+          </div>
+        </fetcher.Form>
+      </div>
+    </div>
   );
 }

@@ -20,12 +20,12 @@ export class ItemService {
     return ItemDtoMapper.toResponseDto(item);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async getItems(_filter: {
+  async getItems(filter: {
     name?: string[];
     category?: string[];
+    includeConsumed?: boolean;
   }): Promise<ItemResponseDto[]> {
-    const items = await this.itemRepository.findAll();
+    const items = await this.itemRepository.findAll(filter.includeConsumed);
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 
@@ -45,8 +45,14 @@ export class ItemService {
     await this.itemRepository.delete(id);
   }
 
-  async getItemsByPantry(pantryId: number): Promise<ItemResponseDto[]> {
-    const items = await this.itemRepository.findByPantryId(pantryId);
+  async getItemsByPantry(
+    pantryId: number,
+    includeConsumed = false,
+  ): Promise<ItemResponseDto[]> {
+    const items = await this.itemRepository.findByPantryId(
+      pantryId,
+      includeConsumed,
+    );
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 }

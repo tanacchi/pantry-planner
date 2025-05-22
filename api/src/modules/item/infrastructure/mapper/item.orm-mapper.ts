@@ -44,6 +44,7 @@ export class ItemOrmMapper {
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
       expiresAt: entity.expiresAt,
+      deletedAt: null,
     };
   }
 }

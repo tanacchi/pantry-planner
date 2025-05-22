@@ -40,10 +40,12 @@ export interface ItemControllerGetItemRequest {
 export interface ItemControllerGetItemsRequest {
     name?: Array<string>;
     category?: Array<string>;
+    includeConsumed?: boolean;
 }
 
 export interface ItemControllerGetItemsByPantryRequest {
     pantryId: number;
+    includeConsumed?: boolean;
 }
 
 export interface ItemControllerUpdateItemRequest {
@@ -164,6 +166,10 @@ export class ItemApi extends runtime.BaseAPI {
             queryParameters['category'] = requestParameters['category'];
         }
 
+        if (requestParameters['includeConsumed'] != null) {
+            queryParameters['include_consumed'] = requestParameters['includeConsumed'];
+        }
+
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
@@ -194,6 +200,10 @@ export class ItemApi extends runtime.BaseAPI {
         }
 
         const queryParameters: any = {};
+
+        if (requestParameters['includeConsumed'] != null) {
+            queryParameters['include_consumed'] = requestParameters['includeConsumed'];
+        }
 
         const headerParameters: runtime.HTTPHeaders = {};
 
