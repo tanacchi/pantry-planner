@@ -48,7 +48,9 @@ server.tool(
   "Retrieve all item information in the pantry or refrigerator including consumed items.",
   { limit: z.number().min(1).describe("Number of items to get.") },
   async ({ limit }) => {
-    const items = (await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID), true))
+    const items = (
+      await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID), true)
+    )
       .slice(0, limit)
       .map(formatItem);
 
@@ -73,13 +75,20 @@ server.tool(
       .describe("Category of the item."),
     quantity: z.number().min(1).describe("Quantity of the item."),
     unit: z.string().describe("Unit of the item in Japanese. e.g. 個, g, ml"),
+    expiresAt: z
+      .preprocess(
+        (value) => (typeof value === "string" ? new Date(value) : value),
+        z.date().optional()
+      )
+      .describe("Expiration date of the item (YYYY-MM-DD)."),
   },
-  async ({ name, category, quantity, unit }) => {
+  async ({ name, category, quantity, unit, expiresAt }) => {
     const item = {
       name,
       category,
       quantity,
       unit,
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
     };
     const result = await pantryApiClient.addItem({
       ...item,
@@ -89,7 +98,7 @@ server.tool(
       content: [
         {
           type: "text",
-          text: `Added item: ${result.name} (${result.quantity}${result.unit})`,
+          text: `Added item: ${JSON.stringify(result)}`,
         },
       ],
     };
