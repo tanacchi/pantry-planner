@@ -21,6 +21,8 @@ export class ItemRepository {
     const where = includeConsumed
       ? { pantryId }
       : { pantryId, deletedAt: null };
+    console.log('includeConsumed', includeConsumed);
+    console.log('where', where);
     const result = await this.prisma.item.findMany({
       where,
       orderBy: { createdAt: 'desc' },
@@ -38,6 +40,7 @@ export class ItemRepository {
   }
 
   async create(item: Item): Promise<Item> {
+    console.log('item', typeof item.expiresAt);
     const result = await this.prisma.item.create({
       data: {
         name: item.name,
@@ -45,6 +48,7 @@ export class ItemRepository {
         pantryId: item.pantryId,
         quantity: item.quantity,
         unit: item.unit,
+        expiresAt: item.expiresAt,
       },
     });
     return ItemOrmMapper.toDomain(result);

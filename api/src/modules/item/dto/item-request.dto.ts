@@ -7,6 +7,7 @@ import {
   IsString,
   Length,
 } from 'class-validator';
+import { Transform } from 'class-transformer';
 import { All_CATEGORIES, ItemCategory } from '../domain/entity/item.entity';
 
 export class CreateItemRequestDto {
@@ -43,7 +44,9 @@ export class CreateItemRequestDto {
     required: false,
   })
   @IsOptional()
-  @IsDateString()
+  @IsDateString({ strict: true })
+  // FIXME: mapper での変換を不要にしたい
+  @Transform(({ value }) => (value ? new Date(value) : null))
   expiresAt?: Date | null = null;
 }
 

@@ -67,6 +67,12 @@ export interface ItemResponseDto {
      * @memberof ItemResponseDto
      */
     updatedAt: Date;
+    /**
+     * 賞味期限
+     * @type {Date}
+     * @memberof ItemResponseDto
+     */
+    expiresAt?: Date | null;
 }
 
 
@@ -116,6 +122,7 @@ export function ItemResponseDtoFromJSONTyped(json: any, ignoreDiscriminator: boo
         'unit': json['unit'],
         'createdAt': (new Date(json['createdAt'])),
         'updatedAt': (new Date(json['updatedAt'])),
+        'expiresAt': json['expiresAt'] == null ? undefined : (new Date(json['expiresAt'])),
     };
 }
 
@@ -138,6 +145,7 @@ export function ItemResponseDtoToJSONTyped(value?: ItemResponseDto | null, ignor
         'unit': value['unit'],
         'createdAt': ((value['createdAt']).toISOString()),
         'updatedAt': ((value['updatedAt']).toISOString()),
+        'expiresAt': value['expiresAt'] == null ? undefined : ((value['expiresAt'] as any).toISOString()),
     };
 }
 

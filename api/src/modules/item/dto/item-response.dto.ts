@@ -28,4 +28,13 @@ export class ItemResponseDto {
 
   @ApiProperty({ description: '更新日時', example: '2024-01-01T00:00:00Z' })
   updatedAt: Date;
+
+  @ApiProperty({
+    description: '賞味期限',
+    example: '2024-01-01T00:00:00Z',
+    nullable: true,
+    required: false,
+    type: Date,
+  })
+  expiresAt: Date | null;
 }

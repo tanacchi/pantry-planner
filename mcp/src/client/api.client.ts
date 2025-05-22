@@ -31,6 +31,7 @@ export class PantryApiClient {
           category: item.category,
           quantity: item.quantity,
           unit: item.unit,
+          expiresAt: item.expiresAt,
         },
       });
       return response;
