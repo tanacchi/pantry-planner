@@ -1,5 +1,5 @@
 import { data, LoaderFunction } from "@remix-run/server-runtime";
-import { userClient } from "../lib/client/api/index.server";
+import { userClient } from "../../lib/client/api/index.server";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { id } = params;
