@@ -1,8 +1,8 @@
 import { data, LoaderFunction } from "@remix-run/server-runtime";
-import { userClient } from "../lib/client/api/index.server";
+import { userClient } from "../../lib/client/api/index.server";
 import { Link, Outlet, useLoaderData } from "@remix-run/react";
-import { User } from "../domain/user";
-import { UserProfile } from "../components/UserProfile";
+import { User } from "../../domain/user";
+import { UserProfile } from "../../components/UserProfile";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { userId } = params;

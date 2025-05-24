@@ -1,5 +1,5 @@
 import { ActionFunction, data } from "@remix-run/server-runtime";
-import { userClient } from "../lib/client/api/index.server";
+import { userClient } from "../../lib/client/api/index.server";
 
 export const action: ActionFunction = async ({ request }) => {
   // FIXME: ２回呼ばれてる？

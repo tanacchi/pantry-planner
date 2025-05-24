@@ -13,15 +13,15 @@ import {
   useMatches,
   useSearchParams,
 } from "@remix-run/react";
-import { User } from "../domain/user";
+import { User } from "../../domain/user";
 import {
   itemClient,
   messageClient,
   pantryClient,
   userClient,
-} from "../lib/client/api/index.server";
-import { Pantry } from "../domain/pantry";
-import { validCategory } from "~/domain/item";
+} from "../../lib/client/api/index.server";
+import { Pantry } from "../../domain/pantry";
+import { validCategory } from "../../domain/item";
 
 export type LoaderData = {
   user: User;
@@ -66,7 +66,7 @@ export const action: ActionFunction = async ({ params, request }) => {
         quantity: formData.get("quantity"),
         unit: formData.get("unit")?.toString(),
         expiresAt: formData.get("expiresAt")?.toString(),
-      }
+      };
       const name = formData.get("name");
       if (!name) {
         throw new Response("Name is required", { status: 400 });
@@ -192,7 +192,9 @@ export default function Dashboard() {
         ))}
       </ul>
       <FloatingAddButton onClick={openModal} />
-      {showModal && <AddItemModal onClose={closeModal} fetcher={fetcher} pantry={pantry} />}
+      {showModal && (
+        <AddItemModal onClose={closeModal} fetcher={fetcher} pantry={pantry} />
+      )}
     </>
   );
 }

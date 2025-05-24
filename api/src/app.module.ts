@@ -5,9 +5,17 @@ import { PantryModule } from './modules/pantry/pantry.module';
 import { UserModule } from './modules/user/user.module';
 import { PrismaModule } from './infrastructure/prisma/prisma.module';
 import { MessageModule } from './modules/message/message.module';
+import { ShoppingItemModule } from './modules/shopping-item/shopping-item.module';
 
 @Module({
-  imports: [ItemModule, PantryModule, UserModule, PrismaModule, MessageModule],
+  imports: [
+    ItemModule,
+    PantryModule,
+    UserModule,
+    PrismaModule,
+    MessageModule,
+    ShoppingItemModule,
+  ],
   controllers: [],
   providers: [],
 })
