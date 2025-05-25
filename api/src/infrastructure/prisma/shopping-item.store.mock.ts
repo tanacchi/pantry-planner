@@ -25,23 +25,31 @@ export class MockShoppingItemStore {
       return true;
     });
   };
-  create = async ({ data }: { data: Prisma.ShoppingItemCreateInput }) => {
+  create = async ({
+    data,
+  }: {
+    data:
+      | Prisma.ShoppingItemCreateInput
+      | Prisma.ShoppingItemUncheckedCreateInput;
+  }) => {
     let userId: number | undefined;
-    if (
-      Object.prototype.hasOwnProperty.call(data, 'userId') &&
-      typeof (data as unknown as { userId?: unknown }).userId === 'number'
-    ) {
-      userId = (data as unknown as { userId: number }).userId;
+    if ('userId' in data && typeof data.userId === 'number') {
+      userId = data.userId;
     } else if (
       'user' in data &&
       data.user &&
       typeof data.user === 'object' &&
-      'connect' in data.user &&
-      typeof (data.user as { connect?: unknown }).connect === 'object' &&
-      data.user.connect !== null &&
-      typeof (data.user.connect as { id?: unknown }).id === 'number'
+      'connect' in data.user
     ) {
-      userId = (data.user.connect as { id: number }).id;
+      const connect = (data.user as { connect?: { id?: unknown } }).connect;
+      if (
+        connect &&
+        typeof connect === 'object' &&
+        'id' in connect &&
+        typeof connect.id === 'number'
+      ) {
+        userId = connect.id;
+      }
     }
     if (typeof userId !== 'number') {
       throw new Error(

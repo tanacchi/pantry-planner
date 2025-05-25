@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
 import { Injectable, INestApplication, OnModuleInit } from '@nestjs/common';
 import { MockUserStore } from './mock-user.store';
-import { MockPantryStore } from './mock-pantry.store';
-import { MockItemStore } from './mock-item.store';
-import { MockShoppingItemStore } from './mock-shopping-item.store';
+import { MockPantryStore } from './pantry.store.mock';
+import { MockItemStore } from './item.store.mock';
+import { MockShoppingItemStore } from './shopping-item.store.mock';
 
 @Injectable()
 export class MockPrismaService implements OnModuleInit {

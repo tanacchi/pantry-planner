@@ -20,14 +20,17 @@ export class MockItemStore {
       return true;
     });
   };
-  create = async ({ data }: { data: Prisma.ItemCreateInput }) => {
-    // pantryIdが直接存在する場合（APIからのリクエスト）と、pantry: { connect: { id } } の両方に対応
+  create = async ({
+    data,
+  }: {
+    data: Prisma.ItemCreateInput | Prisma.ItemUncheckedCreateInput;
+  }) => {
     let pantryId: number | undefined;
     if (
       Object.prototype.hasOwnProperty.call(data, 'pantryId') &&
-      typeof (data as unknown as { pantryId?: unknown }).pantryId === 'number'
+      typeof (data as { pantryId?: unknown }).pantryId === 'number'
     ) {
-      pantryId = (data as unknown as { pantryId: number }).pantryId;
+      pantryId = (data as { pantryId: number }).pantryId;
     } else if (
       'pantry' in data &&
       data.pantry &&
@@ -44,16 +47,25 @@ export class MockItemStore {
         'Invalid ItemCreateInput: pantryId or pantry.connect.id required',
       );
     }
+    const name = 'name' in data ? data.name : '';
+    const quantity =
+      'quantity' in data && typeof data.quantity === 'number'
+        ? data.quantity
+        : 1;
+    const unit = 'unit' in data ? data.unit : '';
+    const category = 'category' in data ? data.category : 'Food';
+    const expiresAt =
+      'expiresAt' in data ? (data.expiresAt as Date | null | undefined) : null;
     const item: Item = {
       id: this.idSeq++,
       pantryId,
-      name: data.name,
-      quantity: data.quantity,
-      unit: data.unit,
-      category: data.category,
+      name,
+      quantity,
+      unit,
+      category,
       createdAt: new Date(),
       updatedAt: new Date(),
-      expiresAt: (data.expiresAt as Date) ?? null,
+      expiresAt: expiresAt ?? null,
       deletedAt: null,
     };
     this.items.push(item);

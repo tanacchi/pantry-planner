@@ -18,7 +18,11 @@ export class MockPantryStore {
       return true;
     });
   };
-  create = async ({ data }: { data: Prisma.PantryCreateInput }) => {
+  create = async ({
+    data,
+  }: {
+    data: Prisma.PantryCreateInput | Prisma.PantryUncheckedCreateInput;
+  }) => {
     // UserRepository.create() から呼ばれる場合は userId: number で来る
     // それ以外は user: { connect: { id: number } } で来る
     let userId: number;
