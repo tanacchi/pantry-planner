@@ -27,7 +27,7 @@ export class MockPantryStore {
     // それ以外は user: { connect: { id: number } } で来る
     let userId: number;
     if ('userId' in data) {
-      userId = data.userId as number;
+      userId = data.userId;
     } else if (
       'user' in data &&
       data.user &&

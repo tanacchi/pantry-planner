@@ -1,19 +1,29 @@
+import { Test, TestingModule } from '@nestjs/testing';
 import { MessageController } from './message.controller';
 import { MessageService } from './message.service';
 
+const mockMessageService = () => ({
+  send: jest.fn(),
+});
+
 describe('MessageController', () => {
   let controller: MessageController;
-  let service: MessageService;
+  let service: ReturnType<typeof mockMessageService>;
 
-  beforeEach(() => {
-    service = { sendMessage: jest.fn() } as any;
-    controller = new MessageController(service);
+  beforeEach(async () => {
+    const module: TestingModule = await Test.createTestingModule({
+      controllers: [MessageController],
+      providers: [{ provide: MessageService, useFactory: mockMessageService }],
+    }).compile();
+    controller = module.get<MessageController>(MessageController);
+    service = module.get(MessageService);
   });
 
   it('should call sendMessage', async () => {
-    (service.sendMessage as jest.Mock).mockResolvedValue(true);
-    const result = await controller.sendMessage({ to: 'to', body: 'body' });
-    expect(result).toBe(true);
-    expect(service.sendMessage).toBeCalledWith('to', 'body');
+    await controller.createMessage({
+      userId: 1,
+      message: 'body',
+    });
+    expect(service.send).toBeCalledWith({ userId: 1, message: 'body' });
   });
 });

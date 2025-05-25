@@ -83,8 +83,7 @@
         "interfaces",
         "jestGlobalMocks.ts",
         "\\.module\\.ts",
-        "<rootDir>/src/main.ts",
-        "mock-*\\.ts"
+        "<rootDir>/src/main.ts"
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
