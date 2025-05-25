@@ -1,100 +1,40 @@
-# 実装・単体テスト・E2E テスト運用マニュアル（item モジュール例）
+# pantry-planner コーディング・運用インストラクション
 
-## 1. 実装方針
+## 基本方針
 
-- **ドメイン層・アプリケーション層・インフラ層**の責務を明確に分離する。
-- 例外・エラーケース（例: NotFound, バリデーションエラー）は必ず明示的にハンドリングする。
-- `includeConsumed` などの分岐ロジックは、必ず全パターン網羅する。
-- Prisma 等の外部依存はインフラ層でラップし、テスト容易性を高める。
+- 本プロジェクトの実装・テスト・運用は、必ず `docs/` および各サブプロジェクト（api/ui/mcp）の `docs/` 配下ドキュメントの指示・ガイドラインに厳密に従うこと。
+- 仕様・設計・命名・テスト・CI/CD・セキュリティ等、迷った場合や判断が必要な場合は必ず該当ドキュメントを参照し、指示に従うこと。
+- 例外・分岐・エラーケース・型安全性・ESLint エラー解消・Arrange-Act-Assert パターン等、各種運用ルールも必ず遵守すること。
 
-## 2. 単体テスト方針
+## ドキュメント参照ルール
 
-- **テスト対象ごとに spec ファイルを作成**（例: `item.repository.spec.ts`, `item.service.spec.ts`）。
-- **分岐網羅（branch coverage 80%以上、理想は 100%）**を目指す。
-  - 例: `includeConsumed: true/false` の両方、エラー/正常系、例外 throw 分岐など。
-- **モック/スタブ**を活用し、外部依存（DB, Service 等）は直接叩かない。
-- **テストケース例**:
-  - CRUD 全パターン（正常/異常）
-  - 存在しない ID での update/delete
-  - `findAll`/`findByPantryId`の`includeConsumed`分岐
-  - マッピング層の enum 変換・例外
-- **テスト失敗時は原因を特定し、テスト/実装両面から修正する**。
-- **TypeScript/ESLint エラーは必ず解消する**（引数・オブジェクトリテラルの整形等）。
-- **各テストは Arrange-Act-Assert パターンで実装する**
-- **必要に応じて Parameterized Test でコンパクトにテストを記述する**
+修正内容に応じ、要求や作業内容に必要十分なドキュメントを参照し、指示に従うこと。
+関連するドキュメントは必ず参照する一方で、無闇にドキュメントを参照することは避け、必要な情報のみを参照すること。
 
-## 3. E2E テスト方針
+- **api/ 配下のコードを修正・実装する場合**: `api/docs/` 内の `README.md`, `guideline.md`, `technology.md` を必ず参照し、記載された設計・実装・運用方針に従うこと。
+- **ui/ 配下のコードを修正・実装する場合**: `ui/docs/` 内の `README.md`, `guideline.md`, `technology.md` を必ず参照し、記載された設計・実装・運用方針に従うこと。
+- **mcp/ 配下のコードを修正・実装する場合**: `mcp/docs/` 内の `README.md`, `guideline.md`, `technology.md` を必ず参照し、記載された設計・実装・運用方針に従うこと。
+- **テスト実装・修正時**: `docs/test-strategy.md` を必ず熟読し、テスト設計・分岐網羅・モック運用・カバレッジ・命名・Arrange-Act-Assert パターン等の指針に従うこと。
+- **API 設計・エラー処理**: `docs/api-guideline.md`, `docs/error-handling.md` を参照。
+- **命名・スタイル**: `docs/naming-convention.md`, `docs/code-style.md` を参照。
+- **CI/CD・環境変数**: `docs/ci-cd.md`, `docs/env-config.md` を参照。
+- **DB/マイグレーション**: `docs/migration.md` を参照。
+- **UI/UX**: `docs/ux-ui.md` を参照。
 
-- E2E テストは`test/`配下に配置し、API のエンドツーエンド動作を検証する。
-- **実 DB/外部 API は原則モックまたはテスト用 DB を利用**。
-- **主要なユースケース（正常/異常）を網羅**。
-- **コントローラ層のテスト**では、Service 層をモックし、リクエスト/レスポンスの流れを確認する。
+## 各 docs ディレクトリの概要
 
-## 4. カバレッジ運用
+- `api/docs/` : API サーバの設計・実装・運用・技術方針を集約。新規参入者・レビュワーも必ず参照。
+- `ui/docs/` : フロントエンド（UI）の設計・実装・運用・技術方針を集約。新規参入者・レビュワーも必ず参照。
+- `mcp/docs/` : Model Context Protocol (MCP) サーバ/クライアントの設計・運用・技術方針を集約。
+- `docs/` : プロジェクト全体の横断的な設計・テスト・CI/CD・命名・スタイル・API・セキュリティ等のガイドライン。
 
-- `pnpm test:cov` でカバレッジを計測。
-- **statement/line/branch/function いずれも 80%以上、理想は 100%**を目指す。
-- カバレッジレポートで未カバー分岐・エラーケースを特定し、テストを追加。
+## 参照・遵守が必須となる条件例
 
-## 5. コードレビュー・運用
-
-- PR 時は必ずカバレッジレポートを確認。
-- **分岐・例外・エラーケースの網羅性**を重点的にレビュー。
-- **テストの可読性・保守性**も重視。
+- api/ui/mcp 配下のコード・テスト・設定を修正/追加する際は、必ず該当ディレクトリの `docs/` 内ガイドラインを参照し、指示に従うこと。
+- テスト実装時は `docs/test-strategy.md` の内容を厳守すること。
+- 迷った場合・判断に困った場合は、必ず関連する `docs/` 配下のドキュメントを確認し、記載内容を最優先とすること。
 
 ---
 
-### 参考: item.controller.spec.ts テスト例
-
-- Service 層を jest.mock で差し替え、各 API のリクエスト/レスポンス・Service 呼び出しを検証。
-- CRUD, getItems, getItemsByPantry 等の全パスをテスト。
-
----
-
-このマニュアルは今後の実装・テスト運用の標準とし、随時改善・拡充すること。
-
-# 参照ドキュメント一覧・用途ガイド
-
-このプロジェクトの開発・運用・設計・テスト・CI/CD・セキュリティ・障害対応・コミュニケーション等、あらゆる観点の規約・ガイドライン・運用ルールはすべて `docs/` 配下の Markdown に集約されています。
-
-## 主なドキュメントと用途
-
-- [architecture.md](../docs/architecture.md): 全体設計・レイヤー構成・依存関係
-- [design-philosophy.md](../docs/design-philosophy.md): 設計思想・原則・意思決定
-- [directory-structure.md](../docs/directory-structure.md): ディレクトリ構成・責務分離
-- [code-style.md](../docs/code-style.md): コードスタイル・静的解析・自動整形
-- [naming-convention.md](../docs/naming-convention.md): 命名規則・命名例
-- [doc-style.md](../docs/doc-style.md): ドキュメント記述・運用スタイル
-- [test-strategy.md](../docs/test-strategy.md): テスト戦略・単体/E2E/カバレッジ方針
-- [mock-policy.md](../docs/mock-policy.md): モック・スタブ・フェイク運用
-- [test-data.md](../docs/test-data.md): テストデータ・フィクスチャ運用
-- [ci-cd.md](../docs/ci-cd.md): CI/CD 運用・GitHub Actions 例
-- [env-config.md](../docs/env-config.md): 環境変数・設定管理
-- [migration.md](../docs/migration.md): DB マイグレーション・データ移行
-- [secrets-policy.md](../docs/secrets-policy.md): シークレット管理・漏洩防止
-- [api-guideline.md](../docs/api-guideline.md): API 設計・運用
-- [error-handling.md](../docs/error-handling.md): エラー・例外ハンドリング
-- [ux-ui.md](../docs/ux-ui.md): UI/UX 設計・運用
-
-## 参照例
-
-- 設計・実装方針: architecture.md, design-philosophy.md
-- 命名・スタイル: naming-convention.md, code-style.md
-- テスト: test-strategy.md, mock-policy.md
-- CI/CD: ci-cd.md, env-config.md
-- セキュリティ: secrets-policy.md
-- API 設計・エラー処理: api-guideline.md, error-handling.md
-- DB/マイグレーション: migration.md
-- UI/UX: ux-ui.md
-- その他: doc-style.md
-
----
-
-### どのような情報が必要なときに参照すべきか
-
-- 設計・実装・テスト・運用・障害対応・リリース・セキュリティ・コミュニケーション等、あらゆる観点で迷った場合は、まず`README.md`（docs/配下）と本ファイルを参照し、該当ガイドラインを確認してください。
-- 新規参入時・設計/実装/テスト/レビュー/運用/障害対応/リリース/CI/CD/セキュリティ等、全てのフェーズで活用できます。
-
----
-
-本一覧・リンクは随時最新化してください。
+> **備考:**
+> 本インストラクションおよび各種ガイドラインは随時最新化されるため、常に最新版を参照してください。
