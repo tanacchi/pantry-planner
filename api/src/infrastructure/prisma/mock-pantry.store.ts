@@ -19,7 +19,23 @@ export class MockPantryStore {
     });
   };
   create = async ({ data }: { data: Prisma.PantryCreateInput }) => {
-    const userId = (data.user as { connect: { id: number } }).connect.id;
+    // UserRepository.create() から呼ばれる場合は userId: number で来る
+    // それ以外は user: { connect: { id: number } } で来る
+    let userId: number;
+    if ('userId' in data) {
+      userId = data.userId as number;
+    } else if (
+      'user' in data &&
+      data.user &&
+      typeof data.user === 'object' &&
+      'connect' in data.user
+    ) {
+      userId = (data.user as { connect: { id: number } }).connect.id;
+    } else {
+      throw new Error(
+        'Invalid PantryCreateInput: userId or user.connect.id required',
+      );
+    }
     const pantry: Pantry = {
       id: this.idSeq++,
       userId,
