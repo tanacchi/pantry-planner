@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
 import { UserService } from './application/user.service';
@@ -114,7 +115,9 @@ export class UserController {
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'ユーザーID' })
   @ApiResponse({ status: 204, description: 'ユーザーの削除に成功しました' })
-  deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
-    return this.userService.deleteUser(id);
+  @HttpCode(204)
+  async deleteUser(@Param('id', ParseIntPipe) id: number): Promise<void> {
+    await this.userService.deleteUser(id);
+    return;
   }
 }

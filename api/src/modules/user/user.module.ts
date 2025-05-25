@@ -4,9 +4,10 @@ import { UserService } from './application/user.service';
 import { UserRepository } from './infrastructure/user.repository';
 import { PantryRepository } from '../pantry/infrastructure/pantry.repository';
 import { ItemRepository } from '../item/infrastructure/item.repository';
+import { PrismaModule } from '../../infrastructure/prisma/prisma.module';
 
 @Module({
-  imports: [],
+  imports: [PrismaModule],
   controllers: [UserController],
   providers: [UserService, UserRepository, PantryRepository, ItemRepository],
 })

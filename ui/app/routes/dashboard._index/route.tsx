@@ -8,10 +8,10 @@ import {
   useMatches,
   useNavigate,
 } from "@remix-run/react";
-import { User } from "../domain/user";
-import { LineProfileCard } from "../components/liff/LineProfile";
-import { useLiff } from "../context/LiffProvider";
-import { useLineProfile } from "~/hook/liff";
+import { User } from "../../domain/user";
+import { LineProfileCard } from "../../components/liff/LineProfile";
+import { useLiff } from "../../context/LiffProvider";
+import { useLineProfile } from "../../hook/liff";
 
 export const loader: LoaderFunction = async (): Promise<{ title: string }> => {
   return { title: "dashboard" };

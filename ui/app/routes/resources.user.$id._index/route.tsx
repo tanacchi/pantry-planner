@@ -1,5 +1,5 @@
 import { data, LoaderFunction } from "@remix-run/server-runtime";
-import { itemClient } from "../lib/client/api/index.server";
+import { userClient } from "../../lib/client/api/index.server";
 
 export const loader: LoaderFunction = async ({ params }) => {
   const { id } = params;
@@ -7,6 +7,6 @@ export const loader: LoaderFunction = async ({ params }) => {
     throw new Error("ID is required");
   }
 
-  const items = await itemClient.getItemsByPantryId(Number(id));
-  return data({ items});
-}
+  const user = await userClient.getUserById(Number(id));
+  return data({ user });
+};
