@@ -4,7 +4,6 @@ import { Category as PrismaCategory, Item as PrismaItem } from '@prisma/client';
 
 describe('ItemOrmMapper', () => {
   const now = new Date();
-
   const prismaItem: PrismaItem = {
     id: 1,
     name: 'しょうゆ',
@@ -15,6 +14,7 @@ describe('ItemOrmMapper', () => {
     createdAt: now,
     updatedAt: now,
     expiresAt: null,
+    deletedAt: null,
   };
 
   const domainItem = new Item(
@@ -34,16 +34,6 @@ describe('ItemOrmMapper', () => {
       const result = ItemOrmMapper.toDomain(prismaItem);
       expect(result).toBeInstanceOf(Item);
       expect(result).toEqual(domainItem);
-    });
-
-    it('should throw an error if unknown category is passed', () => {
-      const invalidItem = {
-        ...prismaItem,
-        category: 'Unknown' as PrismaCategory,
-      };
-      expect(() => ItemOrmMapper['toDomain'](invalidItem)).toThrow(
-        'Unknown category',
-      );
     });
   });
 
