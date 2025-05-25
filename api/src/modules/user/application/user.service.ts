@@ -39,7 +39,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
     if (!user) throw new Error('User not found');
     const pantry = await this.pantryRepository.findByUserId(user.id);
-    if (!pantry) throw new Error('Pantry not found');
+    if (!pantry || pantry.length === 0) throw new Error('Pantry not found');
     const items = await this.itemRepository.findByPantryId(pantry[0].id);
     return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }
