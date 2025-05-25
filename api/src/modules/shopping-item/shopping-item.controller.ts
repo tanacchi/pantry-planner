@@ -8,6 +8,7 @@ import {
   Param,
   Query,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ShoppingItemService } from './application/shopping-item.service';
@@ -62,6 +63,7 @@ export class ShoppingItemController {
   @Delete(':id')
   @ApiParam({ name: 'id', type: Number })
   @ApiResponse({ status: 204 })
+  @HttpCode(204)
   async deleteItem(@Param('id', ParseIntPipe) id: number): Promise<void> {
     await this.shoppingItemService.deleteItem(id);
   }

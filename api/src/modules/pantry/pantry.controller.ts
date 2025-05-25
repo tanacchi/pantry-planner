@@ -7,6 +7,7 @@ import {
   Delete,
   Param,
   ParseIntPipe,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PantryService } from './application/pantry.service';
@@ -113,6 +114,7 @@ export class PantryController {
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'パントリーID' })
   @ApiResponse({ status: 204, description: 'パントリーの削除に成功しました' })
+  @HttpCode(204)
   deletePantry(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.pantryService.deletePantry(id);
   }

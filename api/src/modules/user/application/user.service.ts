@@ -6,8 +6,8 @@ import {
 } from '../dto/user-response.dto';
 import { UserDtoMapper } from './mapper/user.dto-mapper';
 import { UserRepository } from '../infrastructure/user.repository';
-import { PantryRepository } from 'src/modules/pantry/infrastructure/pantry.repository';
-import { ItemRepository } from 'src/modules/item/infrastructure/item.repository';
+import { PantryRepository } from '../../pantry/infrastructure/pantry.repository';
+import { ItemRepository } from '../../item/infrastructure/item.repository';
 
 @Injectable()
 export class UserService {
@@ -39,7 +39,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
     if (!user) throw new Error('User not found');
     const pantry = await this.pantryRepository.findByUserId(user.id);
-    if (!pantry) throw new Error('Pantry not found');
+    if (!pantry || pantry.length === 0) throw new Error('Pantry not found');
     const items = await this.itemRepository.findByPantryId(pantry[0].id);
     return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }
