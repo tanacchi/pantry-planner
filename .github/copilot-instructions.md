@@ -66,53 +66,33 @@
 - [naming-convention.md](../docs/naming-convention.md): 命名規則・命名例
 - [doc-style.md](../docs/doc-style.md): ドキュメント記述・運用スタイル
 - [test-strategy.md](../docs/test-strategy.md): テスト戦略・単体/E2E/カバレッジ方針
-- [coverage-guideline.md](../docs/coverage-guideline.md): カバレッジ運用・レポート活用
 - [mock-policy.md](../docs/mock-policy.md): モック・スタブ・フェイク運用
 - [test-data.md](../docs/test-data.md): テストデータ・フィクスチャ運用
 - [ci-cd.md](../docs/ci-cd.md): CI/CD 運用・GitHub Actions 例
-- [release-management.md](../docs/release-management.md): リリース管理・バージョニング
 - [env-config.md](../docs/env-config.md): 環境変数・設定管理
-- [dependency-management.md](../docs/dependency-management.md): 依存パッケージ管理
-- [logging.md](../docs/logging.md): ロギング・監視運用
-- [monitoring.md](../docs/monitoring.md): 監視・アラート運用
-- [backup-policy.md](../docs/backup-policy.md): バックアップ・リストア運用
-- [disaster-recovery.md](../docs/disaster-recovery.md): 災害復旧・BCP
-- [security.md](../docs/security.md): セキュリティ運用・脆弱性対応
-- [secrets-policy.md](../docs/secrets-policy.md): シークレット管理・漏洩防止
-- [license-policy.md](../docs/license-policy.md): ライセンス・OSS 利用
-- [CONTRIBUTING.md](../docs/CONTRIBUTING.md): コントリビュートガイド
-- [onboarding.md](../docs/onboarding.md): 新規参入者向けオンボーディング
-- [review-guideline.md](../docs/review-guideline.md): コードレビューガイド
-- [branch-policy.md](../docs/branch-policy.md): ブランチ戦略・運用
-- [issue-pr-policy.md](../docs/issue-pr-policy.md): Issue/PR 運用・テンプレート
-- [communication.md](../docs/communication.md): チームコミュニケーション
-- [incident-response.md](../docs/incident-response.md): 障害対応・インシデントレスポンス
 - [migration.md](../docs/migration.md): DB マイグレーション・データ移行
+- [secrets-policy.md](../docs/secrets-policy.md): シークレット管理・漏洩防止
 - [api-guideline.md](../docs/api-guideline.md): API 設計・運用
 - [error-handling.md](../docs/error-handling.md): エラー・例外ハンドリング
-- [performance.md](../docs/performance.md): パフォーマンス・スケーラビリティ
-- [accessibility.md](../docs/accessibility.md): アクセシビリティ・国際化
 - [ux-ui.md](../docs/ux-ui.md): UI/UX 設計・運用
-- [glossary.md](../docs/glossary.md): 用語集・略語ガイド
-- [doc-index.md](../docs/doc-index.md): ドキュメント一覧・参照ガイド
 
 ## 参照例
 
 - 設計・実装方針: architecture.md, design-philosophy.md
 - 命名・スタイル: naming-convention.md, code-style.md
-- テスト・カバレッジ: test-strategy.md, coverage-guideline.md
-- CI/CD・リリース: ci-cd.md, release-management.md
-- セキュリティ: security.md, secrets-policy.md
-- 新規参入: onboarding.md, CONTRIBUTING.md
+- テスト: test-strategy.md, mock-policy.md
+- CI/CD: ci-cd.md, env-config.md
+- セキュリティ: secrets-policy.md
 - API 設計・エラー処理: api-guideline.md, error-handling.md
-- 障害・災害対応: incident-response.md, disaster-recovery.md
-- その他: glossary.md, doc-style.md, doc-index.md
+- DB/マイグレーション: migration.md
+- UI/UX: ux-ui.md
+- その他: doc-style.md
 
 ---
 
 ### どのような情報が必要なときに参照すべきか
 
-- 設計・実装・テスト・運用・障害対応・リリース・セキュリティ・コミュニケーション等、あらゆる観点で迷った場合は、まず`doc-index.md`と本ファイルを参照し、該当ガイドラインを確認してください。
+- 設計・実装・テスト・運用・障害対応・リリース・セキュリティ・コミュニケーション等、あらゆる観点で迷った場合は、まず`README.md`（docs/配下）と本ファイルを参照し、該当ガイドラインを確認してください。
 - 新規参入時・設計/実装/テスト/レビュー/運用/障害対応/リリース/CI/CD/セキュリティ等、全てのフェーズで活用できます。
 
 ---
