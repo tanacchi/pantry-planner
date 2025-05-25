@@ -11,6 +11,7 @@ import {
   ParseArrayPipe,
   ParseBoolPipe,
   DefaultValuePipe,
+  HttpCode,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -102,6 +103,7 @@ export class ItemController {
   @Delete('/:id')
   @ApiParam({ name: 'id', type: Number, description: 'アイテムID' })
   @ApiResponse({ status: 204, description: 'アイテムの削除に成功しました' })
+  @HttpCode(204)
   deleteItem(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.itemService.deleteItem(id);
   }

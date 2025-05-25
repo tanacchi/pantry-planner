@@ -6,7 +6,7 @@ import {
 } from '../dto/pantry-response.dto';
 import { PantryDtoMapper } from './mapper/pantry.dto-mapper';
 import { PantryRepository } from '../infrastructure/pantry.repository';
-import { ItemRepository } from 'src/modules/item/infrastructure/item.repository';
+import { ItemRepository } from '../../item/infrastructure/item.repository';
 
 @Injectable()
 export class PantryService {

@@ -21,7 +21,29 @@ export class MockItemStore {
     });
   };
   create = async ({ data }: { data: Prisma.ItemCreateInput }) => {
-    const pantryId = (data.pantry as { connect: { id: number } }).connect.id;
+    // pantryIdが直接存在する場合（APIからのリクエスト）と、pantry: { connect: { id } } の両方に対応
+    let pantryId: number | undefined;
+    if (
+      Object.prototype.hasOwnProperty.call(data, 'pantryId') &&
+      typeof (data as unknown as { pantryId?: unknown }).pantryId === 'number'
+    ) {
+      pantryId = (data as unknown as { pantryId: number }).pantryId;
+    } else if (
+      'pantry' in data &&
+      data.pantry &&
+      typeof data.pantry === 'object' &&
+      'connect' in data.pantry &&
+      typeof (data.pantry as { connect?: unknown }).connect === 'object' &&
+      data.pantry.connect !== null &&
+      typeof (data.pantry.connect as { id?: unknown }).id === 'number'
+    ) {
+      pantryId = (data.pantry.connect as { id: number }).id;
+    }
+    if (typeof pantryId !== 'number') {
+      throw new Error(
+        'Invalid ItemCreateInput: pantryId or pantry.connect.id required',
+      );
+    }
     const item: Item = {
       id: this.idSeq++,
       pantryId,
