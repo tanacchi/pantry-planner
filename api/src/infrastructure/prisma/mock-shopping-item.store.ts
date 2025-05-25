@@ -26,7 +26,28 @@ export class MockShoppingItemStore {
     });
   };
   create = async ({ data }: { data: Prisma.ShoppingItemCreateInput }) => {
-    const userId = (data.user as { connect: { id: number } }).connect.id;
+    let userId: number | undefined;
+    if (
+      Object.prototype.hasOwnProperty.call(data, 'userId') &&
+      typeof (data as unknown as { userId?: unknown }).userId === 'number'
+    ) {
+      userId = (data as unknown as { userId: number }).userId;
+    } else if (
+      'user' in data &&
+      data.user &&
+      typeof data.user === 'object' &&
+      'connect' in data.user &&
+      typeof (data.user as { connect?: unknown }).connect === 'object' &&
+      data.user.connect !== null &&
+      typeof (data.user.connect as { id?: unknown }).id === 'number'
+    ) {
+      userId = (data.user.connect as { id: number }).id;
+    }
+    if (typeof userId !== 'number') {
+      throw new Error(
+        'Invalid ShoppingItemCreateInput: userId or user.connect.id required',
+      );
+    }
     const shoppingItem: ShoppingItem = {
       id: this.idSeq++,
       userId,
