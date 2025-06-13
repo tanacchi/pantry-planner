@@ -10,7 +10,6 @@ import {
   Form,
   useFetcher,
   useLoaderData,
-  useMatches,
   useSearchParams,
 } from "@remix-run/react";
 import { User } from "../../domain/user";
@@ -81,9 +80,9 @@ export const action: ActionFunction = async ({ params, request }) => {
         name: name.toString(),
         pantryId: Number(pantryId),
         category: validCategory(itemDto.category) ? itemDto.category : "Other",
-        quantity: !!itemDto.quantity ? Number(itemDto.quantity) : 1,
+        quantity: itemDto.quantity ? Number(itemDto.quantity) : 1,
         unit: itemDto.unit?.toString() ?? "個",
-        expiresAt: !!itemDto.expiresAt ? new Date(itemDto.expiresAt) : null,
+        expiresAt: itemDto.expiresAt ? new Date(itemDto.expiresAt) : null,
       });
 
       messageClient.sendMessage({
@@ -114,15 +113,6 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 
 export default function Dashboard() {
   const { pantry } = useLoaderData<LoaderData>();
-  const matches = useMatches();
-  const userMatch = matches.find((m) => m.id === "routes/dashboard.$userId") as
-    | { data: { user: User } }
-    | undefined;
-
-  const user = userMatch?.data.user;
-  if (!user) {
-    throw new Response("User not found", { status: 404 });
-  }
 
   const fetcher = useFetcher();
   const items = pantry.items;
@@ -150,30 +140,32 @@ export default function Dashboard() {
   }, [fetcher.state, fetcher.data]);
 
   return (
-    <>
+    <div data-testid="dashboard-page">
       {/* Search Form */}
-      <Form method="get" className="flex mb-6">
+      <Form method="get" className="flex mb-6" data-testid="search-form">
         <input
           type="text"
           name="q"
           defaultValue={searchParams.get("q") ?? ""}
           placeholder="検索..."
           className="flex-1 border rounded-l px-4 py-2"
+          data-testid="search-input"
         />
-        <button type="submit" className="bg-blue-500 text-white px-4 rounded-r">
+        <button type="submit" className="bg-blue-500 text-white px-4 rounded-r" data-testid="search-button">
           検索
         </button>
       </Form>
 
       {/* Item List */}
-      <ul className="space-y-4">
+      <ul className="space-y-4" data-testid="pantry-items-list">
         {items.map((item) => (
           <li
             key={item.id}
             className="border p-4 rounded flex justify-between items-center"
+            data-testid={`pantry-item-${item.id}`}
           >
             <div className="flex items-center gap-4">
-              <span>{item.name}</span>
+              <span data-testid={`item-name-${item.id}`}>{item.name}</span>
             </div>
 
             <fetcher.Form method="post">
@@ -184,6 +176,7 @@ export default function Dashboard() {
                 value="delete"
                 className="text-red-500 hover:underline"
                 aria-label="削除"
+                data-testid={`delete-button-${item.id}`}
               >
                 <HiTrash className="h-5 w-5" />
               </button>
@@ -195,7 +188,7 @@ export default function Dashboard() {
       {showModal && (
         <AddItemModal onClose={closeModal} fetcher={fetcher} pantry={pantry} />
       )}
-    </>
+    </div>
   );
 }
 
@@ -204,6 +197,7 @@ function FloatingAddButton({ onClick }: { onClick: () => void }) {
     <button
       onClick={onClick}
       className="fixed bottom-6 right-6 w-14 h-14 bg-green-500 text-white text-3xl rounded-full shadow-lg hover:bg-green-600"
+      data-testid="add-pantry-item-button"
     >
       ＋
     </button>
@@ -220,51 +214,59 @@ function AddItemModal({
   pantry: Pantry;
 }) {
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md">
-        <h2 className="text-xl font-bold mb-4">アイテム追加</h2>
-        <fetcher.Form method="post" className="space-y-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" data-testid="add-pantry-item-modal">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md" data-testid="modal-content">
+        <h2 className="text-xl font-bold mb-4" data-testid="modal-title">アイテム追加</h2>
+        <fetcher.Form method="post" className="space-y-4" data-testid="add-pantry-item-form">
           <div>
-            <label className="block mb-1 font-medium">名前</label>
+            <label htmlFor="name" className="block mb-1 font-medium" data-testid="name-label">名前</label>
             <input
+              id="name"
               type="text"
               name="name"
               placeholder="新しいアイテム名"
               className="w-full border rounded px-4 py-2"
+              data-testid="name-input"
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">カテゴリ</label>
-            <select name="category" className="w-full border rounded px-4 py-2">
+            <label htmlFor="category" className="block mb-1 font-medium" data-testid="category-label">カテゴリ</label>
+            <select id="category" name="category" className="w-full border rounded px-4 py-2" data-testid="category-select">
               <option value="Food">食品</option>
               <option value="Drink">飲料</option>
               <option value="Other">その他</option>
             </select>
           </div>
           <div>
-            <label className="block mb-1 font-medium">個数</label>
+            <label htmlFor="quantity" className="block mb-1 font-medium" data-testid="quantity-label">個数</label>
             <input
+              id="quantity"
               type="number"
               name="quantity"
               defaultValue={1}
               className="w-full border rounded px-4 py-2"
+              data-testid="quantity-input"
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">単位</label>
+            <label htmlFor="unit" className="block mb-1 font-medium" data-testid="unit-label">単位</label>
             <input
+              id="unit"
               type="text"
               name="unit"
               defaultValue="個"
               className="w-full border rounded px-4 py-2"
+              data-testid="unit-input"
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">賞味期限（任意）</label>
+            <label htmlFor="expiresAt" className="block mb-1 font-medium" data-testid="expires-label">賞味期限（任意）</label>
             <input
+              id="expiresAt"
               type="date"
               name="expiresAt"
               className="w-full border rounded px-4 py-2"
+              data-testid="expires-input"
             />
           </div>
           <input type="hidden" name="pantryId" value={pantry.id ?? ""} />
@@ -274,6 +276,7 @@ function AddItemModal({
               type="button"
               onClick={onClose}
               className="px-4 py-2 border rounded hover:bg-gray-100"
+              data-testid="cancel-button"
             >
               キャンセル
             </button>
@@ -282,6 +285,7 @@ function AddItemModal({
               name="intent"
               value="add"
               className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+              data-testid="submit-button"
             >
               追加
             </button>
