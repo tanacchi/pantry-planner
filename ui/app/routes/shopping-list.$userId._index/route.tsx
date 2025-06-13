@@ -15,7 +15,7 @@ import {
 import { ShoppingItem } from "../../domain/shopping-item";
 import { shoppingItemClient, userClient } from "../../lib/client/api/index.server";
 import { User } from "../../domain/user";
-import { All_CATEGORIES } from "../../domain/item";
+import { validCategory } from "../../domain/item";
 
 export type LoaderData = {
   user: User;
@@ -60,7 +60,7 @@ export const action: ActionFunction = async ({ params, request }) => {
 
       const item = await shoppingItemClient.createItem({
         name: name.toString(),
-        category: All_CATEGORIES.includes(category as any) ? category as any : "Other",
+        category: validCategory(category) ? category : "Other",
         userId: Number(userId),
       });
 
@@ -81,7 +81,7 @@ export const action: ActionFunction = async ({ params, request }) => {
 };
 
 export default function ShoppingListUser() {
-  const { user, shoppingItems } = useLoaderData<LoaderData>();
+  const { shoppingItems } = useLoaderData<LoaderData>();
   const fetcher = useFetcher();
   const [searchParams] = useSearchParams();
 
@@ -244,7 +244,6 @@ function AddItemModal({
                 placeholder="例: 牛乳、パン、りんご"
                 className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-base focus:border-blue-500 focus:outline-none"
                 required
-                autoFocus
                 data-testid="name-input"
               />
             </div>
