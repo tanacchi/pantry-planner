@@ -10,7 +10,6 @@ import {
   Form,
   useFetcher,
   useLoaderData,
-  useMatches,
   useSearchParams,
 } from "@remix-run/react";
 import { User } from "../../domain/user";
@@ -81,9 +80,9 @@ export const action: ActionFunction = async ({ params, request }) => {
         name: name.toString(),
         pantryId: Number(pantryId),
         category: validCategory(itemDto.category) ? itemDto.category : "Other",
-        quantity: !!itemDto.quantity ? Number(itemDto.quantity) : 1,
+        quantity: itemDto.quantity ? Number(itemDto.quantity) : 1,
         unit: itemDto.unit?.toString() ?? "個",
-        expiresAt: !!itemDto.expiresAt ? new Date(itemDto.expiresAt) : null,
+        expiresAt: itemDto.expiresAt ? new Date(itemDto.expiresAt) : null,
       });
 
       messageClient.sendMessage({
@@ -114,15 +113,6 @@ export const shouldRevalidate = ({ formMethod }: { formMethod: string }) => {
 
 export default function Dashboard() {
   const { pantry } = useLoaderData<LoaderData>();
-  const matches = useMatches();
-  const userMatch = matches.find((m) => m.id === "routes/dashboard.$userId") as
-    | { data: { user: User } }
-    | undefined;
-
-  const user = userMatch?.data.user;
-  if (!user) {
-    throw new Response("User not found", { status: 404 });
-  }
 
   const fetcher = useFetcher();
   const items = pantry.items;
@@ -225,8 +215,9 @@ function AddItemModal({
         <h2 className="text-xl font-bold mb-4">アイテム追加</h2>
         <fetcher.Form method="post" className="space-y-4">
           <div>
-            <label className="block mb-1 font-medium">名前</label>
+            <label htmlFor="name" className="block mb-1 font-medium">名前</label>
             <input
+              id="name"
               type="text"
               name="name"
               placeholder="新しいアイテム名"
@@ -234,16 +225,17 @@ function AddItemModal({
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">カテゴリ</label>
-            <select name="category" className="w-full border rounded px-4 py-2">
+            <label htmlFor="category" className="block mb-1 font-medium">カテゴリ</label>
+            <select id="category" name="category" className="w-full border rounded px-4 py-2">
               <option value="Food">食品</option>
               <option value="Drink">飲料</option>
               <option value="Other">その他</option>
             </select>
           </div>
           <div>
-            <label className="block mb-1 font-medium">個数</label>
+            <label htmlFor="quantity" className="block mb-1 font-medium">個数</label>
             <input
+              id="quantity"
               type="number"
               name="quantity"
               defaultValue={1}
@@ -251,8 +243,9 @@ function AddItemModal({
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">単位</label>
+            <label htmlFor="unit" className="block mb-1 font-medium">単位</label>
             <input
+              id="unit"
               type="text"
               name="unit"
               defaultValue="個"
@@ -260,8 +253,9 @@ function AddItemModal({
             />
           </div>
           <div>
-            <label className="block mb-1 font-medium">賞味期限（任意）</label>
+            <label htmlFor="expiresAt" className="block mb-1 font-medium">賞味期限（任意）</label>
             <input
+              id="expiresAt"
               type="date"
               name="expiresAt"
               className="w-full border rounded px-4 py-2"
