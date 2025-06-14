@@ -4,18 +4,34 @@
 
 ## 🚀 クイックスタート
 
-### 開発サーバー起動
+### 簡単セットアップ（推奨）
+
+```bash
+# Just (推奨)
+just dev-setup      # 初回セットアップ
+just dev            # 開発サーバー起動
+
+# または Task
+task dev:setup      # 初回セットアップ  
+task dev            # 開発サーバー起動
+
+# または Make
+make dev-setup      # 初回セットアップ
+make dev            # 開発サーバー起動
+```
+
+### 手動セットアップ
 
 ```bash
 # 1. API サーバー起動 (Terminal 1)
 cd api
-npm install
-npm run start:dev    # http://localhost:8000
+pnpm install
+pnpm run start:dev    # http://localhost:8000
 
 # 2. UI サーバー起動 (Terminal 2)  
 cd ui
-npm install
-npm run dev          # http://localhost:5173
+pnpm install
+pnpm run dev          # http://localhost:5173
 
 # 3. E2E テスト (Terminal 3) - オプション
 cd e2e
@@ -28,12 +44,12 @@ pnpm run test        # 上記2つのサーバーが起動済みである必要�
 ```bash
 # データベースセットアップ
 cd api
-npm run prisma:migrate:dev
-npm run prisma:seed
+pnpm exec prisma migrate dev
+pnpm exec prisma db seed
 
 # E2E ブラウザインストール
 cd e2e
-npx playwright install --with-deps
+pnpm exec playwright install --with-deps
 ```
 
 ## 📁 プロジェクト構成
@@ -52,6 +68,7 @@ pantry-planner/
 - **API**: NestJS + Prisma + PostgreSQL
 - **UI**: Remix + React + Tailwind CSS
 - **E2E**: Playwright + TypeScript
+- **パッケージ管理**: pnpm（全プロジェクト統一）
 
 ## 📝 開発ルール
 
@@ -59,41 +76,65 @@ pantry-planner/
 **コード修正完了前に必ず実行:**
 
 ```bash
-# API
-cd api && npm run lint && npm run test && npm run build
+# 簡単（推奨）
+just ci              # lint + typecheck + test + build
+# または
+task ci              # lint + typecheck + test + build  
+# または
+make ci              # lint + typecheck + test + build
 
-# UI  
-cd ui && npm run lint && npm run typecheck && npm run build
-
-# E2E
-cd e2e && pnpm run lint && npx tsc --noEmit
+# 手動
+just lint && just test && just build
+# または各プロジェクトで個別実行
+cd api && pnpm run lint && pnpm run test && pnpm run build
+cd ui && pnpm run lint && pnpm run typecheck && pnpm run build
+cd e2e && pnpm run lint && pnpm exec tsc --noEmit
 ```
 
 ### パッケージ管理
-- **API & UI**: `npm`
-- **E2E**: `pnpm`
+- **全プロジェクト**: `pnpm`（統一）
+- **Commit前自動チェック**: Husky + lint-staged
 
 ## 🎯 主要コマンド
 
-### API開発
+### 統合コマンド（推奨）
+
 ```bash
+# 開発
+just help               # ヘルプ表示
+just dev-setup          # 初回セットアップ
+just dev                # 開発サーバー起動
+just ci                 # 全チェック（lint+test+build）
+
+# 個別操作
+just lint               # 全プロジェクトlint
+just test               # 全プロジェクトテスト
+just build              # 全プロジェクトビルド
+just start-all          # 全サーバー起動
+just stop-all           # 全サーバー停止
+
+# データベース
+just db-setup           # DB初期化
+just db-studio          # Prisma Studio
+```
+
+### 個別プロジェクト
+
+```bash
+# API開発
 cd api
-npm run start:dev        # 開発サーバー
-npm run lint            # ESLint
-npm run test            # Jest テスト
-npm run prisma:studio   # Prisma Studio
-```
+pnpm run start:dev        # 開発サーバー
+pnpm run lint            # Biome + ESLint
+pnpm run test:cov        # Jest テスト + カバレッジ
+pnpm exec prisma studio  # Prisma Studio
 
-### UI開発
-```bash
+# UI開発
 cd ui
-npm run dev             # 開発サーバー
-npm run build           # 本番ビルド
-npm run typecheck       # TypeScript チェック
-```
+pnpm run dev             # 開発サーバー
+pnpm run build           # 本番ビルド
+pnpm run typecheck       # TypeScript チェック
 
-### E2Eテスト
-```bash
+# E2Eテスト
 cd e2e
 pnpm run test           # 全テスト
 pnpm run test:headed    # ブラウザ表示
