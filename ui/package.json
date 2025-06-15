@@ -6,10 +6,16 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev",
-    "lint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint": "biome check . && eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
+    "lint:biome": "biome check .",
+    "lint:biome:fix": "biome check . --write",
+    "lint:eslint": "eslint --ignore-path .gitignore --cache --cache-location ./node_modules/.cache/eslint .",
     "start": "remix-serve ./build/server/index.js",
-    "openapi-gen": "npx openapi-generator-cli generate -i http://localhost:8000/api-json  -g typescript-fetch -o app/lib/client/api/generated",
-    "typecheck": "tsc"
+    "openapi-gen": "pnpm exec openapi-generator-cli generate -i http://localhost:8000/api-json  -g typescript-fetch -o app/lib/client/api/generated",
+    "typecheck": "tsc",
+    "test": "jest",
+    "test:cov": "jest --coverage",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@line/liff": "^2.26.0",
