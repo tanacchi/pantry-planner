@@ -1,10 +1,4 @@
-export const All_CATEGORIES = [
-  'Food',
-  'Drink',
-  'Snack',
-  'Spice',
-  'Other',
-] as const;
+export const All_CATEGORIES = ["Food", "Drink", "Snack", "Spice", "Other"] as const;
 
 export type ItemCategory = (typeof All_CATEGORIES)[number];
 
@@ -18,6 +12,6 @@ export class Item {
     public readonly unit: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-    public readonly expiresAt: Date | null = null,
+    public readonly expiresAt: Date | null = null
   ) {}
 }

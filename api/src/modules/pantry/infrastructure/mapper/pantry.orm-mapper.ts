@@ -1,5 +1,5 @@
-import { Pantry as PrismaPantry } from '@prisma/client';
-import { Pantry } from '../../domain/entity/pantry.entity';
+import type { Pantry as PrismaPantry } from "@prisma/client";
+import { Pantry } from "../../domain/entity/pantry.entity";
 
 export class PantryOrmMapper {
   static toDomain(prismaPantry: PrismaPantry): Pantry {
@@ -7,7 +7,7 @@ export class PantryOrmMapper {
       prismaPantry.id,
       prismaPantry.userId,
       new Date(prismaPantry.createdAt),
-      new Date(prismaPantry.updatedAt),
+      new Date(prismaPantry.updatedAt)
     );
   }
 

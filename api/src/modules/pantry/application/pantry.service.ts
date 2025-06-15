@@ -1,18 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { CreatePantryRequestDto } from '../dto/pantry-request.dto';
-import {
-  PantryDetailResponseDto,
-  PantryResponseDto,
-} from '../dto/pantry-response.dto';
-import { PantryDtoMapper } from './mapper/pantry.dto-mapper';
-import { PantryRepository } from '../infrastructure/pantry.repository';
-import { ItemRepository } from '../../item/infrastructure/item.repository';
+import { Injectable } from "@nestjs/common";
+import type { ItemRepository } from "../../item/infrastructure/item.repository";
+import type { CreatePantryRequestDto } from "../dto/pantry-request.dto";
+import type { PantryDetailResponseDto, PantryResponseDto } from "../dto/pantry-response.dto";
+import type { PantryRepository } from "../infrastructure/pantry.repository";
+import { PantryDtoMapper } from "./mapper/pantry.dto-mapper";
 
 @Injectable()
 export class PantryService {
   constructor(
     private readonly pantryRepository: PantryRepository,
-    private readonly itemRepository: ItemRepository,
+    private readonly itemRepository: ItemRepository
   ) {}
 
   async createPantry(dto: CreatePantryRequestDto): Promise<PantryResponseDto> {
@@ -27,19 +24,17 @@ export class PantryService {
 
   async getPantry(id: number): Promise<PantryResponseDto> {
     const pantry = await this.pantryRepository.findById(id);
-    if (!pantry) throw new Error('Pantry not found');
+    if (!pantry) throw new Error("Pantry not found");
     return PantryDtoMapper.toResponseDto(pantry);
   }
 
   async getPantryDetail(id: number): Promise<PantryDetailResponseDto> {
     const pantry = this.pantryRepository.findById(id);
     const items = this.itemRepository.findByPantryId(id);
-    const result = await Promise.all([pantry, items]).then(
-      ([pantry, items]) => {
-        if (!pantry) throw new Error('Pantry not found');
-        return PantryDtoMapper.toDetailResponseDto(pantry, items);
-      },
-    );
+    const result = await Promise.all([pantry, items]).then(([pantry, items]) => {
+      if (!pantry) throw new Error("Pantry not found");
+      return PantryDtoMapper.toDetailResponseDto(pantry, items);
+    });
     return result;
   }
 
@@ -48,9 +43,7 @@ export class PantryService {
     return pantries.map((pantry) => PantryDtoMapper.toResponseDto(pantry));
   }
 
-  async getPantryDetailsByUser(
-    userId: number,
-  ): Promise<PantryDetailResponseDto[]> {
+  async getPantryDetailsByUser(userId: number): Promise<PantryDetailResponseDto[]> {
     const pantries = await this.pantryRepository.findByUserId(userId);
     const result = pantries.map(async (pantry) => {
       const items = await this.itemRepository.findByPantryId(pantry.id);
@@ -59,14 +52,11 @@ export class PantryService {
     return Promise.all(result);
   }
 
-  async updatePantry(
-    id: number,
-    dto: CreatePantryRequestDto,
-  ): Promise<PantryResponseDto> {
+  async updatePantry(id: number, dto: CreatePantryRequestDto): Promise<PantryResponseDto> {
     const existingPantry = await this.pantryRepository.findById(id);
-    if (!existingPantry) throw new Error('Item not found');
+    if (!existingPantry) throw new Error("Item not found");
     const updated = await this.pantryRepository.update(
-      PantryDtoMapper.toUpdateDomain(existingPantry, dto),
+      PantryDtoMapper.toUpdateDomain(existingPantry, dto)
     );
     return PantryDtoMapper.toResponseDto(updated);
   }

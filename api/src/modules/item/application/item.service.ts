@@ -1,8 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { CreateItemRequestDto } from '../dto/item-request.dto';
-import { ItemResponseDto } from '../dto/item-response.dto';
-import { ItemDtoMapper } from './mapper/item.dto-mapper';
-import { ItemRepository } from '../infrastructure/item.repository';
+import { Injectable } from "@nestjs/common";
+import type { CreateItemRequestDto } from "../dto/item-request.dto";
+import type { ItemResponseDto } from "../dto/item-response.dto";
+import { ItemRepository } from "../infrastructure/item.repository";
+import { ItemDtoMapper } from "./mapper/item.dto-mapper";
 
 @Injectable()
 export class ItemService {
@@ -16,7 +16,7 @@ export class ItemService {
 
   async getItem(id: number): Promise<ItemResponseDto> {
     const item = await this.itemRepository.findById(id);
-    if (!item) throw new Error('Item not found');
+    if (!item) throw new Error("Item not found");
     return ItemDtoMapper.toResponseDto(item);
   }
 
@@ -29,14 +29,11 @@ export class ItemService {
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 
-  async updateItem(
-    id: number,
-    dto: CreateItemRequestDto,
-  ): Promise<ItemResponseDto> {
+  async updateItem(id: number, dto: CreateItemRequestDto): Promise<ItemResponseDto> {
     const existingItem = await this.itemRepository.findById(id);
-    if (!existingItem) throw new Error('Item not found');
+    if (!existingItem) throw new Error("Item not found");
     const updated = await this.itemRepository.update(
-      ItemDtoMapper.toUpdateDomain(existingItem, dto),
+      ItemDtoMapper.toUpdateDomain(existingItem, dto)
     );
     return ItemDtoMapper.toResponseDto(updated);
   }
@@ -45,14 +42,8 @@ export class ItemService {
     await this.itemRepository.delete(id);
   }
 
-  async getItemsByPantry(
-    pantryId: number,
-    includeConsumed = false,
-  ): Promise<ItemResponseDto[]> {
-    const items = await this.itemRepository.findByPantryId(
-      pantryId,
-      includeConsumed,
-    );
+  async getItemsByPantry(pantryId: number, includeConsumed = false): Promise<ItemResponseDto[]> {
+    const items = await this.itemRepository.findByPantryId(pantryId, includeConsumed);
     return items.map((item) => ItemDtoMapper.toResponseDto(item));
   }
 }

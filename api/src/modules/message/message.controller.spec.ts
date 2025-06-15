@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MessageController } from './message.controller';
-import { MessageService } from './message.service';
+import { Test, type TestingModule } from "@nestjs/testing";
+import { MessageController } from "./message.controller";
+import { MessageService } from "./message.service";
 
 const mockMessageService = () => ({
   send: jest.fn(),
 });
 
-describe('MessageController', () => {
+describe("MessageController", () => {
   let controller: MessageController;
   let service: ReturnType<typeof mockMessageService>;
 
@@ -19,11 +19,11 @@ describe('MessageController', () => {
     service = module.get(MessageService);
   });
 
-  it('should call sendMessage', async () => {
+  it("should call sendMessage", async () => {
     await controller.createMessage({
       userId: 1,
-      message: 'body',
+      message: "body",
     });
-    expect(service.send).toBeCalledWith({ userId: 1, message: 'body' });
+    expect(service.send).toBeCalledWith({ userId: 1, message: "body" });
   });
 });

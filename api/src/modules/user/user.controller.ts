@@ -1,16 +1,16 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  Put,
   Delete,
+  Get,
+  HttpCode,
   Param,
   ParseIntPipe,
-  HttpCode,
+  Post,
+  Put,
 } from '@nestjs/common';
-import { ApiTags, ApiResponse, ApiParam, ApiBody } from '@nestjs/swagger';
-import { UserService } from './application/user.service';
+import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import type { UserService } from './application/user.service';
 import { CreateUserRequestDto } from './dto/user-request.dto';
 import {
   UserDetailResponseDto,

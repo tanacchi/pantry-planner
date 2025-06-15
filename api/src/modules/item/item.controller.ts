@@ -1,17 +1,17 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  Put,
+  DefaultValuePipe,
   Delete,
+  Get,
+  HttpCode,
   Param,
-  Query,
-  ParseIntPipe,
   ParseArrayPipe,
   ParseBoolPipe,
-  DefaultValuePipe,
-  HttpCode,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -20,7 +20,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { ItemService } from './application/item.service';
+import type { ItemService } from './application/item.service';
 import { CreateItemRequestDto } from './dto/item-request.dto';
 import { ItemResponseDto } from './dto/item-response.dto';
 

@@ -1,6 +1,6 @@
-import { Item } from '../../domain/entity/item.entity';
-import { CreateItemRequestDto } from '../../dto/item-request.dto';
-import { ItemResponseDto } from '../../dto/item-response.dto';
+import type { Item } from "../../domain/entity/item.entity";
+import type { CreateItemRequestDto } from "../../dto/item-request.dto";
+import type { ItemResponseDto } from "../../dto/item-response.dto";
 
 export class ItemDtoMapper {
   static toDomain(itemDto: CreateItemRequestDto): Item {

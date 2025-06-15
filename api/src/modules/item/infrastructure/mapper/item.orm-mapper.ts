@@ -1,18 +1,18 @@
-import { Category as PrismaCategory, Item as PrismaItem } from '@prisma/client';
-import { Item, ItemCategory } from '../../domain/entity/item.entity';
+import { Category as PrismaCategory, type Item as PrismaItem } from "@prisma/client";
+import { Item, type ItemCategory } from "../../domain/entity/item.entity";
 
 const categoryMapping = (category: PrismaCategory): ItemCategory => {
   switch (category) {
     case PrismaCategory.Food:
-      return 'Food';
+      return "Food";
     case PrismaCategory.Drink:
-      return 'Drink';
+      return "Drink";
     case PrismaCategory.Snack:
-      return 'Snack';
+      return "Snack";
     case PrismaCategory.Spice:
-      return 'Spice';
+      return "Spice";
     case PrismaCategory.Other:
-      return 'Other';
+      return "Other";
     default:
       throw new Error(`Unknown category`);
   }
@@ -29,7 +29,7 @@ export class ItemOrmMapper {
       prismaItem.unit,
       new Date(prismaItem.createdAt),
       new Date(prismaItem.updatedAt),
-      prismaItem.expiresAt ? new Date(prismaItem.expiresAt) : null,
+      prismaItem.expiresAt ? new Date(prismaItem.expiresAt) : null
     );
   }
 

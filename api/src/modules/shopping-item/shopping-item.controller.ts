@@ -1,17 +1,17 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  Put,
   Delete,
-  Param,
-  Query,
-  ParseIntPipe,
+  Get,
   HttpCode,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ShoppingItemService } from './application/shopping-item.service';
+import type { ShoppingItemService } from './application/shopping-item.service';
 import {
   CreateShoppingItemRequestDto,
   UpdateShoppingItemRequestDto,

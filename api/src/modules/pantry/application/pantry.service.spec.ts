@@ -1,7 +1,7 @@
-import { PantryService } from './pantry.service';
-import { PantryRepository } from '../infrastructure/pantry.repository';
-import { ItemRepository } from '../../item/infrastructure/item.repository';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from "@nestjs/testing";
+import { ItemRepository } from "../../item/infrastructure/item.repository";
+import { PantryRepository } from "../infrastructure/pantry.repository";
+import { PantryService } from "./pantry.service";
 
 const mockPantryRepository = () => ({
   findById: jest.fn(),
@@ -21,7 +21,7 @@ const mockItemRepository = () => ({
   delete: jest.fn(),
 });
 
-describe('PantryService', () => {
+describe("PantryService", () => {
   let service: PantryService;
   let pantryRepository: ReturnType<typeof mockPantryRepository>;
   let itemRepository: ReturnType<typeof mockItemRepository>;
@@ -39,7 +39,7 @@ describe('PantryService', () => {
     itemRepository = module.get(ItemRepository);
   });
 
-  it('getPantry: should return pantry', async () => {
+  it("getPantry: should return pantry", async () => {
     pantryRepository.findById.mockResolvedValue({
       id: 1,
       userId: 1,
@@ -50,7 +50,7 @@ describe('PantryService', () => {
     expect(result).toBeTruthy();
   });
 
-  it('getPantryDetail: should return pantry detail', async () => {
+  it("getPantryDetail: should return pantry detail", async () => {
     pantryRepository.findById.mockResolvedValue({
       id: 1,
       userId: 1,
@@ -58,7 +58,7 @@ describe('PantryService', () => {
       updatedAt: new Date(),
     });
     itemRepository.findByPantryId.mockResolvedValue([
-      { id: 1, name: 'item1', pantryId: 1, quantity: 10 },
+      { id: 1, name: "item1", pantryId: 1, quantity: 10 },
     ]);
     const result = await service.getPantryDetail(1);
     expect(result).toBeTruthy();

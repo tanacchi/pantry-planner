@@ -1,21 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { ShoppingItem } from '../domain/entity/shopping-item.entity';
-import { Category } from '@prisma/client';
-import { ShoppingItemOrmMapper } from './mapper/shopping-item.orm-mapper';
+import { Injectable } from "@nestjs/common";
+import type { Category } from "@prisma/client";
+import type { PrismaService } from "../../../infrastructure/prisma/prisma.service";
+import type { ShoppingItem } from "../domain/entity/shopping-item.entity";
+import { ShoppingItemOrmMapper } from "./mapper/shopping-item.orm-mapper";
 
 @Injectable()
 export class ShoppingItemRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAllByUserId(
-    userId: number,
-    includeDeleted = false,
-  ): Promise<ShoppingItem[]> {
+  async findAllByUserId(userId: number, includeDeleted = false): Promise<ShoppingItem[]> {
     const where = includeDeleted ? { userId } : { userId, deletedAt: null };
     const result = await this.prisma.shoppingItem.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return result.map((item) => ShoppingItemOrmMapper.toDomain(item));
   }
@@ -40,10 +37,7 @@ export class ShoppingItemRepository {
     return ShoppingItemOrmMapper.toDomain(result);
   }
 
-  async update(
-    id: number,
-    data: { name?: string; category?: string },
-  ): Promise<ShoppingItem> {
+  async update(id: number, data: { name?: string; category?: string }): Promise<ShoppingItem> {
     const result = await this.prisma.shoppingItem.update({
       where: { id },
       data: {

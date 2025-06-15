@@ -1,5 +1,5 @@
-import { User as PrismaUser } from '@prisma/client';
-import { User } from '../../domain/entity/user.entity';
+import type { User as PrismaUser } from "@prisma/client";
+import { User } from "../../domain/entity/user.entity";
 
 export class UserOrmMapper {
   static toDomain(prismaUser: PrismaUser): User {
@@ -8,7 +8,7 @@ export class UserOrmMapper {
       prismaUser.lineUid,
       new Date(prismaUser.createdAt),
       new Date(prismaUser.updatedAt),
-      new Date(prismaUser.lastLoginAt),
+      new Date(prismaUser.lastLoginAt)
     );
   }
 

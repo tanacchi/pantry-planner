@@ -1,11 +1,8 @@
-import { Item } from '../../../item/domain/entity/item.entity';
-import { ItemDtoMapper } from '../../../item/application/mapper/item.dto-mapper';
-import { Pantry } from '../../domain/entity/pantry.entity';
-import { CreatePantryRequestDto } from '../../dto/pantry-request.dto';
-import {
-  PantryDetailResponseDto,
-  PantryResponseDto,
-} from '../../dto/pantry-response.dto';
+import { ItemDtoMapper } from "../../../item/application/mapper/item.dto-mapper";
+import type { Item } from "../../../item/domain/entity/item.entity";
+import { Pantry } from "../../domain/entity/pantry.entity";
+import type { CreatePantryRequestDto } from "../../dto/pantry-request.dto";
+import type { PantryDetailResponseDto, PantryResponseDto } from "../../dto/pantry-response.dto";
 
 export class PantryDtoMapper {
   static toDomain(dto: CreatePantryRequestDto): Pantry {
@@ -13,14 +10,11 @@ export class PantryDtoMapper {
       -1, // IDはまだ発行されていない
       dto.userId,
       new Date(), // 仮のcreatedAt
-      new Date(),
+      new Date()
     );
   }
 
-  static toUpdateDomain(
-    oldEntity: Pantry,
-    newEntity: CreatePantryRequestDto,
-  ): Pantry {
+  static toUpdateDomain(oldEntity: Pantry, newEntity: CreatePantryRequestDto): Pantry {
     return {
       ...oldEntity,
       ...newEntity,
@@ -36,10 +30,7 @@ export class PantryDtoMapper {
     };
   }
 
-  static toDetailResponseDto(
-    entity: Pantry,
-    items: Item[],
-  ): PantryDetailResponseDto {
+  static toDetailResponseDto(entity: Pantry, items: Item[]): PantryDetailResponseDto {
     return {
       ...this.toResponseDto(entity),
       items: items.map((item) => ItemDtoMapper.toResponseDto(item)),

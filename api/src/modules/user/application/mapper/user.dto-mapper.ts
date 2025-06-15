@@ -1,12 +1,9 @@
-import { Pantry } from '../../../pantry/domain/entity/pantry.entity';
-import { PantryDtoMapper } from '../../../pantry/application/mapper/pantry.dto-mapper';
-import { User } from '../../domain/entity/user.entity';
-import { CreateUserRequestDto } from '../../dto/user-request.dto';
-import {
-  UserDetailResponseDto,
-  UserResponseDto,
-} from '../../dto/user-response.dto';
-import { Item } from '../../..//item/domain/entity/item.entity';
+import type { Item } from "../../..//item/domain/entity/item.entity";
+import { PantryDtoMapper } from "../../../pantry/application/mapper/pantry.dto-mapper";
+import type { Pantry } from "../../../pantry/domain/entity/pantry.entity";
+import { User } from "../../domain/entity/user.entity";
+import type { CreateUserRequestDto } from "../../dto/user-request.dto";
+import type { UserDetailResponseDto, UserResponseDto } from "../../dto/user-response.dto";
 
 export class UserDtoMapper {
   static toDomain(dto: CreateUserRequestDto): User {
@@ -15,7 +12,7 @@ export class UserDtoMapper {
       dto.lineUid,
       new Date(), // createdAt
       new Date(), // updatedAt
-      new Date(), // lastLoginAt
+      new Date() // lastLoginAt
     );
   }
 
@@ -36,11 +33,7 @@ export class UserDtoMapper {
     };
   }
 
-  static toDetailResponseDto(
-    user: User,
-    pantry: Pantry,
-    items: Item[],
-  ): UserDetailResponseDto {
+  static toDetailResponseDto(user: User, pantry: Pantry, items: Item[]): UserDetailResponseDto {
     return {
       ...this.toResponseDto(user),
       pantry: PantryDtoMapper.toDetailResponseDto(pantry, items),

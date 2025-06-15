@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { messagingApi } from '@line/bot-sdk';
+import { messagingApi } from "@line/bot-sdk";
+import { Injectable } from "@nestjs/common";
 const { MessagingApiClient } = messagingApi;
 
 @Injectable()
 export class MessageRepository {
   private readonly client = new MessagingApiClient({
-    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? '',
+    channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? "",
   });
 
   // eslint-disable-next-line @typescript-eslint/require-await

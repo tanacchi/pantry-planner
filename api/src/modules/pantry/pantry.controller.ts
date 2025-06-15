@@ -1,16 +1,16 @@
 import {
   Body,
   Controller,
-  Post,
-  Get,
-  Put,
   Delete,
+  Get,
+  HttpCode,
   Param,
   ParseIntPipe,
-  HttpCode,
+  Post,
+  Put,
 } from '@nestjs/common';
 import { ApiBody, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PantryService } from './application/pantry.service';
+import type { PantryService } from './application/pantry.service';
 import { CreatePantryRequestDto } from './dto/pantry-request.dto';
 import { PantryResponseDto } from './dto/pantry-response.dto';
 import { PantryDetailResponseDto } from './dto/pantry-response.dto';

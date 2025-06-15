@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { Pantry } from '../domain/entity/pantry.entity';
-import { PantryOrmMapper } from './mapper/pantry.orm-mapper';
+import { Injectable } from "@nestjs/common";
+import type { PrismaService } from "../../../infrastructure/prisma/prisma.service";
+import type { Pantry } from "../domain/entity/pantry.entity";
+import { PantryOrmMapper } from "./mapper/pantry.orm-mapper";
 
 @Injectable()
 export class PantryRepository {

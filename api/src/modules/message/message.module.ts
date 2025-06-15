@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { MessageController } from './message.controller';
-import { MessageService } from './message.service';
-import { MessageRepository } from './message.repository';
-import { UserRepository } from '../user/infrastructure/user.repository';
+import { Module } from "@nestjs/common";
+import { UserRepository } from "../user/infrastructure/user.repository";
+import { MessageController } from "./message.controller";
+import { MessageRepository } from "./message.repository";
+import { MessageService } from "./message.service";
 
 @Module({
   imports: [],

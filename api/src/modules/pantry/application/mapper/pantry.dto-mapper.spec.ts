@@ -1,7 +1,7 @@
-import { PantryDtoMapper } from './pantry.dto-mapper';
+import { PantryDtoMapper } from "./pantry.dto-mapper";
 
-describe('PantryDtoMapper', () => {
-  it('should map entity to dto', () => {
+describe("PantryDtoMapper", () => {
+  it("should map entity to dto", () => {
     const entity = {
       id: 1,
       userId: 1,
