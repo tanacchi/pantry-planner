@@ -1,14 +1,14 @@
-import { PrismaClient, Category } from '@prisma/client';
+import { Category, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
   // User作成
   const user = await prisma.user.upsert({
-    where: { lineUid: 'sample-line-uid' },
+    where: { lineUid: "sample-line-uid" },
     update: {},
     create: {
-      lineUid: 'sample-line-uid',
+      lineUid: "sample-line-uid",
     },
   });
 
@@ -25,18 +25,18 @@ async function main() {
   await prisma.item.createMany({
     data: [
       {
-        name: 'りんご',
+        name: "りんご",
         quantity: 5,
-        unit: '個',
+        unit: "個",
         category: Category.Food,
         pantryId: pantry.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        name: 'しょうゆ',
+        name: "しょうゆ",
         quantity: 1,
-        unit: '本',
+        unit: "本",
         category: Category.Spice,
         pantryId: pantry.id,
         createdAt: new Date(),
@@ -50,21 +50,21 @@ async function main() {
   await prisma.shoppingItem.createMany({
     data: [
       {
-        name: '牛乳',
+        name: "牛乳",
         category: Category.Food,
         userId: user.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        name: 'コーヒー',
+        name: "コーヒー",
         category: Category.Drink,
         userId: user.id,
         createdAt: new Date(),
         updatedAt: new Date(),
       },
       {
-        name: 'パン',
+        name: "パン",
         category: Category.Food,
         userId: user.id,
         createdAt: new Date(),
@@ -74,7 +74,7 @@ async function main() {
     skipDuplicates: true,
   });
 
-  console.log('User, Pantry, Item, ShoppingItem seed 完了');
+  console.log("User, Pantry, Item, ShoppingItem seed 完了");
 }
 
 main()
