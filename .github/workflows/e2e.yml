@@ -1,0 +1,104 @@
+name: E2E Tests
+
+on:
+  deployment_status:
+  workflow_run:
+    workflows: ["CI"]
+    types:
+      - completed
+    branches: [main]
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    if: github.event.deployment_status.state == 'success' || github.event.workflow_run.conclusion == 'success'
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pantry_planner_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install API dependencies
+        run: cd api && pnpm install
+
+      - name: Install UI dependencies
+        run: cd ui && pnpm install
+
+      - name: Install E2E dependencies
+        run: cd e2e && pnpm install
+
+      - name: Install Playwright browsers
+        run: cd e2e && pnpm exec playwright install --with-deps
+
+      - name: Setup Database
+        run: |
+          cd api
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma db seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pantry_planner_test
+
+      - name: Start API server
+        run: cd api && pnpm run start:dev &
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pantry_planner_test
+
+      - name: Start UI server
+        run: cd ui && pnpm run dev &
+
+      - name: Wait for servers
+        run: |
+          timeout 60 sh -c 'until curl -f http://localhost:8000/health; do sleep 2; done'
+          timeout 60 sh -c 'until curl -f http://localhost:5173; do sleep 2; done'
+
+      - name: Run E2E tests
+        run: cd e2e && pnpm run test
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pantry_planner_test
+
+      - name: Upload E2E test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-results
+          path: e2e/test-results/
+
+      - name: Upload E2E test report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2e-test-report
+          path: e2e/playwright-report/
+
+      - name: Stop servers
+        if: always()
+        run: |
+          pkill -f "pnpm run start:dev" || true
+          pkill -f "pnpm run dev" || true

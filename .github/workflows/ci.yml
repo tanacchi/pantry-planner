@@ -1,0 +1,107 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pantry_planner_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Install API dependencies
+        run: cd api && pnpm install
+
+      - name: Install MCP dependencies  
+        run: cd mcp && pnpm install
+
+      - name: Install UI dependencies
+        run: cd ui && pnpm install
+
+      - name: Install E2E dependencies
+        run: cd e2e && pnpm install
+
+      - name: Lint API
+        run: cd api && pnpm run lint
+
+      - name: Lint MCP
+        run: cd mcp && pnpm run lint
+
+      - name: Lint UI
+        run: cd ui && pnpm run lint
+
+      - name: Lint E2E
+        run: cd e2e && pnpm run lint
+
+      - name: TypeCheck UI
+        run: cd ui && pnpm run typecheck
+
+      - name: TypeCheck E2E
+        run: cd e2e && pnpm exec tsc --noEmit
+
+      - name: Setup Database
+        run: |
+          cd api
+          pnpm exec prisma migrate deploy
+          pnpm exec prisma db seed
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pantry_planner_test
+
+      - name: Test API
+        run: cd api && pnpm run test:cov
+        env:
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/pantry_planner_test
+
+      - name: Test MCP
+        run: cd mcp && pnpm run test:cov
+
+      - name: Test UI
+        run: cd ui && pnpm run test:cov
+
+      - name: Build API
+        run: cd api && pnpm run build
+
+      - name: Build MCP
+        run: cd mcp && pnpm run build
+
+      - name: Build UI
+        run: cd ui && pnpm run build
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
