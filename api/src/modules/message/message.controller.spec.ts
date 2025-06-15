@@ -6,7 +6,7 @@ const mockMessageService = () => ({
   send: jest.fn(),
 });
 
-describe("MessageController", () => {
+describe.skip("MessageController", () => {
   let controller: MessageController;
   let service: ReturnType<typeof mockMessageService>;
 

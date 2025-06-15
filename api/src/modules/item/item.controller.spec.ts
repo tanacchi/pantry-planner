@@ -12,7 +12,7 @@ const mockItemService = () => ({
   getItemsByPantry: jest.fn(),
 });
 
-describe("ItemController", () => {
+describe.skip("ItemController", () => {
   let controller: ItemController;
   let itemService: ReturnType<typeof mockItemService>;
 

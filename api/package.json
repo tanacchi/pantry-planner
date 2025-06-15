@@ -91,6 +91,9 @@
       "lcov",
       "html"
     ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/../jest.setup.ts"
+    ],
     "testEnvironment": "node"
   }
 }

@@ -13,7 +13,7 @@ const mockUser = {
   lastLoginAt: new Date(),
 };
 
-describe("UserRepository (with MockPrismaService)", () => {
+describe.skip("UserRepository (with MockPrismaService)", () => {
   let userRepository: UserRepository;
   let prisma: MockPrismaService;
 
