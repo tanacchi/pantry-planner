@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { PantryModule } from '../src/modules/pantry/pantry.module';
-import { PrismaService } from '../src/infrastructure/prisma/prisma.service';
-import { MockPrismaService } from '../src/infrastructure/prisma/mock-prisma.service';
-import { Server } from 'http';
-import { PantryResponseDto } from '../src/modules/pantry/dto/pantry-response.dto';
+import type { Server } from "http";
+import type { INestApplication } from "@nestjs/common";
+import { Test, type TestingModule } from "@nestjs/testing";
+import * as request from "supertest";
+import { MockPrismaService } from "../src/infrastructure/prisma/mock-prisma.service";
+import { PrismaService } from "../src/infrastructure/prisma/prisma.service";
+import type { PantryResponseDto } from "../src/modules/pantry/dto/pantry-response.dto";
+import { PantryModule } from "../src/modules/pantry/pantry.module";
 
-describe('Pantry E2E (MockPrismaService)', () => {
+describe("Pantry E2E (MockPrismaService)", () => {
   let app: INestApplication<Server>;
   let createdId: number;
 
@@ -26,13 +26,13 @@ describe('Pantry E2E (MockPrismaService)', () => {
     await app.close();
   });
 
-  it('should create, get, update, and delete a pantry', async () => {
+  it("should create, get, update, and delete a pantry", async () => {
     const createRes = await request(app.getHttpServer())
-      .post('/pantries')
+      .post("/pantries")
       .send({ userId: 1 })
       .expect(201)
       .then((res) => res.body as PantryResponseDto);
-    expect(createRes).toHaveProperty('id');
+    expect(createRes).toHaveProperty("id");
     createdId = createRes.id;
 
     const getRes = await request(app.getHttpServer())
@@ -42,7 +42,7 @@ describe('Pantry E2E (MockPrismaService)', () => {
     expect(getRes.userId).toBe(1);
 
     const listRes = await request(app.getHttpServer())
-      .get('/pantries')
+      .get("/pantries")
       .expect(200)
       .then((res) => res.body as PantryResponseDto[]);
     expect(Array.isArray(listRes)).toBe(true);
@@ -58,11 +58,9 @@ describe('Pantry E2E (MockPrismaService)', () => {
       .then((res) => res.body as PantryResponseDto);
     expect(updatedRes.userId).toBe(1);
 
-    await request(app.getHttpServer())
-      .delete(`/pantries/${createdId}`)
-      .expect(204);
+    await request(app.getHttpServer()).delete(`/pantries/${createdId}`).expect(204);
     const afterDeleteList = await request(app.getHttpServer())
-      .get('/pantries')
+      .get("/pantries")
       .expect(200)
       .then((res) => res.body as PantryResponseDto[]);
     expect(afterDeleteList.some((p) => p.id === createdId)).toBe(false);
