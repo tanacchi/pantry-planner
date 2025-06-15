@@ -14,7 +14,7 @@ const categoryMapping = (category: PrismaCategory): ItemCategory => {
     case PrismaCategory.Other:
       return "Other";
     default:
-      throw new Error(`Unknown category`);
+      throw new Error("Unknown category");
   }
 };
 
@@ -29,7 +29,7 @@ export class ItemOrmMapper {
       prismaItem.unit,
       new Date(prismaItem.createdAt),
       new Date(prismaItem.updatedAt),
-      prismaItem.expiresAt ? new Date(prismaItem.expiresAt) : null
+      prismaItem.expiresAt ? new Date(prismaItem.expiresAt) : null,
     );
   }
 

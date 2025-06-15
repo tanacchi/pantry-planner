@@ -10,7 +10,7 @@ export class PantryDtoMapper {
       -1, // IDはまだ発行されていない
       dto.userId,
       new Date(), // 仮のcreatedAt
-      new Date()
+      new Date(),
     );
   }
 
@@ -32,7 +32,7 @@ export class PantryDtoMapper {
 
   static toDetailResponseDto(entity: Pantry, items: Item[]): PantryDetailResponseDto {
     return {
-      ...this.toResponseDto(entity),
+      ...PantryDtoMapper.toResponseDto(entity),
       items: items.map((item) => ItemDtoMapper.toResponseDto(item)),
     };
   }

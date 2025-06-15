@@ -8,7 +8,6 @@ export class MessageRepository {
     channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN ?? "",
   });
 
-  // eslint-disable-next-line @typescript-eslint/require-await
   async send(lineUid: string, message: string): Promise<void> {
     console.log(`send message: ${lineUid} -> ${message}`);
     // const result = await this.client.pushMessage({

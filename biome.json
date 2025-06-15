@@ -11,11 +11,13 @@
         "useConst": "error",
         "noVar": "error"
       },
+      "complexity": {
+        "noStaticOnlyClass": "off"
+      },
       "correctness": {
         "noUnusedVariables": "error"
       },
       "suspicious": {
-        "noExplicitAny": "warn",
         "noArrayIndexKey": "warn"
       }
     }
@@ -30,8 +32,10 @@
   "javascript": {
     "formatter": {
       "quoteStyle": "double",
-      "trailingCommas": "es5",
       "semicolons": "always"
+    },
+    "parser": {
+      "unsafeParameterDecoratorsEnabled": true
     }
   },
   "files": {

@@ -7,7 +7,7 @@ export class PantryOrmMapper {
       prismaPantry.id,
       prismaPantry.userId,
       new Date(prismaPantry.createdAt),
-      new Date(prismaPantry.updatedAt)
+      new Date(prismaPantry.updatedAt),
     );
   }
 

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import type { CreateItemRequestDto } from "../dto/item-request.dto";
 import type { ItemResponseDto } from "../dto/item-response.dto";
-import { ItemRepository } from "../infrastructure/item.repository";
+import type { ItemRepository } from "../infrastructure/item.repository";
 import { ItemDtoMapper } from "./mapper/item.dto-mapper";
 
 @Injectable()
@@ -33,7 +33,7 @@ export class ItemService {
     const existingItem = await this.itemRepository.findById(id);
     if (!existingItem) throw new Error("Item not found");
     const updated = await this.itemRepository.update(
-      ItemDtoMapper.toUpdateDomain(existingItem, dto)
+      ItemDtoMapper.toUpdateDomain(existingItem, dto),
     );
     return ItemDtoMapper.toResponseDto(updated);
   }

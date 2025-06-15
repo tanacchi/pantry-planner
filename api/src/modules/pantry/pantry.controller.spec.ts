@@ -46,8 +46,8 @@ describe("PantryController", () => {
       const expectedResult: PantryResponseDto = {
         id: 1,
         userId: 1,
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       mockPantryService.createPantry.mockResolvedValue(expectedResult);
@@ -65,14 +65,14 @@ describe("PantryController", () => {
         {
           id: 1,
           userId: 1,
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
         {
           id: 2,
           userId: 2,
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ];
 
@@ -91,8 +91,8 @@ describe("PantryController", () => {
       const expectedResult: PantryResponseDto = {
         id: pantryId,
         userId: 1,
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       mockPantryService.getPantry.mockResolvedValue(expectedResult);
@@ -111,8 +111,8 @@ describe("PantryController", () => {
         id: pantryId,
         userId: 1,
         items: [],
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       mockPantryService.getPantryDetail.mockResolvedValue(expectedResult);
@@ -131,8 +131,8 @@ describe("PantryController", () => {
         {
           id: 1,
           userId: userId,
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ];
 
@@ -153,8 +153,8 @@ describe("PantryController", () => {
           id: 1,
           userId: userId,
           items: [],
-          createdAt: (new Date()).toISOString(),
-          updatedAt: (new Date()).toISOString(),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         },
       ];
 
@@ -176,8 +176,8 @@ describe("PantryController", () => {
       const expectedResult: PantryResponseDto = {
         id: pantryId,
         userId: 1,
-        createdAt: (new Date()).toISOString(),
-        updatedAt: (new Date()).toISOString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
       };
 
       mockPantryService.updatePantry.mockResolvedValue(expectedResult);

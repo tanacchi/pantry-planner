@@ -11,7 +11,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly pantryRepository: PantryRepository,
-    private readonly itemRepository: ItemRepository
+    private readonly itemRepository: ItemRepository,
   ) {}
 
   async createUser(dto: CreateUserRequestDto): Promise<UserDetailResponseDto> {
@@ -52,7 +52,7 @@ export class UserService {
     console.log("user", user);
     if (!user) throw new Error("User not found");
     const pantry = await this.pantryRepository.findByUserId(user.id);
-    if (pantry.length == 0) throw new Error("Pantry not found");
+    if (pantry.length === 0) throw new Error("Pantry not found");
     const items = await this.itemRepository.findByPantryId(pantry[0].id);
     return UserDtoMapper.toDetailResponseDto(user, pantry[0], items);
   }
@@ -61,7 +61,7 @@ export class UserService {
     const existingUser = await this.userRepository.findById(id);
     if (!existingUser) throw new Error("User not found");
     const updated = await this.userRepository.update(
-      UserDtoMapper.toUpdateDomain(existingUser, dto)
+      UserDtoMapper.toUpdateDomain(existingUser, dto),
     );
     return UserDtoMapper.toResponseDto(updated);
   }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import type { Pantry, Prisma } from "@prisma/client";
 import { findById } from "./mock-util";
 
@@ -53,6 +52,7 @@ export class MockPantryStore {
     where: Prisma.PantryWhereUniqueInput;
     data: Partial<Pantry>;
   }) => {
+    // biome-ignore lint/style/noNonNullAssertion: mock
     const pantry = findById(this.pantries, where.id!);
     if (!pantry) throw new Error("Pantry not found");
     Object.assign(pantry, data, { updatedAt: new Date() });

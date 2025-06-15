@@ -7,7 +7,7 @@ import type { MessageRepository } from "./message.repository";
 export class MessageService {
   constructor(
     private readonly messageRepository: MessageRepository,
-    private readonly userRepository: UserRepository
+    private readonly userRepository: UserRepository,
   ) {}
 
   async send(dto: CreateMessageRequestDto): Promise<void> {

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import { type INestApplication, Injectable, type OnModuleInit } from "@nestjs/common";
 import { MockItemStore } from "./mock-item.store";
 import { MockPantryStore } from "./mock-pantry.store";
@@ -19,6 +18,7 @@ export class MockPrismaService implements OnModuleInit {
   async $disconnect() {
     /* no-op */
   }
+  // biome-ignore lint/suspicious/noExplicitAny: This is a mock service, so we can use any type
   $on(event: string, cb: (...args: any[]) => void) {
     if (event === "beforeExit") this.beforeExitHandlers.push(cb);
   }

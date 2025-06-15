@@ -9,7 +9,7 @@ import { PantryDtoMapper } from "./mapper/pantry.dto-mapper";
 export class PantryService {
   constructor(
     private readonly pantryRepository: PantryRepository,
-    private readonly itemRepository: ItemRepository
+    private readonly itemRepository: ItemRepository,
   ) {}
 
   async createPantry(dto: CreatePantryRequestDto): Promise<PantryResponseDto> {
@@ -56,7 +56,7 @@ export class PantryService {
     const existingPantry = await this.pantryRepository.findById(id);
     if (!existingPantry) throw new Error("Item not found");
     const updated = await this.pantryRepository.update(
-      PantryDtoMapper.toUpdateDomain(existingPantry, dto)
+      PantryDtoMapper.toUpdateDomain(existingPantry, dto),
     );
     return PantryDtoMapper.toResponseDto(updated);
   }

@@ -4,6 +4,6 @@ export class User {
     public readonly lineUid: string,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
-    public readonly lastLoginAt: Date
+    public readonly lastLoginAt: Date,
   ) {}
 }

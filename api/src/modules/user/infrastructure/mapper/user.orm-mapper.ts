@@ -8,7 +8,7 @@ export class UserOrmMapper {
       prismaUser.lineUid,
       new Date(prismaUser.createdAt),
       new Date(prismaUser.updatedAt),
-      new Date(prismaUser.lastLoginAt)
+      new Date(prismaUser.lastLoginAt),
     );
   }
 

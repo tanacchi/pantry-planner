@@ -32,7 +32,7 @@ export class ShoppingItemService {
 
   async updateItem(
     id: number,
-    dto: UpdateShoppingItemRequestDto
+    dto: UpdateShoppingItemRequestDto,
   ): Promise<ShoppingItemResponseDto | null> {
     const item = await this.shoppingItemRepository.update(id, {
       name: dto.name,

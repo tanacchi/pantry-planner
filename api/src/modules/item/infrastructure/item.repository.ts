@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../../infrastructure/prisma/prisma.service";
+import type { PrismaService } from "../../../infrastructure/prisma/prisma.service";
 import type { Item } from "../domain/entity/item.entity";
 import { ItemOrmMapper } from "./mapper/item.orm-mapper";
 

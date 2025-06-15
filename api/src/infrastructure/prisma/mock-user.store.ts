@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
 import type { Prisma, User } from "@prisma/client";
 import { findById } from "./mock-util";
 
@@ -31,6 +30,7 @@ export class MockUserStore {
     where: Prisma.UserWhereUniqueInput;
     data: Partial<User>;
   }) => {
+    // biome-ignore lint/style/noNonNullAssertion: mock
     const user = findById(this.users, where.id!);
     if (!user) throw new Error("User not found");
     Object.assign(user, data, { updatedAt: new Date() });

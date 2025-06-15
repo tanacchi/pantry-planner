@@ -76,7 +76,7 @@ describe("ItemOrmMapper", () => {
         "本",
         now,
         now,
-        expires
+        expires,
       );
       const result = ItemOrmMapper.toPrisma(domainItemWithExpires);
       expect(result.expiresAt).toEqual(expires);

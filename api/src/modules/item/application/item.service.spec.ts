@@ -83,7 +83,7 @@ describe("ItemService", () => {
         quantity: 1,
         unit: "個",
         pantryId: 1,
-      })
+      }),
     ).rejects.toThrow("Item not found");
   });
 

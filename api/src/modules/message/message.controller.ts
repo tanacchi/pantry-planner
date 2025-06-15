@@ -1,10 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateMessageRequestDto } from './dto';
-import type { MessageService } from './message.service';
+import { Body, Controller, Post } from "@nestjs/common";
+import { ApiBody, ApiResponse, ApiTags } from "@nestjs/swagger";
+import { CreateMessageRequestDto } from "./dto";
+import type { MessageService } from "./message.service";
 
-@ApiTags('Message')
-@Controller('/messages')
+@ApiTags("Message")
+@Controller("/messages")
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
@@ -12,10 +12,10 @@ export class MessageController {
   @ApiBody({ type: CreateMessageRequestDto })
   @ApiResponse({
     status: 201,
-    description: 'メッセージ送信に成功しました',
+    description: "メッセージ送信に成功しました",
   })
-  @ApiResponse({ status: 400, description: '不正なリクエスト' })
-  @ApiResponse({ status: 500, description: 'サーバーエラー' })
+  @ApiResponse({ status: 400, description: "不正なリクエスト" })
+  @ApiResponse({ status: 500, description: "サーバーエラー" })
   createMessage(@Body() dto: CreateMessageRequestDto): Promise<void> {
     return this.messageService.send(dto);
   }

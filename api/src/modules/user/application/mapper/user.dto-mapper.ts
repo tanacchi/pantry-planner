@@ -12,7 +12,7 @@ export class UserDtoMapper {
       dto.lineUid,
       new Date(), // createdAt
       new Date(), // updatedAt
-      new Date() // lastLoginAt
+      new Date(), // lastLoginAt
     );
   }
 
@@ -35,7 +35,7 @@ export class UserDtoMapper {
 
   static toDetailResponseDto(user: User, pantry: Pantry, items: Item[]): UserDetailResponseDto {
     return {
-      ...this.toResponseDto(user),
+      ...UserDtoMapper.toResponseDto(user),
       pantry: PantryDtoMapper.toDetailResponseDto(pantry, items),
     };
   }
