@@ -1,0 +1,43 @@
+{
+  "name": "pantry-planner",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "run-p dev:*",
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:ui": "pnpm --filter ui dev",
+    "build": "run-s build:*",
+    "build:api": "pnpm --filter api build",
+    "build:ui": "pnpm --filter ui build",
+    "build:mcp": "pnpm --filter mcp build",
+    "test": "run-p test:*",
+    "test:api": "pnpm --filter api test",
+    "test:ui": "pnpm --filter ui test",
+    "test:e2e": "pnpm --filter e2e test",
+    "test:mcp": "pnpm --filter mcp test",
+    "lint": "run-p lint:*",
+    "lint:api": "pnpm --filter api lint",
+    "lint:ui": "pnpm --filter ui lint",
+    "lint:e2e": "pnpm --filter e2e lint",
+    "lint:mcp": "pnpm --filter mcp lint",
+    "typecheck": "run-p typecheck:*",
+    "typecheck:api": "pnpm --filter api typecheck",
+    "typecheck:ui": "pnpm --filter ui typecheck",
+    "typecheck:e2e": "pnpm --filter e2e typecheck",
+    "typecheck:mcp": "pnpm --filter mcp typecheck",
+    "prisma:migrate:dev": "pnpm --filter api prisma:migrate:dev",
+    "prisma:seed": "pnpm --filter api prisma:seed",
+    "prisma:studio": "pnpm --filter api prisma:studio",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "npm-run-all2": "^8.0.4"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "pnpm lint"
+    ]
+  }
+}

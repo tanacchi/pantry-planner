@@ -1,6 +1,6 @@
 # Pantry Planner - AI Assistant Guidelines
 
-このファイルは Claude Code や GitHub Copilot などの AI アシスタントに対するプロジェクト固有のガイドラインです。
+以下のガイドに厳密に従うこと。
 
 ## 📋 プロジェクト概要
 
@@ -15,31 +15,15 @@ Pantry Planner は食材管理・買い物リスト作成アプリケーショ�
 
 ### 必須実行フロー
 **コード修正やタスク完了前に以下を必ず実行して、壊れないことを確認してください：**
-
+プロジェクトのルートにて以下を実行
 ```bash
-# 1. API ディレクトリでの確認
-cd api
-npm run lint        # API linting
-npm run test        # Unit tests
-npm run build       # Build check
-
-# 2. UI ディレクトリでの確認  
-cd ui
-npm run lint        # UI linting
-npm run typecheck   # TypeScript check
-npm run build       # Build check
-
-# 3. E2E ディレクトリでの確認
-cd e2e
-pnpm run lint       # E2E linting (Biome)
-npx tsc --noEmit    # TypeScript check
-pnpm run test       # E2E tests (optional, サーバー起動が必要)
+./.husky/_/pre-commit && ./.husky/_/post-commit
 ```
 
 ### パッケージ管理
-- **API**: `npm` を使用
-- **UI**: `npm` を使用  
-- **E2E**: `pnpm` を使用
+
+- **全プロジェクト**: `pnpm` ワークスペースで統一管理
+- **API/UI/E2E/MCP**: 全て `pnpm` 使用
 
 ### コーディング規約
 
@@ -49,14 +33,18 @@ pnpm run test       # E2E tests (optional, サーバー起動が必要)
 - **行幅**: 100文字
 
 #### TypeScript
+
 - 厳密な型定義を使用
-- `any` 型の使用を避ける
+- `any` 型の使用を禁止
 - 適切な型アノテーションを記述
 
 #### React/Remix (UI)
+
 - 関数コンポーネントを使用
 - TypeScript strict mode
 - data-testid 属性を必ず追加（E2Eテスト用）
+- **lint設定**: Biome + ESLint併用
+- **テスト**: Jest使用
 
 #### E2E テスト
 - **メインツール**: Biome（linting + formatting）
@@ -70,13 +58,17 @@ pantry-planner/
 ├── api/                 # NestJS API
 │   ├── src/
 │   ├── prisma/
-│   └── package.json     # npm
+│   └── package.json     # pnpm
 ├── ui/                  # Remix UI
 │   ├── app/
-│   └── package.json     # npm
+│   └── package.json     # pnpm
 ├── e2e/                 # Playwright E2E
 │   ├── tests/
 │   └── package.json     # pnpm
+├── mcp/                 # MCP Server
+│   └── package.json     # pnpm
+├── package.json         # ルート (pnpm workspace)
+├── pnpm-workspace.yaml  # ワークスペース設定
 └── CLAUDE.md           # このファイル
 ```
 
@@ -103,26 +95,12 @@ E2Eテストのため、全てのインタラクティブ要素に data-testid �
 <input />
 ```
 
-## 🚀 よく使用するコマンド
-
-### 開発サーバー起動
-```bash
-# API サーバー (port 8000)
-cd api && npm run start:dev
-
-# UI サーバー (port 5173)  
-cd ui && npm run dev
-
-# E2E テスト用セットアップ
-cd e2e && pnpm run dev
-```
-
 ### データベース操作
 ```bash
 cd api
-npm run prisma:migrate:dev    # マイグレーション
-npm run prisma:seed           # シードデータ投入
-npm run prisma:studio         # Prisma Studio起動
+pnpm run prisma:migrate:dev   # マイグレーション
+pnpm run prisma:seed          # シードデータ投入
+pnpm run prisma:studio        # Prisma Studio起動
 ```
 
 ### テスト実行
@@ -137,7 +115,8 @@ pnpm run test:ui              # Playwright UI
 ## 📝 重要な注意事項
 
 ### 1. 破壊的変更の防止
-- **必ず** lint, test, build を実行してから変更を完了する
+- **必ず** 以下をを実行してから変更を完了する
+  - `./.husky/_/pre-commit && ./.husky/_/post-commit`
 - TypeScript エラーは0個にする
 - E2Eテストが通ることを確認
 
@@ -155,29 +134,6 @@ pnpm run test:ui              # Playwright UI
 - ベースURL: `http://localhost:8000`
 - Swagger UI: `http://localhost:8000/api`
 - UI: `http://localhost:5173`
-
-### 5. lint 設定
-- **E2E**: Biome（推奨、TypeScript完全サポート）
-- **API/UI**: ESLint + Prettier
-- 全てダブルクォート統一
-
-## 🐛 トラブルシューティング
-
-### よくある問題
-1. **TypeScript エラー**: `npx tsc --noEmit` で確認
-2. **lint エラー**: 該当ディレクトリで `npm run lint:fix` または `pnpm run lint:fix`
-3. **E2E テスト失敗**: サーバーが起動しているか確認
-4. **データベース接続エラー**: `npm run prisma:migrate:dev` 実行
-
-### ヘルプコマンド
-```bash
-# E2E Makefile のヘルプ
-cd e2e && make help
-
-# 依存関係の再インストール
-npm ci                        # API, UI
-pnpm install                  # E2E
-```
 
 ---
 
