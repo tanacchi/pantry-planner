@@ -71,7 +71,7 @@
       "ts"
     ],
     "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
+    "testRegex": ".*\\.(spec|steps)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },
@@ -84,9 +84,15 @@
       "interfaces",
       "jestGlobalMocks.ts",
       "\\.module\\.ts",
-      "<rootDir>/src/main.ts"
+      "<rootDir>/src/main.ts",
+      "step-definitions",
+      "features"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/*.spec.ts",
+      "**/step-definitions/**/*.ts"
+    ]
   }
 }
