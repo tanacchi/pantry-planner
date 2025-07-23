@@ -1,17 +1,29 @@
-import { Category as PrismaCategory, Item as PrismaItem } from '@prisma/client';
+type PrismaCategory = 'Food' | 'Drink' | 'Snack' | 'Spice' | 'Other';
+type PrismaItem = {
+  id: number;
+  name: string;
+  quantity: number;
+  unit: string;
+  category: PrismaCategory;
+  createdAt: Date;
+  updatedAt: Date;
+  expiresAt: Date | null;
+  pantryId: number;
+  deletedAt: Date | null;
+};
 import { Item, ItemCategory } from '../../domain/entity/item.entity';
 
 const categoryMapping = (category: PrismaCategory): ItemCategory => {
   switch (category) {
-    case PrismaCategory.Food:
+    case 'Food':
       return 'Food';
-    case PrismaCategory.Drink:
+    case 'Drink':
       return 'Drink';
-    case PrismaCategory.Snack:
+    case 'Snack':
       return 'Snack';
-    case PrismaCategory.Spice:
+    case 'Spice':
       return 'Spice';
-    case PrismaCategory.Other:
+    case 'Other':
       return 'Other';
     default:
       throw new Error(`Unknown category`);
