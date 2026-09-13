@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiTrash } from "react-icons/hi";
 import {
   ActionFunction,
@@ -122,16 +122,6 @@ export default function Dashboard() {
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
 
-  // Add Item Form input ref
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Clear input after adding item
-  useEffect(() => {
-    if (fetcher.state === "idle" && inputRef.current) {
-      inputRef.current.value = "";
-    }
-  }, [fetcher.state]);
-
   // Close modal when add action completes successfully
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
@@ -226,6 +216,7 @@ function AddItemModal({
               name="name"
               placeholder="新しいアイテム名"
               className="w-full border rounded px-4 py-2"
+              required
               data-testid="name-input"
             />
           </div>
