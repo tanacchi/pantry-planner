@@ -1,5 +1,5 @@
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiTrash } from "react-icons/hi";
 import {
   ActionFunction,
@@ -13,12 +13,10 @@ import {
   useSearchParams,
 } from "@remix-run/react";
 import { ShoppingItem } from "../../domain/shopping-item";
-import { shoppingItemClient, userClient } from "../../lib/client/api/index.server";
-import { User } from "../../domain/user";
+import { shoppingItemClient } from "../../lib/client/api/index.server";
 import { validCategory } from "../../domain/item";
 
 export type LoaderData = {
-  user: User;
   shoppingItems: ShoppingItem[];
 };
 
@@ -30,16 +28,9 @@ export const loader: LoaderFunction = async ({
     throw new Response("User ID is required", { status: 400 });
   }
 
-  const [user, shoppingItems] = await Promise.all([
-    userClient.getUserById(Number(userId)),
-    shoppingItemClient.getItemsByUserId(Number(userId)),
-  ]);
+  const shoppingItems = await shoppingItemClient.getItemsByUserId(Number(userId));
 
-  if (!user) {
-    throw new Response("User not found", { status: 404 });
-  }
-
-  return { user, shoppingItems };
+  return { shoppingItems };
 };
 
 export const action: ActionFunction = async ({ params, request }) => {
@@ -88,16 +79,6 @@ export default function ShoppingListUser() {
   const [showModal, setShowModal] = useState(false);
   const openModal = () => setShowModal(true);
   const closeModal = () => setShowModal(false);
-
-  // Add Item Form input ref
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  // Clear input after adding item
-  useEffect(() => {
-    if (fetcher.state === "idle" && inputRef.current) {
-      inputRef.current.value = "";
-    }
-  }, [fetcher.state]);
 
   // Close modal when add action completes successfully
   useEffect(() => {
@@ -244,6 +225,8 @@ function AddItemModal({
                 placeholder="例: 牛乳、パン、りんご"
                 className="w-full border-2 border-gray-300 rounded-lg px-4 py-3 text-base focus:border-blue-500 focus:outline-none"
                 required
+                // eslint-disable-next-line jsx-a11y/no-autofocus -- modal dialog opened by explicit user action; WAI-ARIA dialog pattern moves focus into it
+                autoFocus
                 data-testid="name-input"
               />
             </div>
