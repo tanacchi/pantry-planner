@@ -1,4 +1,4 @@
-import { ItemCategory, All_CATEGORIES } from './item';
+import type { ItemCategory } from './item';
 
 export class ShoppingItem {
   constructor(
@@ -24,5 +24,3 @@ export interface UpdateShoppingItemRequest {
   category: ItemCategory;
   userId: number;
 }
-
-export { All_CATEGORIES, ItemCategory };
