@@ -1,5 +1,10 @@
 import { expect, test } from "@playwright/test";
-import { TEST_PANTRY_ID, TEST_USER_ID } from "./fixtures/test-data";
+import {
+  TEST_PANTRY_ID,
+  TEST_USER_ID,
+  UNKNOWN_PANTRY_ID,
+  UNKNOWN_USER_ID,
+} from "./fixtures/test-data";
 
 test.describe("Navigation", () => {
   test("should navigate between pages correctly", async ({ page }) => {
@@ -71,31 +76,35 @@ test.describe("Navigation", () => {
     await expect(page.getByTestId("search-input")).toHaveValue(searchTerm);
   });
 
-  test("should handle invalid user ID gracefully", async ({ page }) => {
-    // 存在しないユーザーIDでアクセス
-    const invalidUserId = 99999;
-    await page.goto(`/shopping-list/${invalidUserId}`);
+  test("should show an empty shopping list for an unknown user", async ({ page }) => {
+    // 存在しないユーザーIDでアクセス。買い物リストの loader はユーザーの存在を
+    // 検証しないため、空の一覧が 200 で返る。
+    const response = await page.goto(`/shopping-list/${UNKNOWN_USER_ID}`);
 
-    // エラーハンドリングの確認（404エラーページまたはエラーメッセージ）
-    // Note: 実際のエラーハンドリング実装に応じて調整が必要
-    const _response = await page.waitForLoadState("networkidle");
+    expect(response?.status()).toBe(200);
+    await expect(page.getByTestId("shopping-list-page")).toBeVisible();
+    await expect(page.getByTestId("empty-state")).toBeVisible();
+    await expect(page.locator('[data-testid*="shopping-item-"]')).toHaveCount(0);
   });
 
   test("should handle invalid pantry ID gracefully", async ({ page }) => {
-    // 存在しないパントリーIDでアクセス
-    const invalidPantryId = 99999;
-    await page.goto(`/dashboard/${TEST_USER_ID}/${invalidPantryId}`);
+    // 存在しないパントリーIDでアクセス。dashboard の loader は pantry の存在を
+    // 検証し、見つからなければエラーを throw する。
+    // Note: root.tsx の Layout が children を描画しないバグ（#31）により、
+    // エラー時の画面内容までは検証できないため、HTTP ステータスと
+    // dashboard-page が描画されないことのみを確認する。
+    const response = await page.goto(`/dashboard/${TEST_USER_ID}/${UNKNOWN_PANTRY_ID}`);
 
-    // エラーハンドリングの確認
-    const _response = await page.waitForLoadState("networkidle");
+    expect(response?.status()).toBeGreaterThanOrEqual(400);
+    await expect(page.getByTestId("dashboard-page")).toHaveCount(0);
   });
 
-  test("should handle root path redirect", async ({ page }) => {
-    // ルートパスにアクセス
-    await page.goto("/");
+  test("should serve the root path without redirecting", async ({ page }) => {
+    // ルートパス（Remix のデフォルト Welcome ページ）はリダイレクトしない。
+    const response = await page.goto("/");
 
-    // 適切なページにリダイレクトされることを確認
-    // Note: ルートパスの処理実装に応じて調整が必要
-    await page.waitForLoadState("networkidle");
+    expect(response?.status()).toBe(200);
+    await expect(page).toHaveURL(/\/$/);
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Welcome to");
   });
 });

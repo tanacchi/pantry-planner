@@ -135,7 +135,8 @@ test.describe("Responsive Design", () => {
         await expect(page.getByTestId("add-item-modal")).not.toBeVisible();
 
         // 長い名前が適切に表示されることを確認（切り詰めなど）
-        await expect(page.locator('[data-testid*="shopping-item-"]').last()).toBeVisible();
+        // API は createdAt 降順で返すため、追加したアイテムが先頭に来る
+        await expect(page.locator('[data-testid*="shopping-item-"]').first()).toBeVisible();
       });
 
       test("should handle orientation changes", async ({ page, browserName }) => {

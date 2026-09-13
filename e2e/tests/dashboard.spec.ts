@@ -69,9 +69,9 @@ test.describe("Dashboard Page", () => {
     // モーダルが閉じることを確認
     await expect(page.getByTestId("add-pantry-item-modal")).not.toBeVisible();
 
-    // 新しいアイテムがリストに表示されることを確認
-    await expect(page.locator('[data-testid*="pantry-item-"]').last()).toBeVisible();
-    await expect(page.locator('[data-testid*="item-name-"]').last()).toHaveText(testItem.name);
+    // API は createdAt 降順で返すため、追加したアイテムが先頭に来る
+    await expect(page.locator('[data-testid*="pantry-item-"]').first()).toBeVisible();
+    await expect(page.locator('[data-testid*="item-name-"]').first()).toHaveText(testItem.name);
   });
 
   test("should validate required fields in add form", async ({ page }) => {
@@ -86,17 +86,20 @@ test.describe("Dashboard Page", () => {
   });
 
   test("should delete pantry item", async ({ page }) => {
-    // 既存のアイテムがある場合の削除テスト
-    const deleteButtons = page.locator('[data-testid*="delete-button-"]');
-    const itemCount = await deleteButtons.count();
-
-    if (itemCount > 0) {
-      // 最初の削除ボタンをクリック
-      await deleteButtons.first().click();
-
-      // アイテムが削除されることを確認（ページがリロードされる）
-      await page.waitForLoadState("networkidle");
+    // seed-e2e.ts が必ずアイテムを用意するため、無条件にアサートする
+    const items = page.locator('[data-testid*="pantry-item-"]');
+    const targetItem = items.first();
+    await expect(targetItem).toBeVisible();
+    const targetItemTestId = await targetItem.getAttribute("data-testid");
+    if (!targetItemTestId) {
+      throw new Error("Target item is missing its data-testid attribute");
     }
+
+    // 削除ボタンをクリック
+    await targetItem.locator('[data-testid*="delete-button-"]').click();
+
+    // 削除したアイテムがリストから消えることを確認
+    await expect(page.getByTestId(targetItemTestId)).toHaveCount(0);
   });
 
   test("should search pantry items", async ({ page }) => {
@@ -201,15 +204,10 @@ test.describe("Dashboard Page", () => {
   });
 
   test("should display existing pantry items", async ({ page }) => {
-    // 既存のアイテムが表示されることを確認
+    // seed-e2e.ts が必ずアイテムを用意するため、無条件にアサートする
     const items = page.locator('[data-testid*="pantry-item-"]');
-    const itemCount = await items.count();
-
-    if (itemCount > 0) {
-      // 最初のアイテムの詳細を確認
-      await expect(items.first()).toBeVisible();
-      await expect(page.locator('[data-testid*="item-name-"]').first()).toBeVisible();
-      await expect(page.locator('[data-testid*="delete-button-"]').first()).toBeVisible();
-    }
+    await expect(items.first()).toBeVisible();
+    await expect(page.locator('[data-testid*="item-name-"]').first()).toBeVisible();
+    await expect(page.locator('[data-testid*="delete-button-"]').first()).toBeVisible();
   });
 });

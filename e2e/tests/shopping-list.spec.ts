@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { TEST_DATA, TEST_USER_ID } from "./fixtures/test-data";
+import { TEST_DATA, TEST_USER_ID, UNKNOWN_USER_ID } from "./fixtures/test-data";
 
 test.describe("Shopping List Page", () => {
   const shoppingListUrl = `/shopping-list/${TEST_USER_ID}`;
@@ -77,10 +77,10 @@ test.describe("Shopping List Page", () => {
     // モーダルが閉じることを確認
     await expect(page.getByTestId("add-item-modal")).not.toBeVisible();
 
-    // 新しいアイテムがリストに表示されることを確認
-    await expect(page.locator('[data-testid*="shopping-item-"]').last()).toBeVisible();
-    await expect(page.locator('[data-testid*="item-name-"]').last()).toHaveText(testItem.name);
-    await expect(page.locator('[data-testid*="item-category-"]').last()).toHaveText(
+    // API は createdAt 降順で返すため、追加したアイテムが先頭に来る
+    await expect(page.locator('[data-testid*="shopping-item-"]').first()).toBeVisible();
+    await expect(page.locator('[data-testid*="item-name-"]').first()).toHaveText(testItem.name);
+    await expect(page.locator('[data-testid*="item-category-"]').first()).toHaveText(
       testItem.category
     );
   });
@@ -104,14 +104,19 @@ test.describe("Shopping List Page", () => {
     await page.getByTestId("category-select").selectOption(testItem.category);
     await page.getByTestId("submit-button").click();
 
-    // アイテムが追加されるまで待機
-    await expect(page.locator('[data-testid*="shopping-item-"]').last()).toBeVisible();
+    // アイテムが追加されるまで待機（API は createdAt 降順で返すため先頭に来る）
+    const addedItem = page.locator('[data-testid*="shopping-item-"]').first();
+    await expect(addedItem).toBeVisible();
+    const addedItemTestId = await addedItem.getAttribute("data-testid");
+    if (!addedItemTestId) {
+      throw new Error("Added item is missing its data-testid attribute");
+    }
 
     // 削除ボタンをクリック
-    await page.locator('[data-testid*="delete-button-"]').last().click();
+    await addedItem.locator('[data-testid*="delete-button-"]').click();
 
-    // アイテムが削除されることを確認（ページがリロードされる）
-    await page.waitForLoadState("networkidle");
+    // 追加したアイテムがリストから消えることを確認
+    await expect(page.getByTestId(addedItemTestId)).toHaveCount(0);
   });
 
   test("should search shopping items", async ({ page }) => {
@@ -130,8 +135,8 @@ test.describe("Shopping List Page", () => {
   });
 
   test("should display empty state when no items", async ({ page }) => {
-    // 既存のアイテムがない場合のテスト（新しいユーザーIDを使用）
-    await page.goto("/shopping-list/999"); // 存在しないユーザーID
+    // 既存のアイテムがない場合のテスト（未知のユーザーIDを使用）
+    await page.goto(`/shopping-list/${UNKNOWN_USER_ID}`);
 
     // エンプティステートの確認
     await expect(page.getByTestId("empty-state")).toBeVisible();
@@ -198,9 +203,9 @@ test.describe("Shopping List Page", () => {
       // モーダルが閉じることを確認
       await expect(page.getByTestId("add-item-modal")).not.toBeVisible();
 
-      // 新しいアイテムがリストに表示されることを確認
-      await expect(page.locator('[data-testid*="shopping-item-"]').last()).toBeVisible();
-      await expect(page.locator('[data-testid*="item-category-"]').last()).toHaveText(category);
+      // API は createdAt 降順で返すため、追加したアイテムが先頭に来る
+      await expect(page.locator('[data-testid*="shopping-item-"]').first()).toBeVisible();
+      await expect(page.locator('[data-testid*="item-category-"]').first()).toHaveText(category);
     }
   });
 });

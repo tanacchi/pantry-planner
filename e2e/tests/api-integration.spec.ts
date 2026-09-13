@@ -30,9 +30,14 @@ test.describe("API Integration", () => {
     await page.goto(`/dashboard/${TEST_USER_ID}/${TEST_PANTRY_ID}`);
 
     // アイテム追加のAPIリクエストをインターセプト
+    // フォームの送信先は現在のページ（/dashboard/:userId/:pantryId）なので
+    // "items" ではなく実際の送信先パスで判定する
     let addItemRequest: Request | null = null;
     page.on("request", (request) => {
-      if (request.method() === "POST" && request.url().includes("items")) {
+      if (
+        request.method() === "POST" &&
+        request.url().includes(`/dashboard/${TEST_USER_ID}/${TEST_PANTRY_ID}`)
+      ) {
         addItemRequest = request;
       }
     });
@@ -63,15 +68,12 @@ test.describe("API Integration", () => {
       }
     });
 
-    // 既存のアイテムがある場合のみテスト実行
+    // seed-e2e.ts が必ず商品を用意するため、無条件にアサートする
     const deleteButtons = page.locator('[data-testid*="delete-button-"]');
-    const itemCount = await deleteButtons.count();
-
-    if (itemCount > 0) {
-      await deleteButtons.first().click();
-      await page.waitForTimeout(1000);
-      expect(deleteRequest).toBeTruthy();
-    }
+    await expect(deleteButtons.first()).toBeVisible();
+    await deleteButtons.first().click();
+    await page.waitForTimeout(1000);
+    expect(deleteRequest).toBeTruthy();
   });
 
   test("should handle search API operations", async ({ page }) => {
@@ -93,34 +95,31 @@ test.describe("API Integration", () => {
     expect(searchRequest).toBeTruthy();
   });
 
-  test("should handle API errors gracefully", async ({ page }) => {
-    // APIエラーのシミュレーション
-    await page.route("**/shopping-list/items", (route) => {
-      route.fulfill({
-        status: 500,
-        contentType: "application/json",
-        body: JSON.stringify({ error: "Internal Server Error" }),
-      });
+  test("should reject invalid shopping list actions", async ({ request }) => {
+    // 買い物リストの loader は Remix サーバ側（Node）で API を fetch するため、
+    // ブラウザの page.route ではその通信を横取りできない。action のバリデーション
+    // は request フィクスチャで直接叩いて検証する。
+    const unknownIntent = await request.post(`/shopping-list/${TEST_USER_ID}`, {
+      form: { intent: "bogus" },
     });
+    expect(unknownIntent.status()).toBe(400);
 
-    await page.goto(`/shopping-list/${TEST_USER_ID}`);
-
-    // エラーハンドリングの確認
-    // Note: 実際のエラーハンドリング実装に応じて調整が必要
-    await page.waitForLoadState("networkidle");
+    const missingName = await request.post(`/shopping-list/${TEST_USER_ID}`, {
+      form: { intent: "add" },
+    });
+    expect(missingName.status()).toBe(400);
   });
 
-  test("should handle slow API responses", async ({ page }) => {
-    // 遅いAPIレスポンスのシミュレーション
-    await page.route("**/shopping-list/items", async (route) => {
+  test("should handle slow page loads", async ({ page }) => {
+    // 買い物リストページ自体のドキュメントリクエストを遅延させる
+    // （"**/shopping-list/items" は loader 内部の fetch なのでブラウザから見えない）
+    await page.route(`**/shopping-list/${TEST_USER_ID}`, async (route) => {
       await new Promise((resolve) => setTimeout(resolve, 2000)); // 2秒遅延
-      route.continue();
+      await route.continue();
     });
 
     await page.goto(`/shopping-list/${TEST_USER_ID}`);
 
-    // ローディング状態の確認
-    await page.waitForLoadState("networkidle");
     await expect(page.getByTestId("shopping-list-page")).toBeVisible();
   });
 

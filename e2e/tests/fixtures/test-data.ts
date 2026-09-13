@@ -1,10 +1,16 @@
+// api/prisma/seed-e2e.ts が用意する固定データと対応する。
+// pnpm -C api run db:seed:e2e を実行してから使うこと。
 export const TEST_USER_ID = 27;
 export const TEST_PANTRY_ID = 9;
+
+// 存在しない ID を使うテスト用。実データと衝突しないよう大きな値にする。
+export const UNKNOWN_USER_ID = 99999;
+export const UNKNOWN_PANTRY_ID = 99999;
 
 export const TEST_DATA = {
   user: {
     id: TEST_USER_ID,
-    lineUid: "Uce47f71b572222a66a94b1fde81446df",
+    lineUid: "e2e-test-user-27",
   },
   pantry: {
     id: TEST_PANTRY_ID,
