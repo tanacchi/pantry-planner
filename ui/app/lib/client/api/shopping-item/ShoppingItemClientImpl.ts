@@ -1,8 +1,21 @@
 import { ShoppingItem, CreateShoppingItemRequest, UpdateShoppingItemRequest } from "../../../../domain/shopping-item";
+import type { ItemCategory } from "../../../../domain/item";
 import { ShoppingItemClient } from "./ShoppingItemClient";
 
-// Note: Generated API client is not yet available for shopping-item endpoints
-// This implementation uses direct fetch calls until the generated client is updated
+// TODO(#41): openapi 契約を整備して生成クライアント（ShoppingItemApi）に置き換える。
+// それまでは直 fetch で繋ぐ。
+
+// Shape returned by api/src/modules/shopping-item/dto/shopping-item-response.dto.ts,
+// serialized to JSON (dates become ISO strings on the wire).
+type ShoppingItemResponse = {
+  id: number;
+  name: string;
+  category: ItemCategory;
+  userId: number;
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string | null;
+};
 
 export class ShoppingItemClientImpl implements ShoppingItemClient {
   private readonly baseUrl: string;
@@ -17,8 +30,8 @@ export class ShoppingItemClientImpl implements ShoppingItemClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
-      return data.map((item: any) => responseToShoppingItem(item));
+      const data: ShoppingItemResponse[] = await response.json();
+      return data.map((item) => responseToShoppingItem(item));
     } catch (err) {
       console.error("Error fetching shopping items by user ID:", err);
       throw err;
@@ -34,7 +47,7 @@ export class ShoppingItemClientImpl implements ShoppingItemClient {
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data: ShoppingItemResponse = await response.json();
       return responseToShoppingItem(data);
     } catch (err) {
       console.error("Error fetching shopping item by ID:", err);
@@ -54,7 +67,7 @@ export class ShoppingItemClientImpl implements ShoppingItemClient {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data: ShoppingItemResponse = await response.json();
       return responseToShoppingItem(data);
     } catch (err) {
       console.error("Error creating shopping item:", err);
@@ -77,7 +90,7 @@ export class ShoppingItemClientImpl implements ShoppingItemClient {
         }
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const data = await response.json();
+      const data: ShoppingItemResponse = await response.json();
       return responseToShoppingItem(data);
     } catch (err) {
       console.error("Error updating shopping item:", err);
@@ -100,7 +113,7 @@ export class ShoppingItemClientImpl implements ShoppingItemClient {
   }
 }
 
-export const responseToShoppingItem = (res: any): ShoppingItem => {
+export const responseToShoppingItem = (res: ShoppingItemResponse): ShoppingItem => {
   return new ShoppingItem(
     res.id,
     res.name,
