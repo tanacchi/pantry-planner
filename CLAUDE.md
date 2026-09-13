@@ -19,27 +19,25 @@ Pantry Planner は食材管理・買い物リスト作成アプリケーショ�
 ```bash
 # 1. API ディレクトリでの確認
 cd api
-npm run lint        # API linting
-npm run test        # Unit tests
-npm run build       # Build check
+pnpm run lint        # API linting
+pnpm run test        # Unit tests + e2e tests
+pnpm run build       # Build check
 
-# 2. UI ディレクトリでの確認  
+# 2. UI ディレクトリでの確認
 cd ui
-npm run lint        # UI linting
-npm run typecheck   # TypeScript check
-npm run build       # Build check
+pnpm run lint        # UI linting
+pnpm run typecheck   # TypeScript check
+pnpm run build       # Build check
 
 # 3. E2E ディレクトリでの確認
 cd e2e
-pnpm run lint       # E2E linting (Biome)
-npx tsc --noEmit    # TypeScript check
-pnpm run test       # E2E tests (optional, サーバー起動が必要)
+pnpm run lint            # E2E linting (Biome)
+pnpm exec tsc --noEmit   # TypeScript check
+pnpm run test            # E2E tests (optional, webServer がサーバーを自動起動)
 ```
 
 ### パッケージ管理
-- **API**: `npm` を使用
-- **UI**: `npm` を使用  
-- **E2E**: `pnpm` を使用
+- **API・UI・E2E**: すべて `pnpm` を使用（各ディレクトリに `pnpm-lock.yaml` あり）
 
 ### コーディング規約
 
@@ -59,8 +57,7 @@ pnpm run test       # E2E tests (optional, サーバー起動が必要)
 - data-testid 属性を必ず追加（E2Eテスト用）
 
 #### E2E テスト
-- **メインツール**: Biome（linting + formatting）
-- **補助ツール**: ESLint（基本的なJS用のみ）
+- **ツール**: Biome（linting + formatting）。ESLint は使用しない
 - 全ての操作要素に `data-testid` 属性が必要
 
 ## 📁 ディレクトリ構造
@@ -70,10 +67,10 @@ pantry-planner/
 ├── api/                 # NestJS API
 │   ├── src/
 │   ├── prisma/
-│   └── package.json     # npm
+│   └── package.json     # pnpm
 ├── ui/                  # Remix UI
 │   ├── app/
-│   └── package.json     # npm
+│   └── package.json     # pnpm
 ├── e2e/                 # Playwright E2E
 │   ├── tests/
 │   └── package.json     # pnpm
@@ -108,10 +105,10 @@ E2Eテストのため、全てのインタラクティブ要素に data-testid �
 ### 開発サーバー起動
 ```bash
 # API サーバー (port 8000)
-cd api && npm run start:dev
+cd api && pnpm run start:dev
 
-# UI サーバー (port 5173)  
-cd ui && npm run dev
+# UI サーバー (port 5173)
+cd ui && pnpm run dev
 
 # E2E テスト用セットアップ
 cd e2e && pnpm run dev
@@ -120,9 +117,10 @@ cd e2e && pnpm run dev
 ### データベース操作
 ```bash
 cd api
-npm run prisma:migrate:dev    # マイグレーション
-npm run prisma:seed           # シードデータ投入
-npm run prisma:studio         # Prisma Studio起動
+pnpm run db:push        # スキーマ適用（migrate 整備前の暫定）
+pnpm run db:seed        # サンプルデータ投入
+pnpm run db:seed:e2e    # E2Eテスト用固定データ投入（冪等）
+pnpm run db:studio      # Prisma Studio起動
 ```
 
 ### テスト実行
@@ -158,25 +156,24 @@ pnpm run test:ui              # Playwright UI
 
 ### 5. lint 設定
 - **E2E**: Biome（推奨、TypeScript完全サポート）
-- **API/UI**: ESLint + Prettier
+- **API/UI**: ESLint
 - 全てダブルクォート統一
 
 ## 🐛 トラブルシューティング
 
 ### よくある問題
-1. **TypeScript エラー**: `npx tsc --noEmit` で確認
-2. **lint エラー**: 該当ディレクトリで `npm run lint:fix` または `pnpm run lint:fix`
-3. **E2E テスト失敗**: サーバーが起動しているか確認
-4. **データベース接続エラー**: `npm run prisma:migrate:dev` 実行
+1. **TypeScript エラー**: `pnpm exec tsc --noEmit`（ui は `pnpm run typecheck`）で確認
+2. **lint エラー**: 該当ディレクトリで `pnpm run lint:fix`
+3. **E2E テスト失敗**: `api/.env`・`ui/.env` の用意と `pnpm -C api run db:seed:e2e` の実行を確認
+4. **データベース接続エラー**: `docker compose up -d db` の起動と `api/.env` の `DATABASE_URL` を確認。スキーマ未適用なら `pnpm -C api run db:push`
 
 ### ヘルプコマンド
 ```bash
 # E2E Makefile のヘルプ
 cd e2e && make help
 
-# 依存関係の再インストール
-npm ci                        # API, UI
-pnpm install                  # E2E
+# 依存関係の再インストール（api / ui / e2e それぞれで）
+pnpm install
 ```
 
 ---

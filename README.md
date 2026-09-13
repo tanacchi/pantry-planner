@@ -4,44 +4,66 @@
 
 ## 🚀 クイックスタート
 
+### 環境変数の準備
+
+```bash
+# DB接続情報（compose.yml が読む）
+cp .env.example .env
+
+# API（DATABASE_URL）
+cp api/.env.example api/.env
+
+# UI（API_HOST。LIFF関連は空のままでよい）
+cp ui/.env.example ui/.env
+```
+
+### データベース起動
+
+```bash
+docker compose up -d db
+```
+
 ### 開発サーバー起動
 
 ```bash
 # 1. API サーバー起動 (Terminal 1)
 cd api
-npm install
-npm run start:dev    # http://localhost:8000
+pnpm install
+pnpm run start:dev    # http://localhost:8000
 
-# 2. UI サーバー起動 (Terminal 2)  
+# 2. UI サーバー起動 (Terminal 2)
 cd ui
-npm install
-npm run dev          # http://localhost:5173
+pnpm install
+pnpm run dev          # http://localhost:5173
 
 # 3. E2E テスト (Terminal 3) - オプション
 cd e2e
 pnpm install
-pnpm run test        # 上記2つのサーバーが起動済みである必要あり
+pnpm run test        # webServer が上記2つのサーバーを自動起動する
 ```
 
 ### 初回セットアップ
 
 ```bash
-# データベースセットアップ
+# データベーススキーマ適用とサンプルデータ投入
 cd api
-npm run prisma:migrate:dev
-npm run prisma:seed
+pnpm run db:push
+pnpm run db:seed
+
+# E2E テスト用の固定データ投入（TEST_USER_ID=27 等。冪等）
+pnpm run db:seed:e2e
 
 # E2E ブラウザインストール
-cd e2e
-npx playwright install --with-deps
+cd ../e2e
+pnpm exec playwright install
 ```
 
 ## 📁 プロジェクト構成
 
 ```
 pantry-planner/
-├── api/             # NestJS API (npm)
-├── ui/              # Remix UI (npm)  
+├── api/             # NestJS API (pnpm)
+├── ui/              # Remix UI (pnpm)
 ├── e2e/             # Playwright E2E (pnpm)
 ├── CLAUDE.md        # AI Assistant Guidelines
 └── README.md        # このファイル
@@ -60,44 +82,46 @@ pantry-planner/
 
 ```bash
 # API
-cd api && npm run lint && npm run test && npm run build
+cd api && pnpm run lint && pnpm run test && pnpm run build
 
-# UI  
-cd ui && npm run lint && npm run typecheck && npm run build
+# UI
+cd ui && pnpm run lint && pnpm run typecheck && pnpm run build
 
 # E2E
-cd e2e && pnpm run lint && npx tsc --noEmit
+cd e2e && pnpm run lint && pnpm exec tsc --noEmit
 ```
 
 ### パッケージ管理
-- **API & UI**: `npm`
-- **E2E**: `pnpm`
+- **API・UI・E2E**: すべて `pnpm`（各ディレクトリに `pnpm-lock.yaml` あり）
 
 ## 🎯 主要コマンド
 
 ### API開発
 ```bash
 cd api
-npm run start:dev        # 開発サーバー
-npm run lint            # ESLint
-npm run test            # Jest テスト
-npm run prisma:studio   # Prisma Studio
+pnpm run start:dev      # 開発サーバー
+pnpm run lint           # ESLint
+pnpm run test           # Jest テスト（ユニット + e2e）
+pnpm run db:push        # DBスキーマ適用（migrate 整備前の暫定）
+pnpm run db:seed        # サンプルデータ投入
+pnpm run db:seed:e2e    # E2Eテスト用固定データ投入（冪等）
+pnpm run db:studio      # Prisma Studio
 ```
 
 ### UI開発
 ```bash
 cd ui
-npm run dev             # 開発サーバー
-npm run build           # 本番ビルド
-npm run typecheck       # TypeScript チェック
+pnpm run dev             # 開発サーバー
+pnpm run build           # 本番ビルド
+pnpm run typecheck       # TypeScript チェック
 ```
 
 ### E2Eテスト
 ```bash
 cd e2e
-pnpm run test           # 全テスト
-pnpm run test:headed    # ブラウザ表示
-pnpm run lint           # Biome lint
+pnpm run test              # 全テスト（Mobile Chrome / Mobile Safari）
+pnpm run test:headed       # ブラウザ表示
+pnpm run lint              # Biome lint
 ```
 
 ## 🔗 アクセスURL
@@ -117,9 +141,9 @@ pnpm run lint           # Biome lint
 ### よくある問題
 
 1. **ポート競合**: 8000, 5173, 5555ポートが使用済み
-2. **データベース接続エラー**: `npm run prisma:migrate:dev`
-3. **E2Eテスト失敗**: API・UIサーバーが起動しているか確認
-4. **依存関係エラー**: `npm ci` / `pnpm install` で再インストール
+2. **データベース接続エラー**: `docker compose up -d db` でDBが起動しているか、`api/.env` の `DATABASE_URL` を確認。スキーマ未適用なら `cd api && pnpm run db:push`
+3. **E2Eテスト失敗**: `api/.env`・`ui/.env` が用意されているか、`pnpm -C api run db:seed:e2e` を実行済みか確認
+4. **依存関係エラー**: 各ディレクトリで `pnpm install` を再実行
 
 ### ヘルプコマンド
 ```bash

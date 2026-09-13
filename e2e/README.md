@@ -7,8 +7,9 @@
 ### 前提条件
 
 - Node.js (v18以上)
-- npm
-- APIサーバーとUIサーバーが起動していること
+- pnpm（api / ui / e2e すべて pnpm-lock.yaml で管理されている）
+- PostgreSQL（`docker compose up -d db`。ルートの `.env` を `.env.example` から作成しておく）
+- `api/.env`・`ui/.env` を各ディレクトリの `.env.example` から作成しておく
 
 ### インストール
 
@@ -17,10 +18,10 @@
 make install
 
 # または
-npm ci
-npx playwright install --with-deps
+pnpm install
+pnpm exec playwright install
 
-# ローカル環境のセットアップ
+# ローカル環境のセットアップ（依存関係 + ブラウザ + DB スキーマ・E2E 用データ投入）
 make setup
 ```
 
@@ -70,15 +71,15 @@ make test-file FILE=tests/navigation.spec.ts
 
 ### プロジェクト別実行
 
+`playwright.config.ts` の projects は `Mobile Chrome`（Pixel 5）と `Mobile Safari`（iPhone 12）の 2 つ。
+iPhone SE 相当の画面サイズは `responsive.spec.ts` の viewport ループで別途カバーしている。
+
 ```bash
-# Chromiumでのみテスト実行
-make test-project PROJECT=chromium
-
-# Webkitでのみテスト実行
-make test-project PROJECT=webkit
-
 # モバイルChromeでのみテスト実行
-make test-project PROJECT="Mobile Chrome"
+make test-mobile-chrome
+
+# モバイルSafari（WebKit）でのみテスト実行
+make test-mobile-safari
 ```
 
 ### 特定のファイルを実行
@@ -195,20 +196,15 @@ e2e/
 - **対象**: `**/*.ts`, `**/*.js`
 - **除外**: `node_modules/`, `playwright-report/`, `test-results/`, `*.config.js`
 
-#### ESLint（Basic JS用）
-- **設定ファイル**: `.eslintrc.js`
-- **ルール**: ESLint recommended（基本的なルールのみ）
-- **クォーテーション**: ダブルクォート強制
-- **対象**: `**/*.js`（TypeScriptはBiomeが処理）
-- **除外**: `node_modules/`, `playwright-report/`, `test-results/`, `*.config.ts`
+Lint は Biome のみで完結しており、ESLint は使用していない。
 
 ### 環境変数
 
 テスト実行時に以下の環境変数を設定できます：
 
 - `CI`: CI環境での実行フラグ
-- `API_HOST`: APIサーバーのURL (デフォルト: http://localhost:8000)
-- `UI_HOST`: UIサーバーのURL (デフォルト: http://localhost:5173)
+- `API_HOST`: UI サーバーが使う API のベース URL (デフォルト: http://localhost:8000)。`playwright.config.ts` の `webServer` が UI サーバー起動時にこの値を渡す
+- `UI_HOST`: Playwright がテスト対象にする UI の URL (デフォルト: http://localhost:5173)
 
 ### テストデータ
 
@@ -216,6 +212,13 @@ e2e/
 
 - `TEST_USER_ID`: テスト用ユーザーID (27)
 - `TEST_PANTRY_ID`: テスト用パントリーID (9)
+
+これらは実データとして存在している必要があります。テスト実行前に一度だけ、または
+データをリセットしたい場合に以下を実行してください（`api/prisma/seed-e2e.ts`。冪等）。
+
+```bash
+pnpm -C ../api run db:seed:e2e
+```
 
 ## 📊 レポート
 
@@ -226,26 +229,28 @@ e2e/
 make report
 
 # または
-npx playwright show-report
+pnpm exec playwright show-report
 ```
 
 ## 🐛 トラブルシューティング
 
 ### サーバーが起動していない
 
+`pnpm run test` 自体が `playwright.config.ts` の `webServer` 経由で API・UI サーバーを自動起動するため、通常は個別起動が不要です。手動で確認したい場合は:
+
 ```bash
 # APIとUIサーバーを起動
-make start-servers
+make servers-start
 
 # 手動でサーバーを起動
-cd ../api && npm run start:dev &
-cd ../ui && npm run dev &
+pnpm -C ../api run start:dev &
+pnpm -C ../ui run dev &
 ```
 
 ### Playwrightブラウザがインストールされていない
 
 ```bash
-npx playwright install --with-deps
+pnpm exec playwright install
 ```
 
 ### テストが失敗する
@@ -260,18 +265,7 @@ make test-headed
 
 ## 🚀 CI/CD
 
-GitHub Actionsでの自動テスト実行設定は `.github/workflows/e2e.yml` に定義されています。
-
-### 実行条件
-
-- `main` および `develop` ブランチへのpush
-- `main` ブランチへのプルリクエスト
-
-### テストマトリックス
-
-- Chromium
-- WebKit
-- Mobile Chrome
+GitHub Actions での自動テスト実行はまだ導入されていません（[#29](https://github.com/tanacchi/pantry-planner/issues/29) で導入予定）。現時点では手元で `pnpm run test` を実行して確認してください。
 
 ## 📝 ベストプラクティス
 

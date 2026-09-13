@@ -12,13 +12,13 @@
 pnpm run lint
 
 # 2. TypeScript型チェック
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 
-# 3. (オプション) E2Eテスト実行
-# 事前にサーバー起動が必要:
-# Terminal 1: cd ../api && npm run start:dev
-# Terminal 2: cd ../ui && npm run dev
-# Terminal 3: cd e2e && pnpm run test
+# 3. E2Eテスト実行
+# playwright.config.ts の webServer が api/ui サーバーを自動起動するため、
+# 通常は個別のサーバー起動は不要:
+# pnpm -C api run db:seed:e2e  （初回・データリセット時）
+# cd e2e && pnpm run test
 ```
 
 ### パッケージ管理
@@ -28,7 +28,7 @@ npx tsc --noEmit
 ### Lint設定
 - **メインツール**: Biome（TypeScript完全サポート）
 - **設定ファイル**: `biome.json`
-- ESLintは基本的なJS用のみ（TypeScriptはBiome処理）
+- ESLint は使用しない（Biome のみで完結）
 
 ## 📝 コーディング規約
 
@@ -81,6 +81,9 @@ TEST_USER_ID = 27      // テスト用ユーザー
 TEST_PANTRY_ID = 9     // テスト用パントリー
 ```
 
+これらは `api/prisma/seed-e2e.ts`（`pnpm -C api run db:seed:e2e`、冪等）が実データとして
+用意する。テストデータを変更する場合はこの seed ファイルと両方更新すること。
+
 ### テストデータファイル
 - `tests/fixtures/test-data.ts` でテストデータ管理
 - 新しいテストデータが必要な場合はここに追加
@@ -94,10 +97,9 @@ pnpm run test                 # 全テスト実行
 pnpm run test:headed          # ブラウザ表示
 pnpm run test:ui              # Playwright UI
 
-# プロジェクト別
-pnpm run test:chromium        # Chromium のみ
-pnpm run test:webkit          # WebKit のみ  
+# プロジェクト別（Mobile Chrome / Mobile Safari の2つのみ）
 pnpm run test:mobile-chrome   # Mobile Chrome のみ
+pnpm run test:mobile-safari   # Mobile Safari のみ
 
 # 特定ファイル
 make test-file FILE=tests/shopping-list.spec.ts
@@ -139,6 +141,7 @@ e2e/
 ├── tsconfig.json            # TypeScript設定
 ├── biome.json              # Biome設定
 ├── package.json            # pnpm設定
+├── Makefile                # よく使うコマンドのショートカット
 └── README.md               # 詳細ドキュメント
 ```
 
@@ -147,7 +150,7 @@ e2e/
 ### 1. TypeScriptエラー
 ```bash
 # 確認
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 
 # よくある問題：
 # - Request型のimport漏れ
@@ -168,9 +171,9 @@ pnpm run lint:fix
 
 ### 3. テスト失敗
 ```bash
-# サーバー起動確認
-cd ../api && npm run start:dev &
-cd ../ui && npm run dev &
+# サーバー起動確認（通常は playwright.config.ts の webServer が自動起動する）
+pnpm -C ../api run start:dev &
+pnpm -C ../ui run dev &
 
 # ブラウザ表示でデバッグ
 pnpm run test:headed
@@ -187,7 +190,7 @@ pnpm run test:headed
 pnpm install
 
 # Playwrightブラウザ
-npx playwright install --with-deps
+pnpm exec playwright install
 ```
 
 ## 📋 チェックリスト
@@ -195,7 +198,7 @@ npx playwright install --with-deps
 テスト作成・修正時のチェックリスト：
 
 - [ ] `pnpm run lint` が成功する
-- [ ] `npx tsc --noEmit` が成功する  
+- [ ] `pnpm exec tsc --noEmit` が成功する  
 - [ ] data-testid を適切に使用している
 - [ ] 適切な型定義（any型を避ける）
 - [ ] テストデータは fixtures を使用
