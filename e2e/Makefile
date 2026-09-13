@@ -37,12 +37,6 @@ test-all-projects:
 	pnpm run test:all-projects
 
 # Run specific projects
-test-chromium:
-	pnpm run test:chromium
-
-test-webkit:
-	pnpm run test:webkit
-
 test-mobile-chrome:
 	pnpm run test:mobile-chrome
 
@@ -52,7 +46,7 @@ test-mobile-safari:
 
 # Run specific test file
 test-file:
-	npx playwright test $(FILE)
+	pnpm exec playwright test $(FILE)
 
 # Show test report
 report:
@@ -90,13 +84,13 @@ clean-deps:
 
 # Update Playwright
 update:
-	npm update @playwright/test
-	npx playwright install
+	pnpm update @playwright/test
+	pnpm exec playwright install
 
 # Check Playwright installation
 check:
-	npx playwright --version
-	npx playwright install --dry-run
+	pnpm exec playwright --version
+	pnpm exec playwright install --dry-run
 
 # Help
 help:
@@ -112,8 +106,6 @@ help:
 	@echo "  test-ui         - Run tests with Playwright UI"
 	@echo "  test-debug      - Run tests in debug mode"
 	@echo "  test-all-projects - Run all projects in parallel"
-	@echo "  test-chromium   - Run Chromium tests only"
-	@echo "  test-webkit     - Run WebKit tests only"
 	@echo "  test-mobile-*   - Run mobile tests"
 	@echo ""
 	@echo "Linting:"

@@ -8,11 +8,13 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: "html",
   use: {
-    baseURL: "http://localhost:5173",
+    baseURL: process.env.UI_HOST ?? "http://localhost:5173",
     trace: "on",
     screenshot: "only-on-failure",
   },
 
+  // iPhone SE 相当の viewport は responsive.spec.ts が viewport ループで
+  // 別途カバーしているため、ブラウザエンジン別の project としては持たない。
   projects: [
     {
       name: "Mobile Chrome",
@@ -22,21 +24,22 @@ export default defineConfig({
       name: "Mobile Safari",
       use: { ...devices["iPhone 12"] },
     },
-    {
-      name: "Mobile Safari",
-      use: { ...devices["iPhone SE"] },
-    },
   ],
 
   webServer: [
     {
-      command: "cd ../api && npm run start:dev",
+      command: "pnpm -C ../api run start:dev",
       port: 8000,
+      timeout: 120_000,
       reuseExistingServer: !process.env.CI,
     },
     {
-      command: "cd ../ui && npm run dev",
+      command: "pnpm -C ../ui run dev",
       port: 5173,
+      timeout: 120_000,
+      env: {
+        API_HOST: process.env.API_HOST ?? "http://localhost:8000",
+      },
       reuseExistingServer: !process.env.CI,
     },
   ],
