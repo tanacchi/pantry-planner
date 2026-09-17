@@ -7,6 +7,8 @@ import { PantryClient } from "./pantry/PantryClient";
 import { PantryClientImpl } from "./pantry/PantryClientImpl";
 import { UserClient } from "./user/UserClient";
 import { UserClientImpl } from "./user/UserClientImpl";
+import { ShoppingItemClient } from "./shopping-item/ShoppingItemClient";
+import { ShoppingItemClientImpl } from "./shopping-item/ShoppingItemClientImpl";
 
 const BASE_PATH = process.env.API_HOST;
 
@@ -41,3 +43,6 @@ const messageApi: MessageApi = new MessageApi(
   })
 );
 export const messageClient: MessageClient = new MessageClientImpl(messageApi);
+
+// Shopping Item
+export const shoppingItemClient: ShoppingItemClient = new ShoppingItemClientImpl(BASE_PATH);
