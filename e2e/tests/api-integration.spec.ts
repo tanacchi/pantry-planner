@@ -127,14 +127,18 @@ test.describe("API Integration", () => {
     await page.goto(`/shopping-list/${TEST_USER_ID}`);
 
     // APIリクエストの詳細をキャプチャ
-    let requestData: unknown = null;
+    // フォーム送信は application/x-www-form-urlencoded で、日本語はパーセントエンコードされる
+    // (例: "name=%E3%83%86...") ため、生の postData をそのまま文字列比較すると必ず不一致になる。
+    // URLSearchParams でデコードしてからフィールド単位で検証する。
+    let requestData: Record<string, string> | null = null;
     page.on("request", (request) => {
       if (request.method() === "POST" && request.url().includes("shopping-list")) {
+        const postData = request.postData();
+        if (!postData) return;
         try {
-          requestData = JSON.parse(request.postData() || "{}");
-        } catch (_e) {
-          // フォームデータの場合
-          requestData = request.postData();
+          requestData = JSON.parse(postData);
+        } catch {
+          requestData = Object.fromEntries(new URLSearchParams(postData));
         }
       }
     });
@@ -149,10 +153,7 @@ test.describe("API Integration", () => {
 
     // リクエストデータの検証
     expect(requestData).toBeTruthy();
-    if (typeof requestData === "string") {
-      expect(requestData as string).toContain("テストアイテム");
-      expect(requestData as string).toContain("Food");
-    }
+    expect(requestData).toMatchObject({ name: "テストアイテム", category: "Food" });
   });
 
   test("should handle concurrent API requests", async ({ page }) => {
