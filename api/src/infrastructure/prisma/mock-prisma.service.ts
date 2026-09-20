@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/require-await */
-import { Injectable, INestApplication, OnModuleInit } from '@nestjs/common';
-import { MockUserStore } from './mock-user.store';
-import { MockPantryStore } from './mock-pantry.store';
-import { MockItemStore } from './mock-item.store';
-import { MockShoppingItemStore } from './mock-shopping-item.store';
+import { type INestApplication, Injectable, type OnModuleInit } from "@nestjs/common";
+import { MockItemStore } from "./mock-item.store";
+import { MockPantryStore } from "./mock-pantry.store";
+import { MockShoppingItemStore } from "./mock-shopping-item.store";
+import { MockUserStore } from "./mock-user.store";
 
 @Injectable()
 export class MockPrismaService implements OnModuleInit {
@@ -19,11 +19,11 @@ export class MockPrismaService implements OnModuleInit {
   async $disconnect() {
     /* no-op */
   }
-  $on(event: string, cb: (...args: any[]) => void) {
-    if (event === 'beforeExit') this.beforeExitHandlers.push(cb);
+  $on(event: string, cb: () => void) {
+    if (event === "beforeExit") this.beforeExitHandlers.push(cb);
   }
   enableShutdownHooks(app: INestApplication) {
-    this.$on('beforeExit', () => {
+    this.$on("beforeExit", () => {
       void app.close();
     });
   }

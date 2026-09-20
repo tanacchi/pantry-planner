@@ -1,7 +1,7 @@
-import { PantryOrmMapper } from './pantry.orm-mapper';
+import { PantryOrmMapper } from "./pantry.orm-mapper";
 
-describe('PantryOrmMapper', () => {
-  it('should map orm to entity', () => {
+describe("PantryOrmMapper", () => {
+  it("should map orm to entity", () => {
     const orm = {
       id: 1,
       userId: 1,

@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
+import { describe, expect, it, vi } from "vitest";
 import { server } from "./index.js";
 
 // Arrange: PantryApiClientのモック
@@ -27,12 +27,8 @@ describe("getCurrentPantryItems", () => {
     async ({ limit, expected }) => {
       // Arrange
       const client = new Client({ name: "test client", version: "0.1.0" });
-      const [clientTransport, serverTransport] =
-        InMemoryTransport.createLinkedPair();
-      await Promise.all([
-        client.connect(clientTransport),
-        server.connect(serverTransport),
-      ]);
+      const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+      await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
       // Act
       const result = await client.callTool({
         name: "getCurrentPantryItems",
@@ -55,60 +51,47 @@ describe("getCurrentPantryItems", () => {
       expected.forEach((item) => {
         expect(content[0].text).toContain(item);
       });
-    }
+    },
   );
 
   it("limitが不正な場合はエラーとなる", async () => {
     // Arrange
     const client = new Client({ name: "test client", version: "0.1.0" });
-    const [clientTransport, serverTransport] =
-      InMemoryTransport.createLinkedPair();
-    await Promise.all([
-      client.connect(clientTransport),
-      server.connect(serverTransport),
-    ]);
+    const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
+    await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
     // Act & Assert
     await expect(
       client.callTool({
         name: "getCurrentPantryItems",
         arguments: { limit: 0 },
-      })
+      }),
     ).rejects.toThrow();
   });
 
   it("limit未指定の場合はエラーとなる", async () => {
     const client = new Client({ name: "test client", version: "0.1.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    await Promise.all([
-      client.connect(clientTransport),
-      server.connect(serverTransport),
-    ]);
+    await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
     await expect(
-      client.callTool({ name: "getCurrentPantryItems", arguments: {} })
+      client.callTool({ name: "getCurrentPantryItems", arguments: {} }),
     ).rejects.toThrow();
   });
 
   it("limitが負数の場合はエラーとなる", async () => {
     const client = new Client({ name: "test client", version: "0.1.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    await Promise.all([
-      client.connect(clientTransport),
-      server.connect(serverTransport),
-    ]);
+    await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
     await expect(
-      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: -1 } })
+      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: -1 } }),
     ).rejects.toThrow();
   });
 
   it("limitが数値以外の場合はエラーとなる", async () => {
     const client = new Client({ name: "test client", version: "0.1.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    await Promise.all([
-      client.connect(clientTransport),
-      server.connect(serverTransport),
-    ]);
+    await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
     await expect(
-      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: "abc" } as any })
+      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: "abc" } as any }),
     ).rejects.toThrow();
   });
 
@@ -117,22 +100,21 @@ describe("getCurrentPantryItems", () => {
     // サーバ接続しない
     await client.connect(InMemoryTransport.createLinkedPair()[0]);
     await expect(
-      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: 1 } })
+      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: 1 } }),
     ).rejects.toThrow();
   });
 
   it("サーバ側で例外が発生した場合はエラーとなる", async () => {
     // getItemsByPantryIdが例外を投げるようにモック
     const errorMsg = "API error";
-    (require("./client/api.client").PantryApiClient.prototype.getItemsByPantryId as any).mockRejectedValueOnce(new Error(errorMsg));
+    (
+      require("./client/api.client").PantryApiClient.prototype.getItemsByPantryId as any
+    ).mockRejectedValueOnce(new Error(errorMsg));
     const client = new Client({ name: "test client", version: "0.1.0" });
     const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair();
-    await Promise.all([
-      client.connect(clientTransport),
-      server.connect(serverTransport),
-    ]);
+    await Promise.all([client.connect(clientTransport), server.connect(serverTransport)]);
     await expect(
-      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: 1 } })
+      client.callTool({ name: "getCurrentPantryItems", arguments: { limit: 1 } }),
     ).rejects.toThrow(errorMsg);
   });
 });

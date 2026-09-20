@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../infrastructure/prisma/prisma.service';
-import { Item } from '../domain/entity/item.entity';
-import { ItemOrmMapper } from './mapper/item.orm-mapper';
+import { Injectable } from "@nestjs/common";
+import { PrismaService } from "../../../infrastructure/prisma/prisma.service";
+import type { Item } from "../domain/entity/item.entity";
+import { ItemOrmMapper } from "./mapper/item.orm-mapper";
 
 @Injectable()
 export class ItemRepository {
@@ -14,18 +14,13 @@ export class ItemRepository {
     return data ? ItemOrmMapper.toDomain(data) : null;
   }
 
-  async findByPantryId(
-    pantryId: number,
-    includeConsumed = false,
-  ): Promise<Item[]> {
-    const where = includeConsumed
-      ? { pantryId }
-      : { pantryId, deletedAt: null };
-    console.log('includeConsumed', includeConsumed);
-    console.log('where', where);
+  async findByPantryId(pantryId: number, includeConsumed = false): Promise<Item[]> {
+    const where = includeConsumed ? { pantryId } : { pantryId, deletedAt: null };
+    console.log("includeConsumed", includeConsumed);
+    console.log("where", where);
     const result = await this.prisma.item.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
@@ -34,13 +29,13 @@ export class ItemRepository {
     const where = includeConsumed ? {} : { deletedAt: null };
     const result = await this.prisma.item.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
     });
     return result.map((item) => ItemOrmMapper.toDomain(item));
   }
 
   async create(item: Item): Promise<Item> {
-    console.log('item', typeof item.expiresAt);
+    console.log("item", typeof item.expiresAt);
     const result = await this.prisma.item.create({
       data: {
         name: item.name,

@@ -1,5 +1,5 @@
-import { User as PrismaUser } from '@prisma/client';
-import { User } from '../../domain/entity/user.entity';
+import type { User as PrismaUser } from "@prisma/client";
+import { User } from "../../domain/entity/user.entity";
 
 export class UserOrmMapper {
   static toDomain(prismaUser: PrismaUser): User {

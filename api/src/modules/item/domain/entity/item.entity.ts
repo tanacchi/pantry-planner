@@ -1,10 +1,4 @@
-export const All_CATEGORIES = [
-  'Food',
-  'Drink',
-  'Snack',
-  'Spice',
-  'Other',
-] as const;
+export const All_CATEGORIES = ["Food", "Drink", "Snack", "Spice", "Other"] as const;
 
 export type ItemCategory = (typeof All_CATEGORIES)[number];
 
