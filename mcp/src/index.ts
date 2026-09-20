@@ -8,9 +8,7 @@ const pantryApiClient = new PantryApiClient();
 const USER_ID = process.env.USER_ID;
 const PANTRY_ID = process.env.PANTRY_ID;
 if (!USER_ID || !PANTRY_ID) {
-  throw new Error(
-    "USER_ID and PANTRY_ID must be set in the environment variables."
-  );
+  throw new Error("USER_ID and PANTRY_ID must be set in the environment variables.");
 }
 
 // Create server instance
@@ -40,7 +38,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -48,9 +46,7 @@ server.tool(
   "Retrieve all item information in the pantry or refrigerator including consumed items.",
   { limit: z.number().min(1).describe("Number of items to get.") },
   async ({ limit }) => {
-    const items = (
-      await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID), true)
-    )
+    const items = (await pantryApiClient.getItemsByPantryId(Number(PANTRY_ID), true))
       .slice(0, limit)
       .map(formatItem);
 
@@ -62,7 +58,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 server.tool(
@@ -78,7 +74,7 @@ server.tool(
     expiresAt: z
       .preprocess(
         (value) => (typeof value === "string" ? new Date(value) : value),
-        z.date().optional()
+        z.date().optional(),
       )
       .describe("Expiration date of the item (YYYY-MM-DD)."),
   },
@@ -102,7 +98,7 @@ server.tool(
         },
       ],
     };
-  }
+  },
 );
 
 async function main() {

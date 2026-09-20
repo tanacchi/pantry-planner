@@ -1,4 +1,4 @@
-import { Configuration, CreateItemRequestDto, ItemApi } from "./generated";
+import { Configuration, type CreateItemRequestDto, ItemApi } from "./generated";
 
 const BASE_PATH = process.env.API_HOST ?? "http://localhost:8000";
 

@@ -1,0 +1,37 @@
+{
+  "name": "pantry-planner",
+  "private": true,
+  "packageManager": "pnpm@9.15.4",
+  "scripts": {
+    "dev": "run-p dev:*",
+    "dev:api": "pnpm --filter api start:dev",
+    "dev:ui": "pnpm --filter pantry-planner-ui dev",
+    "build": "run-p build:*",
+    "build:api": "pnpm --filter api build",
+    "build:ui": "pnpm --filter pantry-planner-ui build",
+    "build:mcp": "pnpm --filter pantry-planner-mcp build",
+    "test": "pnpm --filter api test",
+    "lint": "run-p lint:*",
+    "lint:api": "pnpm --filter api lint",
+    "lint:e2e": "pnpm --filter pantry-planner-e2e lint",
+    "lint:mcp": "pnpm --filter pantry-planner-mcp lint",
+    "typecheck": "run-p typecheck:*",
+    "typecheck:api": "pnpm --filter api typecheck",
+    "typecheck:e2e": "pnpm --filter pantry-planner-e2e exec tsc --noEmit",
+    "typecheck:mcp": "pnpm --filter pantry-planner-mcp typecheck",
+    "prepare": "husky"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.2",
+    "npm-run-all2": "^8.0.4"
+  },
+  "pnpm": {
+    "overrides": {
+      "@modelcontextprotocol/sdk": "1.11.0"
+    }
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": "biome check --write"
+  }
+}

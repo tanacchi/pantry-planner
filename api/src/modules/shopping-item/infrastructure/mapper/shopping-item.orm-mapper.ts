@@ -1,23 +1,23 @@
 import {
   Category as PrismaCategory,
-  ShoppingItem as PrismaShoppingItem,
-} from '@prisma/client';
-import { ShoppingItem } from '../../domain/entity/shopping-item.entity';
+  type ShoppingItem as PrismaShoppingItem,
+} from "@prisma/client";
+import { ShoppingItem } from "../../domain/entity/shopping-item.entity";
 
 const categoryMapping = (category: PrismaCategory): string => {
   switch (category) {
     case PrismaCategory.Food:
-      return 'Food';
+      return "Food";
     case PrismaCategory.Drink:
-      return 'Drink';
+      return "Drink";
     case PrismaCategory.Snack:
-      return 'Snack';
+      return "Snack";
     case PrismaCategory.Spice:
-      return 'Spice';
+      return "Spice";
     case PrismaCategory.Other:
-      return 'Other';
+      return "Other";
     default:
-      throw new Error(`Unknown category`);
+      throw new Error("Unknown category");
   }
 };
 
